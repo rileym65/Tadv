@@ -1,0 +1,1234 @@
+tadv 1.0
+adventure {
+  title Raaka-Tu
+  author Radio Shack, ported to Tadv by Mike Riley
+  intro Welcome to Raaka-Tu!
+  intro Enter the temple of Raaka-Tu and return to your
+  intro starting point with 5 treasures.
+  flag F_STATUE
+  flag F_LEVER
+  flag F_HALLDOOR
+  flag F_LAMP_RUBBED
+  flag F_CANDLE_LIT
+  flag F_GAR_LIVE
+  flag F_GAR_DEAD
+  flag F_GEM_FOUND
+  flag F_ALTAR_MOVED
+  flag F_SNAKE_FOUND
+  flag F_SNAKE_DEAD
+  var  V_HEALTH
+  var  V_GHEALTH
+  var  V_CANDLE
+  var  V_SHEALTH
+  equate Coin 0
+  equate Sword 3
+  equate Lever 4
+  equate Candle 7
+  equate Serpent 11
+  start {
+    V_HEALTH 5 set
+    V_GHEALTH 10 set
+    V_SHEALTH 5 set
+    V_CANDLE 10 set
+    }
+  action {
+    F_SNAKE_FOUND flagset? F_SNAKE_DEAD flagset? + 1 = if
+      Serpent extractitem
+      Serpent placeitem
+      then
+    }
+  action {
+    currentroom 13 >= if true then
+    100 random dup 10 < if 0 say true then
+    20 < if 1 say
+    }
+  action {
+    Serpent iteminroom? F_SNAKE_DEAD flagset? + 1 = if
+      100 random 50 < if
+          2 random 0 = if 106 say else 107 say then
+          3 random V_HEALTH @ swap - dup V_HEALTH swap !
+          0 <= if 66 say die true then
+        else
+          2 random
+          0 = if 108 say true then
+          109 say true
+        then
+      then
+    }
+  action {
+    31 inroom? if
+      F_GAR_LIVE flagset? F_GAR_DEAD flagset? + 1 = if
+        100 random 85 < if
+          5 random V_HEALTH @ swap - dup V_HEALTH swap !
+          5 random
+          dup 0 = if 77 say then
+          dup 1 = if 79 say then
+          dup 2 = if 80 say then
+          dup 3 = if 81 say then
+          4 = if 82 say then
+          0 <= if
+            66 say die true
+            then
+          else
+            78 say
+          then
+        then
+      then
+    }
+  action {
+    F_CANDLE_LIT flagset? if
+      Candle location 31 = if
+        F_GAR_LIVE flagset? F_GAR_DEAD flagset? + 1 = if
+          V_GHEALTH @ 2 - dup V_GHEALTH swap !
+          0 <= if
+            F_GAR_DEAD setflag
+            then
+          then
+        then 
+      Candle carrying?
+      Candle iteminroom?
+      or if
+        60 say
+        V_HEALTH get 1 - dup V_HEALTH swap set
+        0 = if
+          66 say
+          die
+          true 
+          then
+        else
+          V_HEALTH get dup 5 < if 1 + V_HEALTH swap set then
+        then      
+    else
+      V_HEALTH get dup 5 < if 1 + V_HEALTH swap set then
+    then
+    }
+  }
+room 0 {
+  name jungle_0
+  short Jungle
+  desc You are in a dense dark damp jungle.
+  north 1
+  south 2
+  east 3
+  west 4
+  }
+room 1 {
+  name jungle_1
+  short Jungle
+  desc You are in a dense damp dark jungle.
+  south 0
+  north 2
+  east 3
+  west 4
+  }
+room 2 {
+  name jungle_2
+  short Jungle
+  desc You are in a dark damp dense jungle.
+  south 1
+  north 0
+  west 4
+  }
+room 3 {
+  name jungle_3
+  short Jungle
+  desc You are in a damp dark dense jungle.
+  west 1
+  north 2
+  south 0
+  }
+room 4 {
+  name jungle_4
+  short Jungle
+  desc You are in a dark dense damp jungle.
+  south 0
+  east 1
+  north 2
+  west 5
+  }
+room 5 {
+  name jungle_5
+  short Jungle
+  desc Through the jungle you see the east wall of a great temple.
+  east 4
+  north 6
+  south 8
+  west 9
+  }
+room 6 {
+  name jungle_6
+  short Jungle
+  desc Through a gap in the jungle you can see the north wall of a
+  desc magnificent temple.
+  east 5
+  north 2
+  west 7
+  south 12
+  }
+room 7 {
+  name jungle_7
+  short Jungle
+  desc Through the dense undergrowth, you can see the great bronze
+  desc gates on the west wall of the temple.
+  north 6
+  south 8
+  west 3
+  east 11
+  }
+room 8 {
+  name jungle_8
+  short Jungle
+  desc In a clearing before you stands the south wall of a great
+  desc temple.
+  west 7
+  east 5
+  south 0
+  north 10
+  }
+room 9 {
+  name east_wall
+  short East wall
+  desc You are at the east wall.
+  east 5
+  south 10
+  north 12
+  }
+room 10 {
+  name south_wall
+  short South wall
+  desc You are at the south wall.
+  east 9
+  south 8
+  west 11
+  }
+room 11 {
+  name gates
+  short Gates
+  desc You are standing before the west entrance of the temple.
+  desc Great bronze gates engraved with images of serpents stand
+  desc silently before you.
+  south 10
+  north 12
+  west 7
+  action examine gates {
+    91 say true
+    }
+  action open gates {
+    92 say true
+    }
+  action climb gates {
+    93 say true
+    }
+  }
+room 12 {
+  name north_wall
+  short North wall
+  desc You are at the north wall. A large network of vines clings
+  desc to the wall.
+  west 11
+  east 9
+  north 6
+  action climb vines {
+    100 random 45 > if 4 say true then
+    5 say 13 teleport true
+    }
+  action examine vines {
+    94 say true
+    }
+  }
+room 13 {
+  name small_room
+  short Small room
+  desc You are in a small room with granite walls and floor.
+  desc There is a small opening to the east and a large hole
+  desc in the ceiling.
+  east 14
+  action climb hole {
+    7 say true
+    }
+  }
+room 14 {
+  name rectangular_room
+  short Rectangular room
+  desc You are in a large rectangular room. On the floor of the
+  desc east side of the room is an intricate oriental rug
+  desc stretching between the north and south walls. In the east
+  desc wall is a huge carved wooden door. To the south, a small
+  desc hole leads to a dark passage way.
+  west 13
+  east 0
+  south 15
+  action examine rug {
+    8 say true
+    }
+  action get rug {
+    9 say true
+    }
+  action look under rug {
+    10 say true
+    }
+  action lift rug {
+    10 say true
+    }
+  action move rug {
+    11 say true
+    }
+  action examine door {
+    14 say true
+    }
+  action read door {
+    15 say true
+    }
+  leave {
+    goingeast? if 12 say die true then
+    }
+  }
+room 15 {
+  name dark_passage
+  short Dark passage
+  desc You are in a dark passage way which slopes up and to the
+  desc south.
+  north 14
+  south 16
+  }  
+room 16 {
+  name top_passage
+  short Top of passage
+  desc You are at the top of a passage which slopes down and to
+  desc the north. There is a corridor to the east and another to
+  desc the west.
+  north 15
+  west 17
+  east 18
+  }
+room 17 {
+  name sword_room
+  short Small room
+  desc You are in a small room with a single exit east.
+  east 16
+  }
+room 18 {
+  name t_room_1
+  short T shaped room
+  desc This is a T shaped room with exits east, south, and west.
+  west 16
+  south 19
+  east 21
+  }
+room 19 {
+  name gray_walls_1
+  short Room with gray stone walls
+  desc You are in a room with gray stone walls. Passages lead
+  desc north and east.
+  north 18
+  east 20
+  }
+room 20 {
+  name round_room_1
+  short Round room
+  desc This is a round room with high walls. The only opening is
+  desc to the west.
+  west 19
+  }
+room 21 {
+  name Triangular room
+  short Triangular room
+  desc Triangular room
+  west 18
+  east 22
+  action examine statue {
+    23 say true
+    }
+  action get statue {
+    24 say true
+    }
+  action move statue {
+    25 say true
+    }
+  action read message {
+    17 say true
+    }
+  action examine message {
+    18 say true
+    }
+  action put coin in slot {
+    Coin notcarrying? if 2 say true then
+    F_STATUE setflag 19 say Coin dropitem Coin removeitem true
+    }
+  action look {
+    F_STATUE flagset? if 21 say true then
+    20 say true
+    }
+  enter {
+    F_STATUE flagset? if 21 say
+    18 enteredfrom? = if 22 say die true then
+    true then
+    20 say true
+    }
+  leave {
+    goingwest? F_STATUE flagset? + 2 = if 22 say die true then
+    goingeast? F_STATUE flagreset? + 2 = if 22 say die true then
+    }
+  }
+room 22 {
+  name south_hall
+  short South end of great hallway
+  desc You are at the south end of the great central hallway.
+  desc Exits exist in the east and west walls.
+  west 21
+  north 23
+  east 26
+  action examine room {
+    F_GEM_FOUND flagset? if false then
+    76 say 9 placeitem F_GEM_FOUND setflag true
+    }
+  }
+room 23 {
+  name north_hall
+  short North end of great hallway
+  desc You are at the north end of the great central hallway.
+  desc Exits exist in the east and west walls. There is a door on
+  desc the north wall.
+  south 22
+  north 24
+  east 25
+  west 30
+  action n {
+    F_HALLDOOR flagreset? if 26 say true then
+    false
+    }
+  action open door {
+    F_HALLDOOR flagset? if 30 say true then
+    29 say F_HALLDOOR setflag true
+    }
+  action look {
+    roomdesc
+    F_HALLDOOR flagset? if 28 say true
+    else 27 say true then
+    }
+  enter {
+    F_HALLDOOR flagset? if 28 say true then
+    27 say true
+    }
+  }
+room 24 {
+  name vault
+  short Vault
+  desc You are in a vault with a large door to the south. A
+  desc bejeweled lever is on one wall. There is a plaque on the
+  desc wall above the lever.
+  south 23
+  action examine plaque {
+    31 say true
+    }
+  action get plaque {
+    32 say true
+    }
+  action read plaque {
+    33 say true
+    }
+  action pull lever {
+    34 say die true
+    }
+  action look {
+    F_LEVER flagreset? if 35 say else 36 say then
+    F_HALLDOOR flagset? if 28 say true
+    else 27 say true then
+    }
+  action get lever {
+    F_LEVER flagreset? if
+      F_LEVER setflag Lever placeitem Lever takeitem 37 say true
+      then
+    false
+    }
+  action open door {
+    F_HALLDOOR flagset? if 30 say true then
+    29 say F_HALLDOOR setflag true
+    }
+  enter {
+    38 say F_HALLDOOR resetflag
+    }
+  action s {
+    F_HALLDOOR flagreset? if 26 say true then
+    false
+    }
+  }
+room 25 {
+  name very_small_room
+  short Very small room
+  desc You are in a very small room.
+  west 23
+  }
+room 26 {
+  name t_room_2
+  short T shaped room
+  desc This is a T shaped room with exits east, south, and west.
+  west 22
+  south 27
+  east 29
+  }
+room 27 {
+  name gray_walls_2
+  short Room with gray stone walls
+  desc You are in a room with gray stone walls. Passages lead
+  desc north and east.
+  north 26
+  east 28
+  }
+room 28 {
+  name round_room_2
+  short Round room
+  desc This is a round room with high walls. The only opening is
+  desc to the west.
+  west 27
+  }
+room 29 {
+  name petite_chamber
+  short Petite chamber
+  desc You are in a petite chamber. There is a larger room to the
+  desc north and a passage to the west.
+  west 26
+  north 31
+  }
+room 30 {
+  name entrance
+  short Entrance to a long dark tunnel
+  desc You are at the entrance to a long dark tunnel which leads
+  desc west. There is a passage east. There are cryptic runes above
+  desc the tunnel.
+  east 23
+  west 33
+  action examine runes {
+    48 say true
+    }
+  action read runes {
+    49 say true
+    }
+  action get runes {
+    50 say true
+    }
+  }
+room 31 {
+  name large_room_g
+  short Large room
+  desc You are in a large room which smells of decaying flesh.
+  desc There are exits north and south. There is a hideous stone
+  desc gargoyle perched on a ledge above the north passage.
+  south 29
+  north 32
+  action attack gargoyle with sword {
+    Sword notcarrying? if 2 say true then
+    F_GAR_LIVE flagreset? if 87 say true then
+    F_GAR_DEAD flagset? if 89 say true then
+    100 random 50 < if
+      2 random 0 = if 83 say true then
+      84 say true
+      else
+      2 random 0 = if 85 say else 86 say then
+      V_GHEALTH @ 1 - dup V_GHEALTH swap !
+      0 = if 90 say F_GAR_DEAD setflag then
+      then
+    true
+    }
+  action attack gargoyle {
+    Sword notcarrying? if 88 say true then
+    F_GAR_LIVE flagreset? if 87 say true then
+    F_GAR_DEAD flagset? if 89 say true then
+    100 random 50 < if
+      2 random 0 = if 83 say true then
+      84 say true
+      else
+      2 random 0 = if 85 say else 86 say then
+      V_GHEALTH @ 1 - dup V_GHEALTH swap !
+      0 = if 90 say F_GAR_DEAD setflag then
+      then
+    true
+    }
+  action look {
+    F_GAR_LIVE flagset? if
+      F_GAR_DEAD flagset? if 73 say true then
+      52 say true
+      then
+    51 say true
+    }
+  action examine gargoyle {
+    F_GAR_DEAD flagset? 74 say true then
+    53 say true
+    }
+  action get gargoyle {
+    F_GAR_DEAD flagset? 75 say true then
+    54 say true
+    }
+  enter {
+    F_GAR_LIVE flagset? if
+      F_GAR_DEAD flagset? if 73 say true then   
+      57 say true
+      then
+    }
+  leave {
+    goingnorth? if
+        F_GAR_LIVE flagset? if
+          F_GAR_DEAD flagset? if false then
+          56 say 31 teleport true
+          then
+      F_GAR_LIVE setflag
+      55 say 31 teleport true
+      then
+    false
+    }
+  }
+room 32 {
+  name tall_room
+  short Tall room
+  desc This is a tall room carved of stone with a single exit to
+  desc the south.
+  south 31
+  }
+room 33 {
+  name dark_tunnel
+  short Dark tunnel
+  desc You are in the dark tunnel.
+  east 30
+  west 34
+  }
+room 34 {
+  name entrance_2
+  short Tunnel entrance
+  desc You are at the entrance to a long dark tunnel which leads
+  desc east. There is a passage west.
+  east 33
+  west 35
+  }
+room 35 {
+  name altar_room
+  short Altar room
+  desc You are in a large room with a single exit east. Before you
+  desc stands an altar, stained with the blood of countless
+  desc sacrifices.
+  east 34
+  action go under altar {
+    F_ALTAR_MOVED setflag
+    36 teleport true
+    }
+  action go passage {
+    F_ALTAR_MOVED setflag
+    36 teleport true
+    }
+  action enter passage {
+    F_ALTAR_MOVED setflag
+    36 teleport true
+    }
+  action move altar {
+    95 say
+    F_ALTAR_MOVED setflag
+    true
+    }
+  enter {
+    F_SNAKE_FOUND setflag
+    }
+  }
+room 36 {
+  name secret_passage
+  short Secret passage
+  desc You are in the secret passage which leads east.
+  east 37
+  enter {
+    F_ALTAR_MOVED flagset? if 96 say F_ALTAR_MOVED resetflag then
+    }
+  }
+room 37 {
+  name passage_end
+  short End of passage
+  desc You are at the end of the passage. There is a hole in the ceiling.
+  west 36
+  action climb hole {
+    97 say
+    10 teleport
+    true
+    }
+  }
+message 0 {
+  You hear the distant cries of wild animals.
+  }
+message 1 {
+  You are doused by a brief tropical rain shower.
+  }
+message 2 {
+  You do not have it.
+  }
+message 3 {
+  "Praised be Raaka-Tu"
+  }
+message 4 {
+  As you climb, the vine gives way and you fall to the ground.
+  }
+message 5 {
+  You climb to the roof. As you step on the roof, it collapses.
+  }
+message 6 {
+  The bottle is already open.
+  }
+message 7 {
+  Even if you could climb the hole it wouldn't help you.
+  }
+message 8 {
+  There's nothing special about the rug.
+  }
+message 9 {
+  You are quite incapable of removing the rug.
+  }
+message 10 {
+  You discover a deep dark pit which extends from the north
+  to the south wall. The pit is too broad to jump.
+  }
+message 11 {
+  Why don't you leave the poor rug alone.
+  }
+message 12 {
+  You realize while you're falling that the rug covered a
+  pit. The bottom of the pit is covered with spikes about four
+  feet tall - You Don't have time to measure them exactly.
+  }
+message 13 {
+  There's nothing special about the room.
+  }
+message 14 {
+  Something is written on the door.
+  }
+message 15 {
+  The carvings on the door say, "Do not enter."
+  }
+message 16 {
+  "Property of Lieyuchnebst"
+  }
+message 17 {
+  The message says, "Safe passage for a price."
+  }
+message 18 {
+  There is something written on the carved message.
+  }
+message 19 {
+  The statue turns to face the west door.
+  }
+message 20 {
+  You are in a triangular room with openings in the east and
+  west corners. There is a statue in the south corner with bow
+  and arrow. The statue is facing the east door. There is a
+  tiny slot cut in the north wall. There is a message carved
+  under the slot.
+  }
+message 21 {
+  You are in a triangular room with openings in the east and
+  west corners. There is a statue in the south corner with bow
+  and arrow. The statue is facing the west door. There is a
+  tiny slot cut in the north wall. There is a message carved
+  under the slot.
+  }
+message 22 {
+  The statue releases the arrow which penetrates your heart.
+  }
+message 23 {
+  There's nothing special about the statue.
+  }
+message 24 {
+  You are quite incapable of removing the statue.
+  }
+message 25 {
+  The statue is much too heavy for you to move.
+  }
+message 26 {
+  The door blocks passage.
+  }
+message 27 {
+  The door is closed.
+  }
+message 28 {
+  The door is standing open.
+  }
+message 29 {
+  Rrrrreeeeeek - The door is open.
+  }
+message 30 {
+  Its already open.
+  }
+message 31 {
+  Something is written on the plaque.
+  }
+message 32 {
+  You are quite incapable of removing the plaque.
+  }
+message 33 {
+  Untold riches lie within reach, here- to any knowing,
+  living creature. Be wary though, no matter what thy creed,
+  that thou harness and limit thy powerful greed. Pull the
+  lever to gain thy wealth, be prepared to...
+  }
+message 34 {
+  A trap door opens above you. Gold dust fills the room and
+  drowns you.
+  }
+message 35 {
+  You are in a vault with a large door to the south. A
+  bejeweled lever is on one wall. There is a plaque on the
+  wall above the lever.
+  }
+message 36 {
+  You are in a vault with a large door to the south. There
+  is a plaque on the wall.
+  }
+message 37 {
+  Bejeweled lever taken.
+  }
+message 38 {
+    The door closes behind you.
+  }
+message 39 {
+  Burning lamp
+  }
+message 40 {
+  Something is written on the burning lamp.
+  }
+message 41 {
+  The lamp is covered with tarnish and you can't read it.
+  }
+message 42 {
+  The lamp goes out. You must have rubbed it the wrong way!
+  }
+message 43 {
+  "Do not rub"
+  }
+message 44 {
+  Who do you think you are, Aladdin?
+  }
+message 45 {
+  Lamp
+  }
+message 46 {
+  Something is written on the lamp.
+  }
+message 47 {
+  The inscription reads, "Ring of motion."
+  }
+message 48 {
+  Something is written on the runes.
+  }
+message 49 {
+  Into the tunnel enters the seeker, Bravely and wisely he
+  goes. For he will recognize the reaper, as the light before
+  him glows.
+  }
+message 50 {
+  You are quite incapable of removing the runes.
+  }
+message 51 {
+  You are in a large room which smells of decaying flesh.
+  There are exits north and south. There is a hideous stone
+  gargole perched on a ledge above the north passage.
+  }
+message 52 {
+  You are in a large room which smells of decaying flesh.
+  There are exits north and south. There is a hideous
+  gargoyle blocking the north passage.
+  }
+message 53 {
+  There appears to be dried blood on his claws!
+  }
+message 54 {
+  You are quite incapable of removing the stone gargoyle.
+  }
+message 55 {
+  The gargoyle comes to life and jumps down to block your
+  way!
+  }
+message 56 {
+  The gargoyle blocks the way north.
+  }
+message 57 {
+  There is a hideious gargoyle blocking the north passage.
+  }
+message 58 {
+  You have nothing with which to light the candle.
+  }
+message 59 {
+  The candle is now burning, A sweet scent permeates the room.
+  }
+message 60 {
+  The light from the candle seems to be growing dimmer.
+  }
+message 61 {
+  You feel as good as the day you were born.
+  }
+message 62 {
+  You're feeling pretty good under the circumstances.
+  }
+message 63 {
+  You are not feeling up to par. You should take better care
+  of yourself.
+  }
+message 64 {
+  You are feeling quite ill. I prescribe caution!
+  }
+message 65 {
+  One more good injury and you've had it!
+  }
+message 66 {
+  You pass out. When you awaken, you find yourself chained
+  to a blood stained altar. A priest is kneeling over you
+  with a knife. It looks like this is it.
+  }
+message 67 {
+  Candle
+  }
+message 68 {
+  Burning candle
+  }
+message 69 {
+  There's nothing special about the candle.
+  }
+message 70 {
+  There's nothing special about the burning candle.
+  }
+message 71 {
+  The candle is extinguished.
+  }
+message 72 {
+  The candle is not burning.
+  }
+message 73 {
+  You are in a large room which smells of decaying flesh.
+  There are exits north and sourth. There is the dead carcass
+  of an ugly gargoyle nearby.
+  }
+message 74 {
+  There's nothing special about the dead gargoyle.
+  }
+message 75 {
+  You are quite incapable of removing the dead gargoyle.
+  }
+message 76 {
+  You discover a precious gem hidden in a crevice.
+  }
+message 77 {
+  The gargoyle gores you with his horn and rips your guts out!
+  }
+message 78 {
+  You dodge the gargoyle's horn.
+  }
+message 79 {
+  You feel the gnashing of the gargoyle's teeth in your side!
+  }
+message 80 {
+  The gargoyle lunges at your face but you pull back. He bites
+  your shoulder instead!
+  }
+message 81 {
+  The gargoyle claws you across the chest!
+  }
+message 82 {
+  The claws of the gargoyle rip through your arm in an attempt
+  to reach your body!
+  }
+message 83 {
+  A mighty thrust, but it misses the gargoyle by a kilometer!
+  }
+message 84 {
+  I don't think the gargoyle will cooperate.
+  }
+message 85 {
+  Blood rushes forth as you have slashed the gargoyle in the arm!
+  }
+message 86 {
+  You manage a grazing blow to the chest!
+  }
+message 87 {
+  It does no good to attack a stone gargoyle.
+  }
+message 88 {
+  You have nothing with which to attack the gargoyle.
+  }
+message 89 {
+  It does no good to attack a dead gargoyle.
+  }
+message 90 {
+  You have defeated the hideous gargoyle!
+  }
+message 91 {
+  There's nothing special about the bronze gates.
+  }
+message 92 {
+  The gates are locked, you can not open them.
+  }
+message 93 {
+  The gates are too smooth to climb.
+  }
+message 94 {
+  There's nothing special about the vines.
+  }
+message 95 {
+  UGH! With great difficulty you manage to move the altar and
+  you discover a secret passage.
+  }
+message 96 {
+  The altar moves back to seal the hole above you.
+  }
+message 97 {
+  As you climb out of the hole, it seems to magically seal up behind you.
+  }
+message 98 {
+  <pause>
+  }
+message 99 {
+  A large serpent
+  }
+message 100 {
+  A large dead serpent
+  }
+message 101 {
+  A large serpent is coiled up on the floor.
+  }
+message 102 {
+  A large dead serpent lies on the floor.
+  }
+message 103 {
+  I see no serpent here.
+  }
+message 104 {
+  You have nothing with which to attack the serpent.
+  }
+message 105 {
+  It does no good to attack the dead serpent.
+  }
+message 106 {
+  The serpent strikes, poison courses through your veins!
+  }
+message 107 {
+  The serpent coils rapidly around you and constricts!
+  }
+message 108 {
+  The serpent gathers itself for an attack.
+  }
+message 109 {
+  The serpent strikes, you dodge his lunge!
+  }
+message 110 {
+  Your large sword sinks to the hilt in the serpent's scaly body!
+  }
+message 111 {
+  Your large sword throws a shower of sparks as it glances off the wall!
+  }
+message 112 {
+  The serpent's head is severed from his body! A magnificent
+  blow! The serpent is dead.
+  }
+message 113 {
+  So far you have scored
+  }
+message 114 {
+  points.
+  }
+message 115 {
+  You quitter!!!
+  }
+item 0 {
+  name Coin
+  desc Coin
+  examine Something is written on the coin.
+  location gates
+  weight 1
+  score 5
+  action read {
+    Coin notcarrying? if 2 say true then
+    3 say true
+    }
+  }
+item 1 {
+  name Bottle
+  desc Small bottle
+  examine There's nothing special about the small bottle.
+  location small_room
+  weight 1
+  score 0
+  action open {
+    6 say true
+    }
+  }
+item 2 {
+  name Food
+  desc Food
+  examine There's nothing special about the food.
+  location top_passage
+  weight 1
+  score 0
+  }
+item 3 {
+  name Sword
+  desc Large sword
+  examine Something is written on the large sword.
+  location sword_room
+  weight 1
+  score 0
+  action read {
+    16 say true
+    }
+  }
+item 4 {
+  name lever
+  desc Bejeweled lever
+  examine There's nothing special about the bejeweled lever.
+  weight 1
+  score 5
+  }
+item 5 {
+  name Lamp
+  location very_small_room
+  desc {
+    4 spaces
+    F_LAMP_RUBBED flagset? if 45 say true then
+    39 say
+    }
+  examine {
+    F_LAMP_RUBBED flagset? if 46 say true then
+    40 say
+    }
+  weight 1
+  score 0
+  action read {
+    F_LAMP_RUBBED flagset? if 43 say true then
+    41 say true
+    }
+  action rub {
+    F_LAMP_RUBBED flagset? if 44 say true then
+    42 say F_LAMP_RUBBED setflag true
+    }
+  }
+item 6 {
+  name ring
+  desc Gold ring
+  examine Something is written on the gold ring.
+  weight 1
+  score 5
+  location round_room_2
+  action read {
+    47 say true
+    }
+  action get {
+    6 iteminroom? if
+      6 takeitem
+      round_room_1 inroom? if round_room_2 teleport true then
+      round_room_2 inroom? if round_room_1 teleport true then
+      true
+    then
+    false
+    }
+  }
+item 7 {
+  name Candle
+  desc {
+    4 spaces
+    F_CANDLE_LIT flagset? if 68 say true then
+    67 say true
+    }
+  examine {
+    F_CANDLE_LIT flagset? if 70 say true then
+    69 say true
+    }
+  weight 1
+  score 0
+  location entrance
+  action light {
+    7 notcarrying? if 2 say true then
+    Lamp notcarrying? if 58 say true then
+    F_LAMP_RUBBED flagset? if 58 say true then
+    59 say F_CANDLE_LIT setflag true
+    }
+  action blow out {
+    7 notcarrying? if 2 say true then
+    F_CANDLE_LIT flagreset? if 72 say true then
+    71 say F_CANDLE_LIT resetflag true
+    }
+  }
+item 8 {
+  name chopstick
+  desc Golden chopstick
+  examine There's nothing special about the golden chopstick.
+  location tall_room
+  weight 1
+  score 5
+  }
+item 9 {
+  name gem
+  desc Precious gem
+  examine There's nothing special about the precious gem.
+  weight 1
+  score 5
+  }
+item 10 {
+  name idol
+  desc Golden idol
+  examine There's nothing special about the golden idol.
+  location altar_room
+  weight 1
+  score 5
+  }
+item 11 {
+  name serpent
+  desc {
+    4 spaces F_SNAKE_DEAD flagset? if 100 else 99 then say
+    }
+  examine {
+    4 spaces F_SNAKE_DEAD flagset? if 102 else 101 then say
+    }
+  location altar_room
+  }
+action light candle {
+  2 say true
+  }
+action blow out candle {
+  2 say true
+  }
+action read coin {
+  2 say true
+  }
+action read sword {
+  2 say true
+  }
+action open bottle {
+  2 say true
+  }
+action examine room {
+  13 say true
+  }
+action diagnose {
+  V_HEALTH get
+  dup 5 = if 61 say true then
+  dup 4 = if 62 say true then
+  dup 3 = if 63 say true then
+  dup 2 = if 64 say true then
+  65 say true
+  }
+action wait {
+  98 say true
+  }
+action score {
+  113 nsay score . 114 say true
+  }
+action quit {
+  115 say
+  }
+action attack serpent {
+  Serpent itemnotinroom? if 103 say true then
+  Sword notcarrying? if 104 say true then
+  F_SNAKE_DEAD flagset? if 105 say true then
+  100 random 75 <= if
+    V_SHEALTH @ 3 random - dup V_SHEALTH swap !
+    0 <= if
+        112 say
+        F_SNAKE_DEAD setflag true
+      else
+        110 say
+      then
+    else
+    111 say true
+    then
+  true
+  }

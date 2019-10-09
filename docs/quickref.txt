@@ -1,0 +1,196 @@
+TADV 1.0
+ADVENTURE {
+  TITLE Adventure title
+  AUTHOR Author
+  INTRO Intro message text
+  [INTRO additional lines allowed...]
+  [START {
+    action_steps
+    ...
+    } ]
+  FLAG flag_name
+  VAR  var_name
+  EQUATE name value
+  ACTION {
+    action_steps
+    ...
+    }
+  }
+FUNCTION name {
+  action_steps
+  ...
+  }
+ROOM number {
+  NAME room_name
+  SHORT short description
+  DESC description of room
+  [DESC additional description lines...]
+  [DESC {
+    action_steps...
+    }]
+  [NORTH room_number [DOOR door_number]]
+  [SOUTH room_number [DOOR door_number]]
+  [EAST  room_number [DOOR door_number]]
+  [WEST  room_number [DOOR door_number]]
+  [NORTHEAST room_number [DOOR door_number]]
+  [NORTHWEST room_number [DOOR door_number]]
+  [SOUTHEAST room_number [DOOR door_number]]
+  [SOUTHWEST room_number [DOOR door_number]]
+  [UP    (room_number]
+  [DOWN  (room_number]
+  [NEEDLIGHT]
+  [ACTION action phrase {
+    action_steps...
+    }]
+  [ENTER {
+    action_steps...
+    }]
+  [LEAVE {
+    action_steps...
+    }]
+  [OCCUPIED {
+    action_steps...
+    }]
+  [TURN {
+    action_steps...
+    }]
+  }
+
+DOOR number {
+  NAME door_name
+  desc descriptive text
+  desc {
+    action_steps...
+    }
+  [OPEN]
+  [CLOSED]
+  [LOCKED]
+  [UNLOCKED]
+  [LOCKABLE]
+  [KEY object_number]
+  }
+
+ITEM number {
+  NAME item_name
+  DESC description
+  EXAMINE examine text
+  [DESC {
+    action_steps...
+    }]
+  [EXAMINE {
+    action_steps...
+    }]
+  [WEIGHT weight]
+  [SCORE  score]
+  [NONCARRYABLE]
+  [LOCATION starting_room_number_or_name]
+  [CARRYING {
+    action_steps...
+    }]
+  [TURN {
+    action_steps...
+    }]
+  [ACTION action_word {
+    action_steps...
+    }]
+  }
+
+MESSAGE number {
+  message text
+  [additional message lines allowed]
+  }
+
+ACTION phrase {
+  action_steps ...
+  [action_steps ...]
+  }
+
+Action Steps:
+[item]     carrying?      [boolean] True if player is carrying item
+[item]     notcarrying?   [boolean] True if player is not carrying item
+[flag]     flagset?       [boolean] True if specified flag is set
+[flag]     flagreset?     [boolean] True if specified flag is not set
+[flag]     setflag        []        Set specified flag
+[flag]     resetflag      []        Reset specified flag
+[room]     inroom?        [boolean] True if player in specified room
+[room]     notinroom?     [boolean] True if player not in specified room
+[item]     iteminroom?    [boolean] True if specified item in current room
+[item]     itemnotinroom? [boolean] True if specified item not in current room
+[msg]      say            []        Display specified message
+[]         true           []        Stop processing, prevent default actions
+[]         false          []        Stop processing, perform default actions
+[]         else           []        Continuation on failed boolean
+[item]     placeitem      []        Place specified item in current room
+[item]     takeitem       []        Place specified item into player inventory
+[item]     dropitem       []        Drop specified item from player inventory
+[num]      addscore       []        Add to player score
+[num]      subscore       []        Subtract from player score
+[room]     teleport       []        Teleport player to specified room
+[]         die            []        End adventrue with player's death
+[]         win            []        End adventure with player having won
+[]         lose           []        End adventure with player having lost
+[a b]      +              [a]       Add top two stack entries
+[a b]      -              [a]       Subtract top two stack entries
+[a b]      *              [a]       Multiply top two stack entries
+[a b]      /              [a]       Divide top two stack entries
+[a]        dup            [a a]     Duplicate top of stack
+[a]        drop           []        Drop top stack entry
+[a b]      swap           [b a]     Swap top 2 stack entries     
+[var val]  set            []        Set variable to value
+[var]      get            [val]     Get value of a variable
+[var val]  !              []        Set variable to value
+[var]      @              [val]     Get value of a variable
+[a b]      =              [boolean] True if a == b
+[a b]      <>             [boolean] True if a != b
+[a b]      >              [boolean] True if a > b
+[a b]      <              [boolean] True if a < b
+[a b]      >=             [boolean] True if a >= b
+[a b]      <=             [boolean] True if a <= b
+[num]      random         [val]     Generate a random number from 0-num
+[]         .              []        Print top of stack, no CR, space before and after
+[]         cr             []        Print a carriage return
+[msg]      nsay           []        Say message number without a carriage return
+[room]     enteredfrom?   [boolean] True if entered from specified room
+[]         goingwest?     [boolean] True if last command was west
+[]         goingeast?     [boolean] True if last command was east
+[]         goingnorth?    [boolean] True if last command was north
+[]         goingsouth?    [boolean] True if last command was south
+[]         goingup?       [boolean] True if last command was up
+[]         goingdown?     [boolean] True if last command was down
+[]         currentroom    [room]    Place current room on the stack
+[item]     removeitem     []        Remove item from current room
+[a b]      over           [a b a]   Copy 2nd stack item to top
+[a b c]    rot            [b c a]   Rotate 3rd item to top
+[a b c]    -rot           [c a b]   Rotate top to 3rd
+[a b]      and            [n]       logical and
+[a b]      or             [n]       Logical or
+[a b]      xor            [n]       Logical xor
+[a]        not            [n]       Logical not
+[n]        pick           [n]       Copy nth stack item to top
+[e s]      do             []        Begin a do loop
+[]         i              [n]       Get current do value
+[]         loop           []        End of do loop
+[]         roomdesc       []        Print room long description
+[n]        spaces         []        Output n spaces
+[item]     location       [room]    Room where object is located, or -1
+[item]     extractitem    []        Remove item from whereever it is
+[]         score          [value]   Place the current score onto the stack
+[]         weight         [value]   Get weight player is carrying
+[]         geteast        [room]    Room east of current room
+[]         getwest        [room]    Room west of current room
+[]         getnorth       [room]    Room north of current room
+[]         getsouth       [room]    Room south of current room
+[]         getup          [room]    Room up of current room
+[]         getdown        [room]    Room down of current room
+[n]        emit           []        Output top of stack as ASCII character
+[]         more           []        Prints -More- and then waits for <enter>
+[n]        light          []        Light for n turns, 0 turns off, -perm.
+[]         light?         [boolean] Whether or not the player has light
+[n]        open           []        Open a door
+[n]        close          []        Close a door
+[n]        opened?        [boolean] True if door is opened
+[n]        lock           []        Lock a door
+[n]        unlock         []        Unlock a door
+[n]        unlocked?      [boolean] True if door is unlocked
+[]         turncount      [n]       Place the number of turns onto the stack
+

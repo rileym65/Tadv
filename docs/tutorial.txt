@@ -1,0 +1,1200 @@
+                                   TADV
+                                    by
+                              Michael H Riley
+-----------------------------------------------------------------------------
+
+Tutorial:
+=========
+
+  This section of the tutorial will teach you how begin creating your 
+adventure and setting up your world with rooms, links, and items.  A full
+listing of the adventure file will be shown at the end of the section.  By
+the time you finish this section of the tutorial your file should look like
+the one presented.  If you are unsure about where to put things while
+going through the tutorial, you can always check the full listing to be 
+sure you are doing the right thing.
+
+I. The header
+
+  In this tutorial we will go over all the main features of TADV and build
+a text adventure in the process.  By the time we are finished you should be
+familiar with all of TADV's capabilities and be ready for making your very
+own text adventures.
+
+  For this tutorial you will need a basic text editor as well as the binary
+for TADV.  Your text editor must be capable of producing pure ascii files
+without any special formatting codes.  For unix, VI or EMACS work great
+and for Windows users, Notepad will produce proper files.
+
+  Lets get started by building the header for our adventure.  Open up your
+text editor and create a file with these lines:
+
+tadv 1.0
+adventure {
+  title Escape
+  author Mike Riley
+  intro You have been locked inside a house, can you get out?
+  start {
+    win
+    }
+  }
+
+  save this in a file called "escape.adv".
+
+  Although this is not a complete adventure file, we can actually run this
+to see what happens.  From your command line type:
+
+tadv escape.adv
+
+  You should see:
+
+Adventure: Escape
+Written by: Mike Riley
+You have been locked inside a house, can you get out?
+
+
+
+
+Congratulations!!! You have won!!!
+
+  Lets go over the lines we have so far in our adventure file.
+
+  First we have:
+
+  tadv 1.0
+
+  This line indicates that this is a TADV adventure and that at least 
+version 1.0 of TADV is required to run this adventure.
+
+  The next line:
+
+  adventure {
+
+  begins the header section of the file.  This section is used to hold
+such things as the name of the adventure, who wrote it, an introduction
+to be shown when the game is started and a number of other global
+definitions that we will be getting to later in this tutorial
+
+  The next two lines:
+
+  title Escape
+  author Mike Riley
+
+  are pretty straight forward, they just give a name to the adventure as
+well as indicating who wrote it.
+
+  Next comes the intro line:
+
+intro You have been locked inside a house, can you get out?
+
+  You can have as many intro lines as you want.  All intro lines will be
+shown to the player when the adventure starts.  This is a good place to
+provide the introductory story of your adventure as well as any other 
+instructions you would like to give the player.
+
+  The next lines are probably less obvious:
+
+  start {
+    win
+    }
+
+  This is a code block.  The "start {" keyword indicates that this 
+particular code block is to be executed on adventure startup.  Code blocks
+are written in TADV's programming language which is based upon the 
+programming language FORTH.  If you already know FORTH then you will have
+little difficulty in understanding TADV code blocks.  If you do not know
+FORTH then fear not, I will explain all code blocks we write and by the
+time we are done with the tutorial you will be quite the expert in FORTH
+programming.
+
+  This particular code block has only a single command in it: win.  This
+is a special command that tells TADV that the player has won the adventure.
+TADV will then print the message that the player had won along with the
+player's score and then exit the program.
+
+  The final line of our file:
+
+  }
+ 
+  is the ending of the adventure { section.  All sections that open with
+a { symbol are closed at the end with the } symbol.  If these braces are
+not properly matched the adventure loader will give all kinds of complaints
+about the file, so be sure that you always provide the closing braces.
+
+  Now open up the escape.adv file and remove the three lines:
+
+  start {
+    win 
+    }
+
+  so that your adventure section looks like:
+
+adventure {
+  title Escape
+  author Mike Riley
+  intro You have been locked inside a house, can you get out?
+  }
+
+
+II. Rooms
+
+  An adventure without rooms would be a pretty dull adventure, so lets get
+started by adding a room to our game world.  Open up escape.adv, if it is
+not already open and add these lines to the end of the file:
+
+room 0 {
+  name R_FOYER
+  short Entry Foyer.
+  desc You are standing in the entry foyer of the house.  The front door is
+  desc to the south.  Another door leads north.
+  }
+
+  This shows you the basic definition of a room in the adventure world.
+All room definitions must start with the keyword "room" followed by the
+room number.  Room numbers start from 0 and must be declared in order.
+After the room number we see the { symbol to open the room definition.
+
+  The first line:
+
+  name R_FOYER
+
+  is the internal name for the room.  This will equate to the room number
+itself and my be used in place of the room number when referring to this
+room.  We will see an example of this later.  By convention we start the
+name with R_ to indicate that this is a value pointing to a room number.
+The rest of the name can be whatever you want to be able to refer to this
+room later.
+
+  The line:
+
+  short Entry Foyer.
+
+  specifies the short name of the room that the player will actually see.
+When a player enters a room where they have already been at least once then
+the short name will be shown to the player instead of the full room 
+description.  If the player would like to see the full description again
+they can always use the "look" command to see the long description again.
+
+  The next two lines:
+
+  desc You are standing in the entry foyer of the house.  The front door is
+  desc to the south.  Another door leads north.
+
+  are the rooms long description.  These lines are shown the first time the
+player enters the room.  The player may also see this description again by
+using the "look" command.  You may have as many desc lines as needed to 
+fully describe the room.
+
+  You can go ahead and try out your adventure file now.  At this point
+TADV will show you the description of the room and give you the '>' prompt
+waiting for your commands.  Go ahead and give a direction command, like
+north or south.  Notice how you bump into walls?  This is because we have
+not yet connected this room to any others.  Just because we have in the 
+description that there are doors to the north and south, we have not yet
+linked these with our room.
+
+  In our description of the room we mention two doors.  One is the front
+door which is where the player needs to exit the house.  For now we are
+not going to worry about this door since there will be conditions needed
+in order to open it.  We will instead work on the door to the north, which
+should lead to the rest of the house.
+
+  In order to go through the north door there needs to be somewhere to go,
+so lets add another room:
+
+room 1 {
+  name R_ENTRYHALL
+  short Entry Hall
+  desc You have entered the main entry hall of the house.  The ceiling in
+  desc this room is high above you.  White marble pillars line the room
+  desc along the east and west walls, about 3 feet from the walls.
+  desc There are doorways leading east and west and a grand staircase
+  desc leading upwards at the north end of the room.
+  }
+
+  This looks very much like the format of the first room, so no explantion
+should be needed here.  Now we need to link the rooms so that we can move
+from one to the other.  In the room 0 add this line before the closing }:
+
+  north 1
+
+  This provides the link to the room so that when the player tries to move
+north they will find themselves in room 1, the Entry Hall.
+
+  Now we need to be able to get back to the entry foyer from the hall, so
+in the room 1 definition add this line before the closing }:
+
+  south 0
+
+  These two rooms are now linked together.  Go ahead and load up your
+adventure in TADV and try moving between the rooms.  Notice how the first
+time you go to the entry hall you see the long description, and then when
+you move back and forth between the rooms you will only see the short
+description.  Try using the "look" command to see the long description
+again.
+
+  In preparation for the next section, lets go ahead and add one more room:
+
+room 2 {
+  name R_STUDY
+  short Study
+  desc You are in a large study.  Many bookcases line the walls, curiously
+  desc the bookshelves have no books on them.  There is a mahogony desk in
+  desc the center of the room.  There are many papers strewn about the desk.
+  desc A mahogony chair with black leather upholstry is behind the desk.
+  west 1
+  }
+
+  You will also need to place this link into room 1:
+
+  east 2
+
+  Go ahead and try your adventure now and be sure that you can move freely
+between the three rooms.
+
+
+III. Our First Puzzle
+
+  An adventure where all you could do is walk between rooms would be pretty
+boring, so lets add a puzzle to our game to get the players thinking.
+
+  We are going to add a locked door between the entry hall and the study.
+The player must then use the correct key in order to unlock and open the door.
+
+  In order to accomplish this, we must override TADV's default action of
+allowing a player to move freely between rooms.
+
+  There are two things we need to keep track of for our door, first is it
+locked or unlocked? and second is it open or closed?  TADV provides a feature
+called "flags" that allow us to keep track of things that have just two states,
+like opened/closed locked/unlocked, lit/unlit, etc.  All flags used by your
+game must be defined in the adventure section of the file, so lets start by
+adding these two lines to the adventure block just below the intro line:
+
+  flag F_STUDY_DOOR_OPEN
+  flag F_STUDY_DOOR_UNLOCKED
+
+  Flags are automaticly false from the beginning of the game, which means
+our door is closed and locked.
+
+  Now we need to prevent moving from the entry hall to the study if the door
+is closed.  For this we will need to modify TADV's default behavior when
+leaving a room.  There is a special code block we can use to work on this
+behavior.  this code block must be inside the room 1 definition, afterall it
+is when we are leaving room 1 that we need to do something special.  Add
+this block to your room 1:
+
+  leave {
+    goingeast? if
+      F_STUDY_DOOR_OPEN if false else true then
+      then
+    }
+
+  which makes our whole room 1 definition look like:
+
+room 1 {
+  name R_ENTRYHALL
+  short Entry Hall
+  desc You have entered the main entry hall of the house.  The ceiling in
+  desc this room is high above your.  White marble pillars line the room
+  desc along the east and west walls, about 3 feet from the walls.
+  desc There are doorways leading east and west and a grand staircase
+  desc leading upwards at the north end of the room.
+  south 0
+  east 2
+  leave {
+    goingeast? if
+      F_STUDY_DOOR_OPEN flagset? if false else true then
+      then
+    }
+  }
+
+  When a room has a "leave {" code block TADV will run the code block any
+time the player attempts to leave the room.
+
+  First we need to under stand the "if" command.  FORTH has kind of an 
+unusual way of processing if.  The basic template is:
+
+    IF <execute if true> THEN
+
+  IF tests the value on the top of the stack.  If it is not 0 then the
+condition is considered true and all the commands between the IF and its
+matching THEN will be executed.  If the top of the stack had a zero on it
+then all commands between the IF and THEN will be ignored and program 
+execution pickes up again following the matching THEN.
+
+  In our leave block our first test is this:
+
+  goingeast? if
+
+  "goingeast?" is a command that will place a 1 on the stack if the player
+issued an "east" command, otherwise it will place a zero on the stack.  The
+"if" then tests this value.  If the player selected to go east then everything
+between this "if" and the "then" that is on its own line will be executed.
+
+  The next line uses another form of the IF structure, which is:
+
+    IF <execute if true> ELSE <execute if false> THEN
+
+  The way this form works is that if the top of stack is not zero then all
+the commands between the IF and the ELSE are executed.  Once these are done
+all the commands between the ELSE and THEN are skipped and execution picks
+up again following the THEN.  If the top of stack was zero then all the
+commands between IF and ELSE are skipped and then all the commands between
+ELSE and THEN are exectued.  Execution will then pick up again normally after
+the THEN.
+
+  The next line:
+
+  F_STUDY_DOOR_OPEN flagset? if false else true then
+
+  Is a bit complicated so lets take it a step at a time, first we have
+"F_STUDY_DOOR_OPEN" this will put the number of this flag onto the stack.
+The next commaand "flagset?" then tests if this flag is set or not.  If the
+flag is set then a true will be placed onto the stack for the following "if"
+otherwise if the flag is not set then a false is placed onto the stack.
+
+  Now we see that second form of the IF command.  If flag is set, meaning
+the door is open then it will execute the "false" command, otherwise if
+the flag is not set then the "true" command will get executed.  Now, what
+do "false" and "true" actually do?  Both the "true" and "false" commands
+are action endings.  These two commands inform TADV that the code block is 
+done and whether or not the command was completely handled.  In the case of
+"false" the code block indicates that the command was not completed and 
+therefore TADV should continue to process the command, which in this case
+means that it will use the default action for "east", moving into the room
+on the east link, which is what we want to happen if the door is open.  The
+"true" command ends the action and informs TADV that nothing else needs to
+be done by interpreter, and therefore the default action will not take place.
+
+  Go ahead and try this out in TADV now, you should find that you can no 
+longer enter the study.  You should also notice that TADV gives us no clue
+that we could not move and that we are in fact still in the entry hall, you
+can see this if you type "look" after trying to go east, you will get the
+description of the entry hall.
+
+  Lets display a message to the player indicating that the door is blocking
+their path.  First we need a message block,  Add this to the bottom of your
+adventure file:
+
+message 0 {
+  The door is blocking your path.
+  }
+
+  And then change the line starting with F_STUDY_DOOR_OPEN to read:
+
+    F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+
+  The only change is the addition of "0 say" before the true.  "say" is a 
+command that will take the number on the top of the stack and then find
+the message block with that number and display it to the player.  in this
+case it will display our message about the door being in the way.  Go ahead
+and try your adventure in TADV and make sure it is now telling you why you
+cannot go east.
+
+  Now lets add the ability to open the door.  First we want to display a
+message to the player when they succesfully open the door, so add this
+message block to the end of the file:
+
+message 1 {
+  The door is now open.
+  }
+
+  We also need a message to display if the door is already open:
+
+message 2 {
+  The door is already open.
+  }
+
+  Now we must define a new message handler for opening the door.  Since this
+action only makes sense in the entry hall, we will create our action handler
+in the entry hall room.  Place this block below the ending of the leave 
+block:
+
+  action open door {
+    F_STUDY_DOOR_OPEN flagset? if 2 say true then
+    F_STUDY_DOOR_OPEN setflag
+    1 say
+    true
+    }
+
+  this produces a new action entry that when the player is in the entry
+hall and issues the command "open door" then this block of code will get
+executed.  We will walk through these lines one by one to make sure that
+you understand the code here.
+
+  action open door {
+
+  this is defining the new action.  This action will be triggered when the
+player types "open door".
+
+    F_STUDY_DOOR_OPEN flagset? if 2 say true then
+
+  This line is checking to see if the door is already open, just like in the
+leave block above.  If the door is open then display message 2, which is the
+message indicating the door is already open, then "true" will be executed
+which will prevent any further processing.  If the door was not open then
+the program continues on to:
+
+    F_STUDY_DOOR_OPEN setflag
+
+  This is setting the flag F_STUDY_DOOR_OPEN, indicating that the door is now
+opened.
+
+  The next line just informs the player that the door is now open:
+
+    1 say
+
+  And the final "true" is used to stop TADV from attempting to do any further
+processing of the command.  If this final true was not here then TADV will
+then attempt to use its default actions which since there is no default
+action of "open door" it will generate a message indicating that it does
+not understand the player.
+
+  Go ahead and try this out now.  Initially you will not be able to enter the
+study, then after you "open door" you will be able to enter it.  Also try
+opening the door more than once.
+
+  Since we can open the door, it makes sense that we should be able to close
+it as well.  Start by adding these new messages:
+
+message 3 {
+  The door is now closed.
+  }
+message 4 {
+  The door is already closed.
+  }
+
+  And then we need this action handler in the entry hall room.  Put it just
+below the end of the open door block:
+
+  action close door {
+    F_STUDY_DOOR_OPEN flagreset? if 4 say true then
+    F_STUDY_DOOR_OPEN resetflag
+    3 say
+    true
+    }
+
+  This is almost exactly like the open door code except now we are testing
+if the flag is reset instead of set and to close the door we reset the flag.
+
+  Go ahead and try this in TADV now.  You should be able to open and close
+the door.  You also should only be able to enter the study while the door
+is open.
+
+  Did you try opening or closing the door while in the study?  You should
+have noticed it does not work there.  Since the door is between both rooms
+it should operate from both rooms.  We are not going to deal with it quite
+yet since we still have more work to do on the door.  Once we have finished
+everything related to the door then we can copy the code to the study and
+get the door working there as well.
+
+  Now, our door is supposed to be locked, so lets add a new message to 
+display if the player attempts to open the door while it is locked:
+
+message 5 {
+  The door is locked.
+  }
+
+  Then add this line to your open door block as the first line in the block:
+
+    F_STUDY_DOOR_UNLOCKED flagreset? if 5 say true then
+
+  So, your whole open door block should look like:
+
+  action open door {
+    F_STUDY_DOOR_UNLOCKED flagreset? if 5 say true then
+    F_STUDY_DOOR_OPEN flagset? if 2 say true then
+    F_STUDY_DOOR_OPEN setflag
+    1 say
+    true
+    }
+
+  All we are doing here is checking the flag if the door is locked or not.
+If the door is still locked then F_STUDY_DOOR_UNLOCKED will be reset and
+therefore message 5, indicating the door is locked, will be displayed before
+processing terminates.  Go ahead and try it out in TADV, you should now find
+that you cannot open the door anymore.
+
+  Although we do not yet have the right item for unlocking the door, we can
+start working on the actions for unlocking the door.  We will start by adding
+a couple messages:
+
+message 6 {
+  The door is already unlocked.
+  }
+message 7 {
+  Unlock the door with what?
+  }
+
+  Now we need a message to handle the player typeing "unlock door":
+
+  action unlock door {
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    7 say true
+    }
+
+  This should be straight forward, first we check if the door is already
+unlocked and if it is then we display a message indicating so, otherwise
+we will inform the player that they need to specify what to unlock the door
+with.  Go ahead and try this out in TADV.
+
+
+IV. Items
+
+  Now that we have our locked door, we need a way to open it.  We will
+provide a keyring with numerous keys on it, one of which will open the door.
+We will start by defining the keyring, put this at the end of your file:
+
+item 0 {
+  name keyring
+  desc Keyring
+  examine This is a simple ring containing a number of keys: Gold, Silver,
+  examine Bronze, Iron, Steel, Brass, Aluminum, Copper, Platinum.
+  location 0
+  weight 1
+  score 5
+  }
+
+  This is the basic item definition.  Lets go over each line so that you
+fully understand each one.
+
+item 0 {
+
+  This begins an item definition.  Numbers must start from 0 and then count
+up from there.  Items need to be defined in order.
+
+  name keyring
+
+  This gives the item an internal name that can be used inside of code blocks
+to refer to this item.
+
+  desc Keyring
+
+  This specifies what will be displayed when this item is found in a room. 
+This is also what will be displayed when the item exists in the players's
+inventory and the inventory is listed.
+
+  examine This is a simple ring containing a number of keys: Gold, Silver,
+  examine Bronze, Iron, Steel, Brass, Aluminum, Copper, Platinum.
+
+  These lines specify what will be displayed if the player examines the item.
+As many examine lines as needed to describe the item may be used.
+
+  location 0
+ 
+  This specifies where this item starts.  The number is the room number where
+the item is first placed.  This number could also be the room name.
+
+  weight 1
+
+  This specifies how heavy this item is.  Some adventures may want to keep 
+track of how much the player is carrying and limit them, this allows for
+such adventures.
+
+  score 5
+
+  This specifies how many points will be added to the score if this item is
+in the player's inventory.  If the item is dropped, this value will be 
+removed from the player's score.
+
+  Go ahead and try your adventure in TADV, you should now find the keyring
+in the entry foyer where you start.  Go ahead and get it and examine it.
+
+  Having the keyring in the starting room would be a bit too easy, so lets
+make the player work a bit harder to get it.  Start by removing the 
+location line from the item block.  If there is no location entry then the
+item will not start in any room.  Try running your adventure in TADV after
+removing the location and verify that the keyring is no longer in the
+entry foyer.
+
+  Now lets provide a hiding place, change the description in room 0 to:
+
+  desc You are standing in the entry foyer of the house.  The front door is
+  desc to the south.  Another door leads north.  There is a potted plant in
+  desc one corner and a coat rack in another.
+
+  Now lets create some actions to allow the player to examine the new things
+in the entry foyer.  First we need to create a couple messages:
+
+message 8 {
+  This is a simple coat rack, there are no coats hanging on the rack.
+  }
+message 9 {
+  This is plastic pot containing a number of tall lily plants.
+  }
+
+  Now lets create the actions for the player:
+
+  action examine coat rack {
+    8 say true
+    }
+  action examine coatrack {
+    8 say true
+    }
+  action examine plant {
+    9 say true
+    }
+  action examine potted plant {
+    9 say true
+    }
+
+  Now lets hide the keys behind the potted plant so that the player must
+search there to find the keys.  We do not want the keys to be found twice
+so we need to create a new flag to indicate if the keys have already been
+found, so add this flag to the adventure section:
+
+  flag F_KEYRING_FOUND
+
+  And now we need a couple messages:
+
+message 10 {
+  You have found a keyring behind the plant.
+  }
+message 11 {
+  There is nothing further to be found.
+  }
+
+  Now we can actually create our action for looking behind the plant, this
+goes inside the room 0 block:
+
+  action look behind plant {
+    F_KEYRINGFOUND flagset? if 11 say true then
+    F_KEYRINGFOUND setflag
+    10 say
+    0 placeitem
+    true
+    }
+
+  This is pretty similar to other actions we have created so you should 
+already understand most of this.  The only new item here is:
+
+    0 placeitem
+
+  The "placeitem" command will take a number from the top of the stack and
+then place the item with that item number into the current room.
+
+  Go ahead and try the adventure in TADV now.  After you look behind the plant
+do another "look" of the room and notice the keyring is now there, also look
+behind the plant again and make sure you that the game does not find another
+set of keys.
+
+  Now we can go back to our locked door in the entry hall and finish coding
+it so that it can be unlocked.  Since our keyring has a number of keys on it,
+lets give a clue to the player of which key is the correct one.  Add this
+message:
+
+message 12 {
+  The door appears to be solid oak.  There is a small round brass knob with
+  a keyhole in the center.
+  }
+
+  And then add this action to room 1:
+
+  action examine door {
+    12 say true
+    }
+
+  Now lets create a couple messages we will need for our unlock actions:
+
+message 13 {
+  You need to specify which key to use.
+  }
+message 14 {
+  That key does not fit the lock.
+  }
+message 15 {
+  The door is now unlocked.
+  }
+message 16 {
+  You do not have the key.
+  }
+
+
+  Now for the actions, first will be one if the player just specifies key,
+but not a specific key:
+
+  action unlock door with key {
+    0 notcarrying? if 16 say true then
+    13 say true
+    }
+
+  The new command in here is "notcarrying?" this takes the top of the stack
+for an item number and then returns true if the player is not currently
+carrying the item.  In this case we are making sure that the player has
+the keyring in his inventory, otherwise we indicate they have no keys and
+finish.  If the player does have the keys then we display a message 
+that indicates they need to specify which key.
+
+  Now lets allow the player to open the door when they specify the right key:
+
+  action unlock door with brass key {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    F_STUDY_DOOR_UNLOCKED setflag
+    15 say true
+    }
+
+  We should also have action handlers for the other keys mentioned on the
+keyring:
+
+  action unlock door with gold key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with silver key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with bronze key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with iron key { 
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with steel key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with aluminum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with copper key { 
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with platinum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+
+  Each of these first checks to make sure the player has the keyring and if
+they do then print out a message that the key they tried does not fit.
+
+  Lastly since we were able to unlock the door, we should be able to lock it
+as well.  First lets make some messages that we will need:
+
+message 17 {
+  The door is already locked.
+  }
+message 18 {
+  The door is now locked.
+  }
+
+  And now the lock action:
+
+  action lock door {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagreset? if 17 say true then
+    F_STUDY_DOOR_UNLOCKED resetflag
+    18 say
+    true
+    }
+
+  We are not going to make the user specify which key to lock the door again,
+but you certainly can if you wish.
+
+  Now the player can fully manipulate the door from the entry hall side, now
+for consistency sake we should also make it work from the study side.  To do
+this we need to copy all of the door code from the entry hall room to the
+study room.  Do not copy the leave block, just the action blocks from room 1
+to room 2.
+
+  Go ahead now and try out your adventure in TADV now.  After unlocking and
+opening the door, go into the study and then close and lock the door again,
+this should all work.  Now go west and you will find yourself in the entry
+hall, do you understand why?  Remember the leave block we wrote in room 1?
+This allowed us to check the status of the door and prevent the player from
+moving if it was closed.  We could also write a leave block for room 2 to
+solve this problem, but instead the next section will show you a different
+way to prevent the player from leaving while the door is closed.
+
+
+V. Command Overrides
+
+  We had used a leave block in our entry hall to provide the functionality
+we needed if the player tried to go to the study with the door closed.  
+Although this method works there is something we had to do in the leave block
+to make sure only when the player went east would they be hindered by the
+door.  We had to test this condition within the leave block.
+
+  Another way that we could provide the functionality we need for the door
+is to override the command for movement.  We will implement a command
+override to prevent the player from moving from the study back to the entry
+hall if the door is closed.  
+
+  There are two commands that the player can use in order to go west: 'w' and
+'west', we will need to override both commands:
+
+  action west {
+    F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+    }
+  action w {
+    F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+    }
+
+  These work just like the leave block in room 1, they check if the door is
+closed or not and then either allows the player to move or else indicates
+that the door is in the way.
+
+  Try this in TADV, after moving into the study, close the door and then try
+going west to the entry hall.
+
+  All of the default player commands can be overridden.  Lets modify the 
+"look" command so that it indicates we are looking around before we show
+the room description.  First we need a new message:
+
+message 19 {
+  You take a moment to look around the room.
+
+  }
+
+  Do demonstrate local versus global actions, lets put this action into the 
+room 0 block:
+
+action look {
+  19 say false
+  }
+
+  Now load up the adventure and type "look" while in the entry foyer, you 
+should now see:
+
+    You take a moment to look around the room.
+ 
+    You are standing in the entry foyer of the house.  The front door is
+    to the south.  Another door leads north.  There is a potted plant in
+    one corner and a coat rack in another.
+
+  Move north into the entry hall and "look" again:
+
+    You have entered the main entry hall of the house.  The ceiling in
+    this room is high above your.  White marble pillars line the room
+    along the east and west walls, about 3 feet from the walls.
+    There are doorways leading east and west and a grand staircase
+    leading upwards at the north end of the room.
+
+  Notice how you did not get the looking around the room message, this is
+because with the look override being in the room 0 definition, it will only
+work if you are in room 0.  To allow our modified look to work everywhere it
+needs to be defined by itself instead of inside of a room.  Move the 
+action look block from room 0 to the end of the file and then try running
+the adventure again.  The look should now do our modified version in
+every room.
+
+  This is a key aspect of action handlers.  Handlers that are defined inside
+of a room will only work in the room where they are defined.  Actions 
+handlers defined outside of rooms can be used everywhere.  In order to know
+where to put your action handler, ask yourself this question: "Does this
+action only make sense if it is in a given room? or does it make sense to
+use it everywhere?"  If it only makes sense in a specific room then the
+handler should be defined in that room, otherwise define the handler 
+outside of a room block to make it available everywhere.
+
+VI. Review.
+
+  Up to this point you have learned the following items:
+
+1. How to setup the adventure header.
+2. How to create a room and link it to others.
+3. How to create items.
+4. How to create messages.
+5. How to use flags.
+6. How to take action when a player leaves a room.
+7. How to create action handlers for new player commands.
+8. How to override TADV's default action handlers.
+
+  You have now learned enough that you can start to put together your own
+simple adventures.  Section II of the tutorial will go into more advanced
+topics.
+
+  Here is the adventure file up to this point.  Verify your copy against this
+to make sure that you are in sync with what we are doing in this tutorial:
+
+tadv 1.0
+adventure {
+  title Escape
+  author Mike Riley
+  intro You have been locked inside a house, can you get out?
+  flag F_STUDY_DOOR_OPEN
+  flag F_STUDY_DOOR_UNLOCKED
+  flag F_KEYRINGFOUND
+  }
+
+room 0 {
+  name R_FOYER
+  short Entry Foyer.
+  desc You are standing in the entry foyer of the house.  The front door is
+  desc to the south.  Another door leads north.  There is a potted plant in
+  desc one corner and a coat rack in another.
+  north 1
+  action examine coat rack {
+    8 say true
+    }
+  action examine coatrack {
+    8 say true
+    }
+  action examine plant {
+    9 say true
+    }
+  action examine potted plant {
+    9 say true
+    }
+  action look behind plant {
+    F_KEYRINGFOUND flagset? if 11 say true then
+    F_KEYRINGFOUND setflag
+    10 say
+    0 placeitem
+    true
+    }
+  }
+
+room 1 {
+  name R_ENTRYHALL
+  short Entry Hall
+  desc You have entered the main entry hall of the house.  The ceiling in
+  desc this room is high above your.  White marble pillars line the room
+  desc along the east and west walls, about 3 feet from the walls.
+  desc There are doorways leading east and west and a grand staircase
+  desc leading upwards at the north end of the room.
+  south 0
+  east 2
+  leave {
+    goingeast? if
+      F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+      then
+    }
+  action open door {
+    F_STUDY_DOOR_UNLOCKED flagreset? if 5 say true then
+    F_STUDY_DOOR_OPEN flagset? if 2 say true then
+    F_STUDY_DOOR_OPEN setflag
+    1 say
+    true
+    }
+  action close door {
+    F_STUDY_DOOR_OPEN flagreset? if 4 say true then
+    F_STUDY_DOOR_OPEN resetflag
+    3 say
+    true
+    }
+  action unlock door {
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    7 say true
+    }
+  action examine door {
+    12 say true
+    }
+  action unlock door with key {
+    0 notcarrying? if 16 say true then
+    13 say true
+    }
+  action unlock door with brass key {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    F_STUDY_DOOR_UNLOCKED setflag
+    15 say true
+    }
+  action unlock door with gold key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with silver key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with bronze key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with iron key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with steel key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with aluminum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with copper key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with platinum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action lock door {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagreset? if 17 say true then
+    F_STUDY_DOOR_UNLOCKED resetflag
+    18 say
+    true
+    }
+  }
+
+room 2 {
+  name R_STUDY
+  short Study
+  desc You are in a large study.  Many bookcases line the walls, curiously
+  desc the bookshelves have no books on them.  There is a mahogony desk in
+  desc the center of the room.  There are many papers strewn about the desk.
+  desc A mahogony chair with black leather upholstry is behind the desk.
+  west 1
+  action open door {
+    F_STUDY_DOOR_UNLOCKED flagreset? if 5 say true then
+    F_STUDY_DOOR_OPEN flagset? if 2 say true then
+    F_STUDY_DOOR_OPEN setflag
+    1 say
+    true
+    }
+  action close door {
+    F_STUDY_DOOR_OPEN flagreset? if 4 say true then
+    F_STUDY_DOOR_OPEN resetflag
+    3 say
+    true
+    }
+  action unlock door {
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    7 say true
+    }
+  action examine door {
+    12 say true
+    }
+  action unlock door with key {
+    0 notcarrying? if 16 say true then
+    13 say true
+    }
+  action unlock door with brass key {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagset? if 6 say true then
+    F_STUDY_DOOR_UNLOCKED setflag
+    15 say true
+    }
+  action unlock door with gold key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with silver key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with bronze key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with iron key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with steel key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with aluminum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with copper key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action unlock door with platinum key {
+    0 notcarrying? if 16 say true then
+    14 say true
+    }
+  action lock door {
+    0 notcarrying? if 16 say true then
+    F_STUDY_DOOR_UNLOCKED flagreset? if 17 say true then
+    F_STUDY_DOOR_UNLOCKED resetflag
+    18 say
+    true
+    }
+  action west {
+    F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+    }
+  action w {
+    F_STUDY_DOOR_OPEN flagset? if false else 0 say true then
+    }
+  }
+
+message 0 {
+  The door is blocking your path.
+  }
+message 1 {
+  The door is now open.
+  }
+message 2 {
+  The door is already open.
+  }
+message 3 {
+  The door is now closed.
+  }
+message 4 {
+  The door is already closed.
+  }
+message 5 {
+  The door is locked.
+  }
+message 6 {
+  The door is already unlocked.
+  }
+message 7 {
+  Unlock the door with what?
+  }
+message 8 {
+  This is a simple coat rack, there are no coats hanging on the rack.
+  }
+message 9 {
+  This is plastic pot containing a number of tall lily plants.
+  }
+message 10 {
+  You have found a keyring behind the plant.
+  }
+message 11 {
+  There is nothing futher to be found.
+  }
+message 12 {
+  The door appears to be solid oak.  There is a small round brass knob with
+  a keyhole in the center.
+  }
+message 13 {
+  You need to specify which key to use.
+  }
+message 14 {
+  That key does not fit the lock.
+  }
+message 15 {
+  The door is now unlocked.
+  }
+message 16 {
+  You do not have the key.
+  }
+message 17 {
+  The door is already locked.
+  }
+message 18 {
+  The door is now locked.
+  }
+message 19 {
+  You take a moment to look around the room.
+
+  }
+
+item 0 {
+  name keyring
+  desc Keyring
+  examine This is a simple ring containing a number of keys: Gold, Silver,
+  examine Bronze, Iron, Steel, Brass, Aluminum, Copper, Platinum.
+  weight 1
+  score 5
+  }
+
+action look {
+  19 say false
+  }
+
