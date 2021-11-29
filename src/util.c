@@ -12,6 +12,8 @@ char* fileRead(char* buffer,FILE* file) {
     decrypt(buffer,temp,&key);
     strcpy(buffer,temp);
     }
+  while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
+    buffer[strlen(buffer)-1] = 0;
   return ret;
   }
 

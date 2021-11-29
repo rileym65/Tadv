@@ -1,4 +1,4 @@
-TADV 1.0
+TADV 1.1
 ADVENTURE {
   TITLE Adventure title
   AUTHOR Author
@@ -193,4 +193,12 @@ Action Steps:
 [n]        unlock         []        Unlock a door
 [n]        unlocked?      [boolean] True if door is unlocked
 []         turncount      [n]       Place the number of turns onto the stack
+[n]        examineitem    []        Display examine text for specified item
+[n]        opendoor       []        Open specified door
+[n]        closedoor      []        Close specified door
+[n]        lockdoor       []        Lock specified door
+[n]        unlockdoor     []        Unlock specified door
+[n]        doorclosed?    [boolean] True if specifed door is closed
+[n]        doorlocked?    [boolean] True if specified door is locked
+[]         invcount       [n]       Count of items being carried
 

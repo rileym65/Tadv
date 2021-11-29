@@ -44,7 +44,7 @@ int load(char* filename) {
   for (i=25; i<j; i++) {
     fgets(buffer,255,file);
     trim(buffer);
-printf("%d %s\n",i,buffer);
+// printf("%d %s\n",i,buffer);
     addWord(buffer);
     }
 /* ********** get messages ********** */
@@ -179,7 +179,7 @@ printf("%d %s\n",i,buffer);
     for (j=0; j<room->numLeaveSteps; j++)
       fscanf(file,"%d\n",&(room->leaveSteps[j]));
     fscanf(file,"%d\n",&(rooms[i]->numActions));
-printf("%d %d\n",i,rooms[i]->numActions);
+// printf("%d %d\n",i,rooms[i]->numActions);
     rooms[i]->actions = (ACTION**)malloc(sizeof(ACTION*)*rooms[i]->numActions);
     for (j=0; j<rooms[i]->numActions; j++)
       rooms[i]->actions[j] = loadAction(file);

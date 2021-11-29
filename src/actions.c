@@ -575,6 +575,58 @@ int actionBlock(int* actions,int count) {
     case CMD_TURNCOUNT:
          stack[sp++] = player.turnCount;
          break;
+    case CMD_EXAMINEITEM:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             printf("%s\n",items[k]->examine);
+           }
+         break;
+    case CMD_OPEN_DOOR:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             doors[k]->opened = 1;
+           }
+         break;
+    case CMD_CLOSE_DOOR:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             doors[k]->opened = 0;
+           }
+         break;
+    case CMD_LOCK_DOOR:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             doors[k]->unlocked = 0;
+           }
+         break;
+    case CMD_UNLOCK_DOOR:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             doors[k]->unlocked = 1;
+           }
+         break;
+    case CMD_DOOR_CLOSED:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             stack[sp++] = (doors[k]->opened) ? 0 : 1;
+           }
+         break;
+    case CMD_DOOR_LOCKED:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numDoors)
+             stack[sp++] = (doors[k]->unlocked) ? 0 : 1;
+           }
+         break;
+    case CMD_INV_COUNT:
+         stack[sp++] = player.numItems;
+         break;
     default: 
          stack[sp++] = actions[ip];
          break;

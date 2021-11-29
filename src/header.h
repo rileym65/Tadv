@@ -95,6 +95,14 @@
 #define CMD_UNLOCK             30085
 #define CMD_UNLOCKED           30086
 #define CMD_TURNCOUNT          30087
+#define CMD_EXAMINEITEM        30088
+#define CMD_OPEN_DOOR          30089
+#define CMD_CLOSE_DOOR         30090
+#define CMD_LOCK_DOOR          30091
+#define CMD_UNLOCK_DOOR        30092
+#define CMD_DOOR_CLOSED        30093
+#define CMD_DOOR_LOCKED        30094
+#define CMD_INV_COUNT          30095
 
 typedef struct {
   int*  phraseTokens;

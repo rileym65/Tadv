@@ -29,6 +29,8 @@ int getItemNumber(char* wrd) {
   if (wrd[0] >= '0' && wrd[0] <= '9') return atoi(wrd);
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
+  for (i=0; i<numEquates; i++)
+    if (strcasecmp(wrd, equates[i]) == 0) return eqValues[i];
   return -1;
   }
 
@@ -144,6 +146,14 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"unlock") == 0) return CMD_UNLOCK;
   if (strcasecmp(wrd,"unlock?") == 0) return CMD_UNLOCKED;
   if (strcasecmp(wrd,"turncount") == 0) return CMD_TURNCOUNT;
+  if (strcasecmp(wrd,"examineitem") == 0) return CMD_EXAMINEITEM;
+  if (strcasecmp(wrd,"opendoor") == 0) return CMD_OPEN_DOOR;
+  if (strcasecmp(wrd,"closedoor") == 0) return CMD_CLOSE_DOOR;
+  if (strcasecmp(wrd,"lockdoor") == 0) return CMD_LOCK_DOOR;
+  if (strcasecmp(wrd,"unlockdoor") == 0) return CMD_UNLOCK_DOOR;
+  if (strcasecmp(wrd,"doorlocked?") == 0) return CMD_DOOR_LOCKED;
+  if (strcasecmp(wrd,"doorclosed?") == 0) return CMD_DOOR_CLOSED;
+  if (strcasecmp(wrd,"invcount") == 0) return CMD_INV_COUNT;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
@@ -163,11 +173,10 @@ int getCode(char* wrd) {
   return CMD_ERROR;
   }
 
-int* readActionSteps(FILE* inFile,int* count) {
+int* readActionSteps(FILE* inFile,int* count, char* pBuf) {
   int*    steps;
   char    flag;
   char*   pWrd;
-  char*   pBuf;
   char    wrd[255];
   char    buf2[1024];
   char    arg;
@@ -176,9 +185,14 @@ int* readActionSteps(FILE* inFile,int* count) {
   int j;
   *count = 0;
   flag = ' ';
-  fileRead(buf2,inFile);
-  pBuf = upper(buf2);
+  pBuf = upper(pBuf);
+  while (*pBuf != 0 && *pBuf != '{') pBuf++;
+  if (*pBuf == '{') pBuf++;
   while (flag == ' ') {
+    if (*pBuf == 0) {
+      fileRead(buf2,inFile);
+      pBuf = upper(buf2);
+      }
     while (*pBuf > 0 && *pBuf <= ' ') pBuf++;
     if (*pBuf == 0) {
       fileRead(buf2,inFile);
@@ -317,6 +331,8 @@ void readMessage(FILE* inFile,char* buf) {
   char*    pBuffer;
   MESSAGE* message;
   char buffer[1024];
+  char msg[1024];
+  int  pos;
   sscanf(buf,"%s %d",buffer,&number);
   if (number != numMessages) {
     printf("Message number mismatch: %d, %s\n",numMessages,buf);
@@ -333,20 +349,28 @@ void readMessage(FILE* inFile,char* buf) {
     messages = (MESSAGE**)realloc(messages,sizeof(MESSAGE*) * numMessages);
     messages[numMessages - 1] = message;
     }
+  while (*buf != 0 && *buf != '{') buf++;
+  buf++;
+  while (*buf > 0 && *buf <= ' ') buf++;
   flag = ' ';
+  pos = 0;
   while (flag == ' ') {
-    if (fileRead(buffer,inFile) == NULL) flag = '*';
-    if (strchr(buffer,'}') != NULL) flag='*';
-    if (flag != '*') {
-      pBuffer = trim(buffer);
-      if (++message->numLines == 1)
-        message->message = (char**)malloc(sizeof(char*));
-      else
-        message->message = (char**)realloc(message->message,
-          sizeof(char*) * message->numLines);
-      message->message[message->numLines-1]=(char*)malloc(strlen(pBuffer)+1);
-      strcpy(message->message[message->numLines-1],pBuffer);
+    if (*buf == 0) {
+      if (fileRead(buffer,inFile) == NULL) flag = '*';
+      buf = buffer;
+      pos = 0;
+      while (*buf > 0 && *buf <= ' ') buf++;
       }
+    while (*buf != 0 && *buf != '}') msg[pos++] = *buf++;
+    msg[pos] = 0;
+    if (++message->numLines == 1)
+      message->message = (char**)malloc(sizeof(char*));
+    else
+      message->message = (char**)realloc(message->message,
+        sizeof(char*) * message->numLines);
+    message->message[message->numLines-1]=(char*)malloc(strlen(msg)+1);
+      strcpy(message->message[message->numLines-1],msg);
+    if (*buf == '}') flag = '*';
     }
 
   }
@@ -358,6 +382,7 @@ void readRoom(FILE* inFile,char* buf) {
   ACTION* action;
   int number;
   char buffer[1024];
+  char buf2[1024];
   char* pBuffer;
   char head[255];
   char flag;
@@ -417,7 +442,6 @@ void readRoom(FILE* inFile,char* buf) {
   flag = ' ';
   while (flag == ' ') {
     if (fileRead(buffer,inFile) == NULL) flag = '*';
-    if (strchr(buffer,'}') != NULL) flag='*';
     if (flag != '*') {
       pBuffer = trim(buffer);
       sscanf(buffer,"%s",head);
@@ -426,15 +450,15 @@ void readRoom(FILE* inFile,char* buf) {
         room->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->name, pBuffer);
         }
-      if (strcmp(head,"short") == 0) {
+      else if (strcmp(head,"short") == 0) {
         room->shortDesc = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->shortDesc, pBuffer);
         }
 
-      if (strcmp(head,"desc") == 0) {
+      else if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           room->descSteps =
-            readActionSteps(inFile,&(room->numDescSteps));
+            readActionSteps(inFile,&(room->numDescSteps),pBuffer);
           } else {
           if (++room->numDesc == 1)
             room->description = (char**)malloc(sizeof(char*));
@@ -446,31 +470,32 @@ void readRoom(FILE* inFile,char* buf) {
           }
         }
 
-      if (strcmp(head,"needlight") == 0) room->needLight = 1;
-      if (strcmp(head,"north") == 0) read_dest(pBuffer,room->north);
-      if (strcmp(head,"south") == 0) read_dest(pBuffer,room->south);
-      if (strcmp(head,"east") == 0) read_dest(pBuffer,room->east);
-      if (strcmp(head,"west") == 0) read_dest(pBuffer,room->west);
-      if (strcmp(head,"up") == 0) read_dest(pBuffer,room->up);
-      if (strcmp(head,"down") == 0) read_dest(pBuffer,room->down);
-      if (strcmp(head,"northeast") == 0) read_dest(pBuffer,room->ne);
-      if (strcmp(head,"northwest") == 0) read_dest(pBuffer,room->nw);
-      if (strcmp(head,"southeast") == 0) read_dest(pBuffer,room->se);
-      if (strcmp(head,"southwest") == 0) read_dest(pBuffer,room->sw);
-      if (strcmp(head,"enter") == 0)
+      else if (strcmp(head,"needlight") == 0) room->needLight = 1;
+      else if (strcmp(head,"north") == 0) read_dest(pBuffer,room->north);
+      else if (strcmp(head,"south") == 0) read_dest(pBuffer,room->south);
+      else if (strcmp(head,"east") == 0) read_dest(pBuffer,room->east);
+      else if (strcmp(head,"west") == 0) read_dest(pBuffer,room->west);
+      else if (strcmp(head,"up") == 0) read_dest(pBuffer,room->up);
+      else if (strcmp(head,"down") == 0) read_dest(pBuffer,room->down);
+      else if (strcmp(head,"northeast") == 0) read_dest(pBuffer,room->ne);
+      else if (strcmp(head,"northwest") == 0) read_dest(pBuffer,room->nw);
+      else if (strcmp(head,"southeast") == 0) read_dest(pBuffer,room->se);
+      else if (strcmp(head,"southwest") == 0) read_dest(pBuffer,room->sw);
+      else if (strcmp(head,"enter") == 0)
          room->enterSteps =
-           readActionSteps(inFile,&(room->numEnterSteps));
-      if (strcmp(head,"leave") == 0)
+           readActionSteps(inFile,&(room->numEnterSteps),pBuffer);
+      else if (strcmp(head,"leave") == 0)
          room->leaveSteps =
-           readActionSteps(inFile,&(room->numLeaveSteps));
-      if (strcmp(head,"occupied") == 0)
+           readActionSteps(inFile,&(room->numLeaveSteps),pBuffer);
+      else if (strcmp(head,"occupied") == 0)
          room->occupiedSteps =
-           readActionSteps(inFile,&(room->numOccupiedSteps));
-      if (strcmp(head,"turn") == 0)
+           readActionSteps(inFile,&(room->numOccupiedSteps),pBuffer);
+      else if (strcmp(head,"turn") == 0)
          room->turnSteps =
-           readActionSteps(inFile,&(room->numTurnSteps));
-      if (strcmp(head,"action") == 0) {
+           readActionSteps(inFile,&(room->numTurnSteps),pBuffer);
+      else if (strcmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
+         strcpy(buf2, pBuffer);
          for (i=0; i<strlen(pBuffer); i++)
            if (pBuffer[i] == '{') pBuffer[i] = 0;
          pBuffer = trim(pBuffer);
@@ -487,8 +512,9 @@ void readRoom(FILE* inFile,char* buf) {
          for (i=0; i<numTokens; i++) action->phraseTokens[i] = tokens[i];
          action->numActionTokens = 0;
          action->actionTokens =
-           readActionSteps(inFile,&(action->numActionTokens));
+           readActionSteps(inFile,&(action->numActionTokens),buf2);
         }
+      else if (strchr(buffer,'}') != NULL) flag='*';
         
       }
     }
@@ -549,7 +575,7 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           item->descSteps =
-            readActionSteps(inFile,&(item->numDescSteps));
+            readActionSteps(inFile,&(item->numDescSteps),pBuffer);
           item->description = "null";
           } else {
           item->description = (char*)malloc(strlen(pBuffer) + 1);
@@ -559,7 +585,7 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"examine") == 0) {
         if (pBuffer[0] == '{') {
           item->examSteps =
-            readActionSteps(inFile,&(item->numExamSteps));
+            readActionSteps(inFile,&(item->numExamSteps),pBuffer);
           item->examine = "null";
           } else {
           if (item->examine ==NULL) {
@@ -580,10 +606,10 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"score") == 0) item->score = atoi(pBuffer);
       if (strcmp(head,"carrying") == 0)
          item->carryingSteps =
-           readActionSteps(inFile,&(item->numCarryingSteps));
+           readActionSteps(inFile,&(item->numCarryingSteps),pBuffer);
       if (strcmp(head,"turn") == 0)
          item->turnSteps =
-           readActionSteps(inFile,&(item->numTurnSteps));
+           readActionSteps(inFile,&(item->numTurnSteps),pBuffer);
       if (strcmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          for (i=0; i<strlen(pBuffer); i++)
@@ -602,7 +628,7 @@ void readItem(FILE* inFile,char* buf) {
          for (i=0; i<numTokens; i++) action->phraseTokens[i] = tokens[i];
          action->numActionTokens = 0;
          action->actionTokens =
-           readActionSteps(inFile,&(action->numActionTokens));
+           readActionSteps(inFile,&(action->numActionTokens),pBuffer);
         }
       }
     }
@@ -652,7 +678,7 @@ void readDoor(FILE* inFile,char* buf) {
       if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           door->descSteps =
-            readActionSteps(inFile,&(door->numDescSteps));
+            readActionSteps(inFile,&(door->numDescSteps),pBuffer);
           door->description = "null";
           } else {
           door->description = (char*)malloc(strlen(pBuffer) + 1);
@@ -682,6 +708,7 @@ void readAction(FILE* inFile,char* buffer) {
   int j;
   buffer += 6;
   buffer = trim(buffer);
+  strcpy(buf2, buffer);
   for (i=0; i<strlen(buffer); i++)
     if (buffer[i] == '{') buffer[i] = 0;
   buffer = trim(buffer);
@@ -694,7 +721,7 @@ void readAction(FILE* inFile,char* buffer) {
   action->phraseTokens = (int*)malloc(sizeof(int) * numTokens);
   for (i=0; i<numTokens; i++) action->phraseTokens[i] = tokens[i];
   action->numActionTokens = 0;
-  action->actionTokens = readActionSteps(inFile,&(action->numActionTokens));
+  action->actionTokens = readActionSteps(inFile,&(action->numActionTokens),buf2);
   }
 
 void readFunction(FILE* inFile,char* buffer) {
@@ -722,7 +749,7 @@ void readFunction(FILE* inFile,char* buffer) {
   action->phraseTokens = (int*)malloc(sizeof(int) * numTokens);
   for (i=0; i<numTokens; i++) action->phraseTokens[i] = tokens[i];
   action->numActionTokens = 0;
-  action->actionTokens = readActionSteps(inFile,&(action->numActionTokens));
+  action->actionTokens = readActionSteps(inFile,&(action->numActionTokens),buffer);
   }
 
 void readAdventure(FILE* inFile) {
@@ -752,7 +779,7 @@ void readAdventure(FILE* inFile) {
         printf("%s\n",pBuffer);
         }
       if (strcmp(head,"start") == 0)
-         startSteps = readActionSteps(inFile,&numStartSteps);
+         startSteps = readActionSteps(inFile,&numStartSteps,pBuffer);
       if (strcmp(head,"action") == 0) {
          action = (ACTION*)malloc(sizeof(ACTION));
          if (++numTurnActions == 1)
@@ -765,7 +792,7 @@ void readAdventure(FILE* inFile) {
          action->phraseTokens = NULL;
          action->numActionTokens = 0;
          action->actionTokens =
-           readActionSteps(inFile,&(action->numActionTokens));
+           readActionSteps(inFile,&(action->numActionTokens),pBuffer);
         }
       if (strcmp(head,"flag") == 0) {
         addFlag(pBuffer);
@@ -811,6 +838,8 @@ int readFile(char* filename) {
     return -1;
     }
   fgets(buffer,1024,inFile);
+  while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
+    buffer[strlen(buffer)-1] = 0;
   encrypted = 'N';
   if (strncmp(buffer,"tadv",4) != 0) {
     printf("Invalid file\n");
@@ -822,6 +851,8 @@ int readFile(char* filename) {
     key=rc4_init("tadvencrypt",11);
     }
   while (fileRead(buffer,inFile) != NULL) {
+    while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
+      buffer[strlen(buffer)-1] = 0;
     if (strncmp(buffer,"room",4)         == 0) readRoom(inFile,buffer);
     else if (strncmp(buffer,"message",7) == 0) readMessage(inFile,buffer);
     else if (strncmp(buffer,"item",4)    == 0) readItem(inFile,buffer);
@@ -829,7 +860,8 @@ int readFile(char* filename) {
     else if (strncmp(buffer,"adventure",9) == 0) readAdventure(inFile);
     else if (strncmp(buffer,"function",8) == 0) readFunction(inFile,buffer);
     else if (strncmp(buffer,"door",4) == 0) readDoor(inFile,buffer);
-    else printf("%s\n",buffer);
+    else if (strlen(buffer) == 0) ;
+    else printf("Unknown line: %s\n",buffer);
     }
   return 0;
   }
