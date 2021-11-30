@@ -185,6 +185,11 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"doorclosed?") == 0) return CMD_DOOR_CLOSED;
   if (strcasecmp(wrd,"invcount") == 0) return CMD_INV_COUNT;
   if (strcasecmp(wrd,"mod") == 0) return CMD_MOD;
+  if (strcasecmp(wrd,"invitem") == 0) return CMD_INVITEM;
+  if (strcasecmp(wrd,"describeitem") == 0) return CMD_DESC_ITEM;
+  if (strcasecmp(wrd,"space") == 0) return CMD_SPACE;
+  if (strcasecmp(wrd,"wearable?") == 0) return CMD_WEARABLE;
+  if (strcasecmp(wrd,"wearing?") == 0) return CMD_WEARING;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
@@ -326,6 +331,8 @@ void init() {
   addWord("door");          /* 34 */
   addWord("with");          /* 35 */
   addWord("exits");         /* 36 */
+  addWord("wear");          /* 37 */
+  addWord("remove");        /* 38 */
   addFlag("F_HAS_LIGHT");
   addFlag("F_CAN_MOVE");
   }
@@ -583,6 +590,8 @@ void readItem(FILE* inFile,char* buf) {
   item->turnSteps = NULL;
   item->numTurnSteps = 0;
   item->examine = NULL;
+  item->wearable = 0;
+  item->beingworn = 0;
   if (items == NULL) {
     items = (ITEM**)malloc(sizeof(ITEM*));
     items[0] = item;
@@ -632,6 +641,8 @@ void readItem(FILE* inFile,char* buf) {
           }
         }
       if (strcmp(head,"noncarryable") == 0) item->weight = -1;
+      if (strcmp(head,"wearable") == 0) item->wearable = 1;
+      if (strcmp(head,"beingworn") == 0) item->beingworn = 1;
       if (strcmp(head,"weight") == 0 && item->weight == 0)
         item->weight = atoi(pBuffer);
       if (strcmp(head,"location") == 0) item->location = getRoomNumber(pBuffer);
@@ -686,6 +697,7 @@ void readDoor(FILE* inFile,char* buf) {
   door->opened = 0;
   door->unlocked = 1;
   door->lockable = 0;
+  door->numDescSteps = 0;
   if (doors == NULL) {
     doors = (DOOR**)malloc(sizeof(DOOR*));
     doors[0] = door;

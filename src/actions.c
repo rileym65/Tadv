@@ -123,6 +123,9 @@ int actionBlock(int* actions,int count) {
            for (i=0; i<k; i++) printf(" ");
            }
          break;
+    case CMD_SPACE:
+         printf(" ");
+         break;
     case CMD_EMIT:
          if (sp > 0) {
            k = stack[--sp];
@@ -585,7 +588,28 @@ int actionBlock(int* actions,int count) {
          if (sp > 0) {
            k = stack[--sp];
            if (k >= 0 && k<numItems)
-             printf("%s\n",items[k]->examine);
+             printf("%s",items[k]->examine);
+           }
+         break;
+    case CMD_DESC_ITEM:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             printf("%s",items[k]->description);
+           }
+         break;
+    case CMD_WEARABLE:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             stack[sp++] = items[k]->wearable;
+           }
+         break;
+    case CMD_WEARING:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             stack[sp++] = items[k]->beingworn;
            }
          break;
     case CMD_OPEN_DOOR:
@@ -632,6 +656,16 @@ int actionBlock(int* actions,int count) {
          break;
     case CMD_INV_COUNT:
          stack[sp++] = player.numItems;
+         break;
+    case CMD_INVITEM:
+         i = stack[--sp];
+         j = -1;
+         if (i >= player.numItems) {
+           stack[sp++] = j;
+           }
+         else {
+           stack[sp++] = numberForItem(player.items[i]);
+           }
          break;
     default: 
          stack[sp++] = actions[ip];

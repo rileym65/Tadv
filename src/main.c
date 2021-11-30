@@ -40,6 +40,7 @@ void mainLoop() {
   int  f;
   int  look;
   char buffer[1024];
+  ITEM *item;
   gameFlag = ' ';
   look = 0;
   while (gameFlag == ' ') {
@@ -361,6 +362,35 @@ void mainLoop() {
           }
         else printf("You are incapable of climbing here\n");
         }
+/* ******************** GET ALL ********************** */
+      else if (numTokens == 2 &&
+               (tokens[0] == 17 || tokens[0] == 18) &&
+               tokens[1] == 21) {
+        i = 0;
+        while (i < rooms[player.location]->numItems) {
+          item = rooms[player.location]->items[i];
+          if (item->weight >= 0) {
+            if (++player.numItems == 1)
+              player.items = (ITEM**)malloc(sizeof(ITEM*));
+            else
+              player.items = (ITEM**)realloc(player.items,
+                             sizeof(ITEM*)*player.numItems);
+            player.items[player.numItems-1] = item;
+            printf("  %s taken\n", item->description);
+            player.score += item->score;
+            for (j=i; j<rooms[player.location]->numItems-1; j++)
+              rooms[player.location]->items[j] =
+              rooms[player.location]->items[j+1];
+            if (--rooms[player.location]->numItems == 0)
+              free(rooms[player.location]->items);
+            else rooms[player.location]->items = (ITEM**)realloc(
+              rooms[player.location]->items,
+              sizeof(ITEM*) * rooms[player.location]->numItems);
+            }
+          else i++;
+
+          }
+        }
 /* ******************** GET object ********************** */
       else if (numTokens == 2 && (tokens[0] == 17 || tokens[0] == 18)) {
         j = getItemNumber(vocab[tokens[1]]);
@@ -496,6 +526,64 @@ void mainLoop() {
 /* ***** Otherwise indicate player cannot examine ***** */
         if (j == -1) {
           printf("You are not carrying the ");
+          printToken(tokens[1]);
+          printf("\n");
+          }
+        }
+/* **************************************************** */
+/* ******************** Wear item ********************* */
+/* **************************************************** */
+      else if (numTokens == 2 && tokens[0] == 37) {
+        j = -1;
+        for (i=0; i<player.numItems; i++)
+          if (getToken(player.items[i]->name) == tokens[1])
+            j = i;
+        if (j < 0) {
+          printf("You are not carrying the ");
+          printToken(tokens[1]);
+          printf("\n");
+          }
+        if (j >=0 && player.items[j]->wearable == 0) {
+          printf("The ");
+          printToken(tokens[1]);
+          printf(" is not wearable\n");
+          j = -1;
+          }
+        if (j >= 0 && player.items[j]->beingworn != 0) {
+          printf("The ");
+          printToken(tokens[1]);
+          printf(" is already being worn\n");
+          j = -1;
+          }
+        if (j >= 0) {
+          player.items[j]->beingworn = 1;
+          printf("You are now wearing the ");
+          printToken(tokens[1]);
+          printf("\n");
+          }
+        }
+/* ****************************************************** */
+/* ******************** Remove item ********************* */
+/* ****************************************************** */
+      else if (numTokens == 2 && tokens[0] == 38) {
+        j = -1;
+        for (i=0; i<player.numItems; i++)
+          if (getToken(player.items[i]->name) == tokens[1])
+            j = i;
+        if (j < 0) {
+          printf("You are not wearing the ");
+          printToken(tokens[1]);
+          printf("\n");
+          }
+        if (j >= 0 && player.items[j]->beingworn == 0) {
+          printf("The ");
+          printToken(tokens[1]);
+          printf(" is not being worn\n");
+          j = -1;
+          }
+        if (j >= 0) {
+          player.items[j]->beingworn = 0;
+          printf("You have removed the ");
           printToken(tokens[1]);
           printf("\n");
           }

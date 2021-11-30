@@ -9,9 +9,10 @@ LIBS =
 OBJS = \
 	actions.o \
 	crypt.o \
-	file.o \
 	init.o \
+	load.o \
 	main.o \
+	save.o \
 	util.o
 
 tadv: $(OBJS)
@@ -26,8 +27,9 @@ clean:
 
 actions.o: header.h actions.c
 crypt.o:   header.h crypt.c
-file.o:    header.h file.c
 init.o:    header.h init.c
+load.o:    header.h load.c
 main.o:    header.h main.c
+save.o:    header.h save.c
 util.o:    header.h util.c
 

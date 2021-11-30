@@ -104,6 +104,11 @@
 #define CMD_DOOR_LOCKED        30094
 #define CMD_INV_COUNT          30095
 #define CMD_MOD                30096
+#define CMD_INVITEM            30097
+#define CMD_DESC_ITEM          30098
+#define CMD_SPACE              30099
+#define CMD_WEARABLE           30100
+#define CMD_WEARING            30101
 
 typedef struct {
   int*  phraseTokens;
@@ -129,6 +134,8 @@ typedef struct _item_struct {
   int     numCarryingSteps;
   int*    turnSteps;
   int     numTurnSteps;
+  int     wearable;
+  int     beingworn;
   } ITEM;
 
 typedef struct {
@@ -240,6 +247,7 @@ LINK int stack[100];
 LINK int sp;
 
 
+extern int   numberForItem(ITEM* item);
 extern char* fileRead(char* buffer,FILE* file);
 extern int   rcs_random(int size);
 extern void  rcs_randomize();

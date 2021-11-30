@@ -33,6 +33,13 @@ void rcs_randomize() {
   srand(t);
   }
 
+int numberForItem(ITEM* item) {
+  int i;
+  for (i=0; i<numItems; i++)
+    if (item == items[i]) return i;
+  return -1;
+  }
+
 char* upper(char* buffer) {
   int i;
   for (i=0; i<strlen(buffer); i++)
