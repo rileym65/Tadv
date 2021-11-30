@@ -103,6 +103,7 @@
 #define CMD_DOOR_CLOSED        30093
 #define CMD_DOOR_LOCKED        30094
 #define CMD_INV_COUNT          30095
+#define CMD_MOD                30096
 
 typedef struct {
   int*  phraseTokens;

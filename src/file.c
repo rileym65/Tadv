@@ -238,7 +238,9 @@ void save() {
   FILE* file;
   char buffer[255];
   printf("Enter Filename? ");
-  gets(buffer);
+  fgets(buffer,254,stdin);
+  while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] < 32)
+    buffer[strlen(buffer)-1] = 0;
   strcat(buffer,".sav");
   file = fopen(buffer,"w");
   fprintf(file,"%d\n",numVocab);

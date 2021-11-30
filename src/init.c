@@ -3,6 +3,21 @@
 #include <string.h>
 #include "header.h"
 
+void addEquate(char* name, int value) {
+  if (++numEquates == 1) {
+    equates = (char**)malloc(sizeof(char*));
+    eqValues = (int*)malloc(sizeof(int));
+    }
+  else {
+    equates = (char**)realloc(equates,sizeof(char*) * numEquates);
+    eqValues = (int*)realloc(eqValues,sizeof(int) * numEquates);
+    }
+  equates[numEquates-1] = (char*)malloc(strlen(name) + 1);
+  addWord(name);
+  strcpy(equates[numEquates-1],name);
+  eqValues[numEquates-1] = value;
+  }
+
 void addFlag(char* pBuffer) {
   if (++numFlagNames == 1)
     flagNames = (char**)malloc(sizeof(char*));
@@ -10,6 +25,15 @@ void addFlag(char* pBuffer) {
     flagNames = (char**)realloc(flagNames,sizeof(char*) * numFlagNames);
   flagNames[numFlagNames-1] = (char*)malloc(strlen(pBuffer) + 1);
   strcpy(flagNames[numFlagNames-1],pBuffer);
+  }
+
+int getValue(char* wrd) {
+  int i;
+  if (*wrd >= '0' && *wrd <= '9') return atoi(wrd);
+  for (i=0; i<numEquates; i++)
+    if (strcasecmp(wrd, equates[i]) == 0) return eqValues[i];
+  printf("Name not found: %s\n",wrd);
+  return -1;
   }
 
 int getRoomNumber(char* wrd) {
@@ -31,11 +55,17 @@ int getItemNumber(char* wrd) {
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numEquates; i++)
     if (strcasecmp(wrd, equates[i]) == 0) return eqValues[i];
+  printf("Name not found: %s\n",wrd);
   return -1;
   }
 
 void read_dest(char* buffer,int* link) {
-  link[0] = atoi(buffer);
+  char name[256];
+  int  pos;
+  pos = 0;
+  while (*buffer != 0 && *buffer != ' ') name[pos++] =*buffer++;
+  name[pos] = 0;
+  link[0] = getValue(name);
   while (*buffer != 0 && *buffer != ' ') buffer++;
   if (*buffer == 0) {
     link[1] = -1;
@@ -154,6 +184,7 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"doorlocked?") == 0) return CMD_DOOR_LOCKED;
   if (strcasecmp(wrd,"doorclosed?") == 0) return CMD_DOOR_CLOSED;
   if (strcasecmp(wrd,"invcount") == 0) return CMD_INV_COUNT;
+  if (strcasecmp(wrd,"mod") == 0) return CMD_MOD;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
@@ -294,6 +325,7 @@ void init() {
   addWord("unlock");        /* 33 */
   addWord("door");          /* 34 */
   addWord("with");          /* 35 */
+  addWord("exits");         /* 36 */
   addFlag("F_HAS_LIGHT");
   addFlag("F_CAN_MOVE");
   }
@@ -829,10 +861,55 @@ void readAdventure(FILE* inFile) {
     }
   }
 
+int prePass(char* filename) {
+  int   i;
+  FILE* inFile;
+  int   count;
+  char buffer[1024];
+  char name[256];
+  char *pBuffer;
+  char *pBuf;
+  int   pos;
+  if ((inFile = fopen(filename,"r")) == NULL) {
+    printf("Could not open file\n");
+    return -1;
+    }
+  while (fileRead(buffer,inFile) != NULL) {
+    while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
+      buffer[strlen(buffer)-1] = 0;
+    pBuf = buffer;
+    while (*pBuf == ' ') pBuf++;
+    if (strncasecmp(pBuf,"room ",5) == 0) {
+      pBuffer = pBuf+4;
+      while (*pBuffer == ' ') pBuffer++;
+      count = atoi(pBuffer);
+      }
+    if (strncasecmp(pBuf,"item ",5) == 0) {
+      pBuffer = pBuf+4;
+      while (*pBuffer == ' ') pBuffer++;
+      count = atoi(pBuffer);
+      }
+    if (strncasecmp(pBuf,"door ",5) == 0) {
+      pBuffer = pBuf+4;
+      while (*pBuffer == ' ') pBuffer++;
+      count = atoi(pBuffer);
+      }
+    if (strncasecmp(pBuf,"name ",5) == 0) {
+      pBuffer = pBuf+4;
+      while (*pBuffer == ' ') pBuffer++;
+      pos = 0;
+      while (*pBuffer != 0 && *pBuffer != ' ') name[pos++] = *pBuffer++;
+      name[pos] = 0;
+      addEquate(name, count);
+      }
+    }
+  fclose(inFile);
+  }
 
 int readFile(char* filename) {
   FILE* inFile;
   char buffer[1024];
+  if (prePass(filename) < 0) return -1;
   if ((inFile = fopen(filename,"r")) == NULL) {
     printf("Could not open file\n");
     return -1;
@@ -863,5 +940,6 @@ int readFile(char* filename) {
     else if (strlen(buffer) == 0) ;
     else printf("Unknown line: %s\n",buffer);
     }
+  fclose(inFile);
   return 0;
   }

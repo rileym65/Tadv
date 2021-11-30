@@ -192,7 +192,7 @@ int actionBlock(int* actions,int count) {
          break;
     case CMD_MORE:
          printf("-More-");
-         gets(more);
+         fgets(more,255,stdin);
          break;
     case CMD_ROOM_DESC:
          for (i=0; i<rooms[player.location]->numDesc; i++)
@@ -397,6 +397,12 @@ int actionBlock(int* actions,int count) {
     case CMD_DIV:
          if (sp > 1) {
            stack[sp-2] = stack[sp-2] / stack[sp-1];
+           sp--;
+           }
+         break;
+    case CMD_MOD:
+         if (sp > 1) {
+           stack[sp-2] = stack[sp-2] % stack[sp-1];
            sp--;
            }
          break;

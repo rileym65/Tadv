@@ -130,7 +130,9 @@ void mainLoop() {
     look = 0;
     lastDir = ' ';
     printf(">");
-    gets(buffer);
+    fgets(buffer,1023,stdin);
+    while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] < 32)
+      buffer[strlen(buffer)-1] = 0;
     printf("\n\n");
     if (tokenize(buffer) > 0) {
       player.turnCount++;
@@ -142,6 +144,22 @@ void mainLoop() {
 /* ******************** SAVE *********************** */
       else if (numTokens == 1 && tokens[0] == 24) save();
       else if (numTokens == 1 && tokens[0] == 14) save();
+/* ******************** EXITS ********************** */
+      else if (numTokens == 1 && tokens[0] == 36) {
+        printf("Exits:");
+        if (rooms[player.location]->north[0] >= 0) printf(" N");
+        if (rooms[player.location]->south[0] >= 0) printf(" S");
+        if (rooms[player.location]->west[0] >= 0) printf(" W");
+        if (rooms[player.location]->east[0] >= 0) printf(" E");
+        if (rooms[player.location]->nw[0] >= 0) printf(" NW");
+        if (rooms[player.location]->ne[0] >= 0) printf(" NE");
+        if (rooms[player.location]->sw[0] >= 0) printf(" SW");
+        if (rooms[player.location]->se[0] >= 0) printf(" SE");
+        if (rooms[player.location]->up[0] >= 0) printf(" U");
+        if (rooms[player.location]->down[0] >= 0) printf(" D");
+        printf("\n\n");
+        }
+
 /* ******************** INVENT ********************* */
       else if (numTokens == 1 && tokens[0] == 12) {
         printf("You are carrying:\n");
@@ -184,7 +202,8 @@ void mainLoop() {
         look = 1;
         }
 /* ******************** NORTH ********************* */
-      else if (numTokens == 1 && (tokens[0] == 1 || tokens[0] == 2)) {
+      else if ((numTokens == 1 && (tokens[0] == 1 || tokens[0] == 2)) ||
+               (numTokens == 2 && tokens[0] == 9 && (tokens[1] == 1 || tokens[1] == 2))) {
         lastDir = 'N';
         if (rooms[player.location]->north[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
@@ -199,7 +218,8 @@ void mainLoop() {
         else printf("You bump into a wall\n");
         }
 /* ******************** SOUTH ********************* */
-      else if (numTokens == 1 && (tokens[0] == 3 || tokens[0] == 4)) {
+      else if ((numTokens == 1 && (tokens[0] == 3 || tokens[0] == 4)) ||
+               (numTokens == 2 && tokens[0] == 9 && (tokens[1] == 3 || tokens[1] == 4))) {
         lastDir = 'S';
         if (rooms[player.location]->south[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
@@ -214,7 +234,8 @@ void mainLoop() {
         else printf("You bump into a wall\n");
         }
 /* ******************** EAST ********************* */
-      else if (numTokens == 1 && (tokens[0] == 5 || tokens[0] == 6)) {
+      else if ((numTokens == 1 && (tokens[0] == 5 || tokens[0] == 6)) ||
+               (numTokens == 2 && tokens[0] == 9 && (tokens[1] == 5 || tokens[1] == 6))) {
         lastDir = 'E';
         if (rooms[player.location]->east[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
@@ -229,7 +250,8 @@ void mainLoop() {
         else printf("You bump into a wall\n");
         }
 /* ******************** WEST ********************* */
-      else if (numTokens == 1 && (tokens[0] == 7 || tokens[0] == 8)) {
+      else if ((numTokens == 1 && (tokens[0] == 7 || tokens[0] == 8)) ||
+               (numTokens == 2 && tokens[0] == 9 && (tokens[1] == 7 || tokens[1] == 8))) {
         lastDir = 'W';
         if (rooms[player.location]->west[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
@@ -243,8 +265,73 @@ void mainLoop() {
             }
         else printf("You bump into a wall\n");
         }
+/* ******************** NW ********************* */
+      else if ((numTokens == 1 && tokens[0] == 26) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 26)) {
+        lastDir = 'N';
+        if (rooms[player.location]->nw[0] >= 0) {
+          if (processLeave() != ACTION_TRUE) {
+            if (rooms[player.location]->nw[1] < 0)
+              player.location = rooms[player.location]->nw[0];
+            else if (rooms[player.location]->nw[1] >= 0 &&
+                doors[rooms[player.location]->nw[1]]->opened == 1)
+              player.location = rooms[player.location]->nw[0];
+              else printf("Your passage is currently blocked\n");
+            }
+          }
+        else printf("You bump into a wall\n");
+        }
+/* ******************** NE ********************* */
+      else if ((numTokens == 1 && tokens[0] == 25) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 25)) {
+        lastDir = 'N';
+        if (rooms[player.location]->ne[0] >= 0) {
+          if (processLeave() != ACTION_TRUE) {
+            if (rooms[player.location]->ne[1] < 0)
+              player.location = rooms[player.location]->ne[0];
+            else if (rooms[player.location]->ne[1] >= 0 &&
+                doors[rooms[player.location]->ne[1]]->opened == 1)
+              player.location = rooms[player.location]->ne[0];
+              else printf("Your passage is currently blocked\n");
+            }
+          }
+        else printf("You bump into a wall\n");
+        }
+/* ******************** SW ********************* */
+      else if ((numTokens == 1 && tokens[0] == 28) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 28)) {
+        lastDir = 'S';
+        if (rooms[player.location]->sw[0] >= 0) {
+          if (processLeave() != ACTION_TRUE) {
+            if (rooms[player.location]->sw[1] < 0)
+              player.location = rooms[player.location]->sw[0];
+            else if (rooms[player.location]->sw[1] >= 0 &&
+                doors[rooms[player.location]->sw[1]]->opened == 1)
+              player.location = rooms[player.location]->sw[0];
+              else printf("Your passage is currently blocked\n");
+            }
+          }
+        else printf("You bump into a wall\n");
+        }
+/* ******************** SE ********************* */
+      else if ((numTokens == 1 && tokens[0] == 27) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 27)) {
+        lastDir = 'S';
+        if (rooms[player.location]->se[0] >= 0) {
+          if (processLeave() != ACTION_TRUE) {
+            if (rooms[player.location]->se[1] < 0)
+              player.location = rooms[player.location]->se[0];
+            else if (rooms[player.location]->se[1] >= 0 &&
+                doors[rooms[player.location]->se[1]]->opened == 1)
+              player.location = rooms[player.location]->se[0];
+              else printf("Your passage is currently blocked\n");
+            }
+          }
+        else printf("You bump into a wall\n");
+        }
 /* ******************** UP ********************* */
-      else if (numTokens == 1 && tokens[0] == 10) {
+      else if ((numTokens == 1 && tokens[0] == 10) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 10)) {
         lastDir = 'U';
         if (rooms[player.location]->up[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
@@ -259,7 +346,8 @@ void mainLoop() {
         else printf("You are incapable of climbing here\n");
         }
 /* ******************** DOWN ********************* */
-      else if (numTokens == 1 && tokens[0] == 11) {
+      else if ((numTokens == 1 && tokens[0] == 11) ||
+               (numTokens == 2 && tokens[0] == 9 && tokens[1] == 11)) {
         lastDir = 'D';
         if (rooms[player.location]->down[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
