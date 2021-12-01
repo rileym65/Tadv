@@ -133,6 +133,7 @@
 #define CMD_DROPUNTIL          30123
 #define CMD_DUP2               30124
 #define CMD_SWAP2              30125
+#define CMD_QMARK              30126
 
 typedef struct {
   int*  phraseTokens;

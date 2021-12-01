@@ -812,6 +812,11 @@ int actionBlock(int* actions,int count) {
            a = stack[--sp];
            }
          break;
+    case CMD_QMARK:
+         printf("? ");
+         fgets(more,255,stdin);
+         push(atoi(more));
+         break;
     default: 
          stack[sp++] = actions[ip];
          break;

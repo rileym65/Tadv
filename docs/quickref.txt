@@ -231,4 +231,5 @@ Action Steps:
 [n]        ndrop          []        Drop n items from the stack
 [... n]    sum            [n]       Sum top n items
 [n... n]   dropuntil      []        Drop items until TOS encountered again
+[]         ?              [n]       Request numeric input from user
 

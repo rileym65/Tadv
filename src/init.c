@@ -214,6 +214,7 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"dropuntil") == 0) return CMD_DROPUNTIL;
   if (strcasecmp(wrd,"dup2") == 0) return CMD_DUP2;
   if (strcasecmp(wrd,"swap2") == 0) return CMD_SWAP2;
+  if (strcasecmp(wrd,"?") == 0) return CMD_QMARK;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
