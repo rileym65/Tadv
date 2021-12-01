@@ -648,8 +648,9 @@ int main(int argc,char* argv[]) {
     reset(); 
     }
   printf("\n\n");
+  gameFlag = ' ';
   if (numStartSteps > 0) performAction(startSteps, numStartSteps);
-  mainLoop();
+  if (gameFlag == ' ') mainLoop();
   printf("You scored a total of %d points in %ld turns\n",player.score,player.turnCount);
   return 0;
   }

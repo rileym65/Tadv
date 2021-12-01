@@ -131,13 +131,15 @@ Action Steps:
 []         die            []        End adventrue with player's death
 []         win            []        End adventure with player having won
 []         lose           []        End adventure with player having lost
-[a b]      +              [a]       Add top two stack entries
-[a b]      -              [a]       Subtract top two stack entries
-[a b]      *              [a]       Multiply top two stack entries
-[a b]      /              [a]       Divide top two stack entries
+[a b]      +              [n]       Add top two stack entries
+[a b]      -              [n]       Subtract top two stack entries
+[a b]      *              [n]       Multiply top two stack entries
+[a b]      /              [n]       Divide top two stack entries
 [a]        dup            [a a]     Duplicate top of stack
+[a b]      dup2           [a b a b] Duplicate top two stack values
 [a]        drop           []        Drop top stack entry
 [a b]      swap           [b a]     Swap top 2 stack entries     
+[a b c d]  swap2          [c d a b] Swap two 2 values with the 2 values below
 [var val]  set            []        Set variable to value
 [var]      get            [val]     Get value of a variable
 [var val]  !              []        Set variable to value
@@ -207,5 +209,26 @@ Action Steps:
 [n]        describeitem   []        Display describe text for specified item
 [n]        wearable?      [boolean] True if specified item is wearable
 [n]        wearing?       [boolean] True if specified item is being worn
-
+[boolean]  while          []        Beginning of WHILE/REPEAT loop
+[]         repeat         []        End of WHILE/REPEAT loop
+[]         count          [n]       Count of items on stack
+[...]      clear          []        Clear all items from stack
+[]         begin          []        Beginning of BEGIN/UNTIL loop
+[boolean]  until          []        End of BEGIN/UNTIL loop
+[n]        n.             []        Pop n items from stack and display them
+[...]      stack          [...]     Show contents of stack
+[n]        abs            [n]       Absolute value
+[n]        sgn            [n]       Return sign of number
+[n]        inc            [n]       Increment top of stack
+[n]        dec            [n]       Decrement top of stack
+[n]        aug            [n]       Augment top of stack
+[n]        dim            [n]       Diminish top of stack
+[n]        chs            [n]       Change sign of top of stack
+[a b]      min            [n]       Return lower value of a or b
+[a b]      max            [n]       Return higher value of a or b
+[... n]    nmin           [n]       Return minimum of specified set
+[... n]    nmax           [n]       Return maximum of specified set
+[n]        ndrop          []        Drop n items from the stack
+[... n]    sum            [n]       Sum top n items
+[n... n]   dropuntil      []        Drop items until TOS encountered again
 

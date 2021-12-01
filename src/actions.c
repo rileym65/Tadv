@@ -3,6 +3,18 @@
 #include <string.h>
 #include "header.h"
 
+void push(int n) {
+  stack[sp++] = n;
+  }
+
+int pop() {
+  if (sp == 0) {
+    printf("--Stack Empty--\n");
+    exit(1);
+    }
+  return stack[--sp];
+  }
+
 int dropItem(int itemNum) {
   int i;
   int j;
@@ -88,6 +100,7 @@ int actionBlock(int* actions,int count) {
   int j;
   int t;
   int ip;
+  int a,b;
   int ifCount;
   char flag;
   char more[256];
@@ -245,6 +258,32 @@ int actionBlock(int* actions,int count) {
            }
          break;
     case CMD_THEN:
+         break;
+    case CMD_WHILE:
+         j = stack[--sp];
+         if (j == 0) {
+           ip++;
+           ifCount = 1;
+           while (ip < count && actions[ip] != CMD_REPEAT && ifCount > 0) {
+             if (actions[ip] == CMD_WHILE) ifCount++;
+             if (actions[ip] == CMD_REPEAT) ifCount--;
+             ip++;
+             }
+           } 
+         else {
+           doStack[dsp++] = ip-1;
+           }
+         break;
+    case CMD_REPEAT:
+         ip = doStack[--dsp];
+         break;
+    case CMD_BEGIN:
+         doStack[dsp++] = ip-1;
+         break;
+    case CMD_UNTIL:
+         j = stack[--sp];
+         if (j != 0) ip = doStack[--dsp];
+           else dsp--;
          break;
     case CMD_PICK:
          if (sp > 1) {
@@ -415,6 +454,13 @@ int actionBlock(int* actions,int count) {
            sp++;
            }
          break;
+    case CMD_DUP2:
+         if (sp > 1) {
+           stack[sp] = stack[sp-2];
+           stack[sp+1] = stack[sp-1];
+           sp += 2;
+           }
+         break;
     case CMD_DROP:
          if (sp > 0) sp--;
          break;
@@ -423,6 +469,13 @@ int actionBlock(int* actions,int count) {
            i = stack[sp - 2];
            stack[sp - 2] = stack[sp - 1];
            stack[sp - 1] = i;
+           }
+         break;
+    case CMD_SWAP2:
+         if (sp > 3) {
+           a = stack[sp-1]; b = stack[sp-2];
+           stack[sp-1] = stack[sp-3]; stack[sp-2] = stack[sp-4];
+           stack[sp-3] = a; stack[sp-4] = b;
            }
          break;
     case CMD_WIN:
@@ -665,6 +718,98 @@ int actionBlock(int* actions,int count) {
            }
          else {
            stack[sp++] = numberForItem(player.items[i]);
+           }
+         break;
+    case CMD_COUNT:
+         stack[sp] = sp;
+         sp++;
+         break;
+    case CMD_CLEAR:
+         sp = 0;
+         break;
+    case CMD_NDOT:
+         j = stack[--sp];
+         for (i=0; i<j; i++)
+           printf(" %d",stack[--sp]);
+         break;
+    case CMD_STACK:
+         printf("[");
+         for (i=0; i<sp; i++) {
+           if (i != 0) printf(" ");
+           printf("%d",stack[i]);
+           }
+         printf("]");
+         break;
+    case CMD_ABS:
+         if (stack[sp-1] < 0) stack[sp-1] = -stack[sp-1];
+         break;
+    case CMD_SGN:
+         if (stack[sp-1] < 0) stack[sp-1] = -1;
+         else if (stack[sp-1] > 0) stack[sp-1] = 1;
+         break;
+    case CMD_INC:
+         stack[sp-1]++;
+         break;
+    case CMD_DEC:
+         stack[sp-1]--;
+         break;
+    case CMD_AUG:
+         if (stack[sp-1] < 0) stack[sp-1]--;
+         else if (stack[sp-1] > 0) stack[sp-1]++;
+         break;
+    case CMD_DIM:
+         if (stack[sp-1] < 0) stack[sp-1]++;
+         else if (stack[sp-1] > 0) stack[sp-1]--;
+         break;
+    case CMD_CHS:
+         stack[sp-1] = -stack[sp-1];
+         break;
+    case CMD_MIN:
+         a = stack[--sp];
+         b = stack[--sp];
+         if (a < b) stack[sp++] = a;
+           else stack[sp++] = b;
+         break;
+    case CMD_MAX:
+         a = stack[--sp];
+         b = stack[--sp];
+         if (a > b) stack[sp++] = a;
+           else stack[sp++] = b;
+         break;
+    case CMD_NMIN:
+         j = stack[--sp];
+         for (i=0; i<j; i++) {
+           a = stack[--sp];
+           if (i == 0 || a < b) b = a;
+           }
+         stack[sp++] = b;
+         break;
+    case CMD_NMAX:
+         j = stack[--sp];
+         for (i=0; i<j; i++) {
+           a = stack[--sp];
+           if (i == 0 || a > b) b = a;
+           }
+         stack[sp++] = b;
+         break;
+    case CMD_NDROP:
+         j = stack[--sp];
+         sp -= j;
+         if (sp < 0) sp = 0;
+         break;
+    case CMD_SUM:
+         j = stack[--sp];
+         a = 0;
+         for (i=0; i<j; i++) {
+           a += stack[--sp];
+           }
+         stack[sp++] = a;
+         break;
+    case CMD_DROPUNTIL:
+         j = stack[--sp];
+         a = -j;
+         while (a != j && sp > 0) {
+           a = stack[--sp];
            }
          break;
     default: 

@@ -109,6 +109,30 @@
 #define CMD_SPACE              30099
 #define CMD_WEARABLE           30100
 #define CMD_WEARING            30101
+#define CMD_WHILE              30102
+#define CMD_REPEAT             30103
+#define CMD_COUNT              30104
+#define CMD_CLEAR              30105
+#define CMD_BEGIN              30106
+#define CMD_UNTIL              30107
+#define CMD_NDOT               30108
+#define CMD_STACK              30109
+#define CMD_ABS                30110
+#define CMD_SGN                30111
+#define CMD_INC                30112
+#define CMD_DEC                30113
+#define CMD_AUG                30114
+#define CMD_DIM                30115
+#define CMD_CHS                30116
+#define CMD_MAX                30117
+#define CMD_MIN                30118
+#define CMD_NMAX               30119
+#define CMD_NMIN               30120
+#define CMD_NDROP              30121
+#define CMD_SUM                30122
+#define CMD_DROPUNTIL          30123
+#define CMD_DUP2               30124
+#define CMD_SWAP2              30125
 
 typedef struct {
   int*  phraseTokens;

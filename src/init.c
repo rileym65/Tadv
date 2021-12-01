@@ -190,6 +190,30 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"space") == 0) return CMD_SPACE;
   if (strcasecmp(wrd,"wearable?") == 0) return CMD_WEARABLE;
   if (strcasecmp(wrd,"wearing?") == 0) return CMD_WEARING;
+  if (strcasecmp(wrd,"while") == 0) return CMD_WHILE;
+  if (strcasecmp(wrd,"repeat") == 0) return CMD_REPEAT;
+  if (strcasecmp(wrd,"count") == 0) return CMD_COUNT;
+  if (strcasecmp(wrd,"clear") == 0) return CMD_CLEAR;
+  if (strcasecmp(wrd,"begin") == 0) return CMD_BEGIN;
+  if (strcasecmp(wrd,"until") == 0) return CMD_UNTIL;
+  if (strcasecmp(wrd,"n.") == 0) return CMD_NDOT;
+  if (strcasecmp(wrd,"stack") == 0) return CMD_STACK;
+  if (strcasecmp(wrd,"abs") == 0) return CMD_ABS;
+  if (strcasecmp(wrd,"sgn") == 0) return CMD_SGN;
+  if (strcasecmp(wrd,"inc") == 0) return CMD_INC;
+  if (strcasecmp(wrd,"dec") == 0) return CMD_DEC;
+  if (strcasecmp(wrd,"aug") == 0) return CMD_AUG;
+  if (strcasecmp(wrd,"dim") == 0) return CMD_DIM;
+  if (strcasecmp(wrd,"chs") == 0) return CMD_CHS;
+  if (strcasecmp(wrd,"min") == 0) return CMD_MIN;
+  if (strcasecmp(wrd,"max") == 0) return CMD_MAX;
+  if (strcasecmp(wrd,"nmin") == 0) return CMD_NMIN;
+  if (strcasecmp(wrd,"nmax") == 0) return CMD_NMAX;
+  if (strcasecmp(wrd,"ndrop") == 0) return CMD_NDROP;
+  if (strcasecmp(wrd,"sum") == 0) return CMD_SUM;
+  if (strcasecmp(wrd,"dropuntil") == 0) return CMD_DROPUNTIL;
+  if (strcasecmp(wrd,"dup2") == 0) return CMD_DUP2;
+  if (strcasecmp(wrd,"swap2") == 0) return CMD_SWAP2;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
