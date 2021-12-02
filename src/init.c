@@ -19,12 +19,25 @@ void addEquate(char* name, int value) {
   }
 
 void addFlag(char* pBuffer) {
+  char *value;
+  value = NULL;
+  if (strchr(pBuffer, '=') != NULL) {
+    value = strchr(pBuffer, '=');
+    *value = 0;
+    value++;
+    value = trim(value);
+    pBuffer = trim(pBuffer);
+    }
   if (++numFlagNames == 1)
     flagNames = (char**)malloc(sizeof(char*));
   else
     flagNames = (char**)realloc(flagNames,sizeof(char*) * numFlagNames);
   flagNames[numFlagNames-1] = (char*)malloc(strlen(pBuffer) + 1);
   strcpy(flagNames[numFlagNames-1],pBuffer);
+  flags[numFlagNames-1] = 0;
+  if (value != NULL) {
+    if (strcasecmp(value,"true") == 0) flags[numFlagNames-1] = 1;
+    }
   }
 
 int getValue(char* wrd) {
@@ -201,7 +214,9 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"abs") == 0) return CMD_ABS;
   if (strcasecmp(wrd,"sgn") == 0) return CMD_SGN;
   if (strcasecmp(wrd,"inc") == 0) return CMD_INC;
+  if (strcasecmp(wrd,"++") == 0) return CMD_INC;
   if (strcasecmp(wrd,"dec") == 0) return CMD_DEC;
+  if (strcasecmp(wrd,"--") == 0) return CMD_DEC;
   if (strcasecmp(wrd,"aug") == 0) return CMD_AUG;
   if (strcasecmp(wrd,"dim") == 0) return CMD_DIM;
   if (strcasecmp(wrd,"chs") == 0) return CMD_CHS;
@@ -215,6 +230,34 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"dup2") == 0) return CMD_DUP2;
   if (strcasecmp(wrd,"swap2") == 0) return CMD_SWAP2;
   if (strcasecmp(wrd,"?") == 0) return CMD_QMARK;
+  if (strcasecmp(wrd,"&") == 0) return CMD_L_AND;
+  if (strcasecmp(wrd,"|") == 0) return CMD_L_OR;
+  if (strcasecmp(wrd,"^") == 0) return CMD_L_XOR;
+  if (strcasecmp(wrd,"~") == 0) return CMD_L_NOT;
+  if (strcasecmp(wrd,"itemcount") == 0) return CMD_ITEMCOUNT;
+  if (strcasecmp(wrd,"s.") == 0) return CMD_S_DOT;
+  if (strcasecmp(wrd,"s?") == 0) return CMD_S_QMARK;
+  if (strcasecmp(wrd,"slen") == 0) return CMD_S_LEN;
+  if (strcasecmp(wrd,"sleft") == 0) return CMD_S_LEFT;
+  if (strcasecmp(wrd,"scopy") == 0) return CMD_S_COPY;
+  if (strcasecmp(wrd,"s+") == 0) return CMD_S_PLUS;
+  if (strcasecmp(wrd,"sright") == 0) return CMD_S_RIGHT;
+  if (strcasecmp(wrd,"s@") == 0) return CMD_S_AT;
+  if (strcasecmp(wrd,"sget") == 0) return CMD_S_AT;
+  if (strcasecmp(wrd,"s!") == 0) return CMD_S_SET;
+  if (strcasecmp(wrd,"sset") == 0) return CMD_S_SET;
+  if (strcasecmp(wrd,"s=") == 0) return CMD_S_EQ;
+  if (strcasecmp(wrd,"s<>") == 0) return CMD_S_NE;
+  if (strcasecmp(wrd,"s>") == 0) return CMD_S_GT;
+  if (strcasecmp(wrd,"s<") == 0) return CMD_S_LT;
+  if (strcasecmp(wrd,"s>=") == 0) return CMD_S_GE;
+  if (strcasecmp(wrd,"s<=") == 0) return CMD_S_LE;
+  if (strcasecmp(wrd,"sclear") == 0) return CMD_S_CLEAR;
+  if (strcasecmp(wrd,"strim") == 0) return CMD_S_TRIM;
+  if (strcasecmp(wrd,"slc") == 0) return CMD_S_LC;
+  if (strcasecmp(wrd,"suc") == 0) return CMD_S_UC;
+  if (strcasecmp(wrd,"sval") == 0) return CMD_S_VAL;
+  if (strcasecmp(wrd,"sstr") == 0) return CMD_S_STR;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
@@ -223,6 +266,8 @@ int getCode(char* wrd) {
     if (strcasecmp(wrd,flagNames[i]) == 0) return i;  
   for (i=0; i<numVarNames; i++)
     if (strcasecmp(wrd,varNames[i]) == 0) return i;  
+  for (i=0; i<numSVars; i++)
+    if (strcasecmp(wrd,sVarNames[i]) == 0) return i;  
   t = -1;
   for (i=0; i<numVocab; i++)
     if (strcasecmp(wrd,vocab[i]) == 0) t = i;
@@ -263,7 +308,7 @@ int* readActionSteps(FILE* inFile,int* count, char* pBuf) {
     pWrd = wrd;
     if (*pBuf == '}') flag = '*';
       else {
-      while (*pBuf > ' ' && *pBuf <='z') *pWrd++ = *pBuf++;
+      while (*pBuf > ' ' && *pBuf <=126) *pWrd++ = *pBuf++;
       *pWrd = 0;
       token = getCode(wrd);
       if (token == CMD_ERROR) {
@@ -306,11 +351,14 @@ void init() {
   equates     = NULL;
   eqValues    = NULL;
   startSteps  = NULL;
+  sVarNames   = NULL;
+  sVarValues  = NULL;
   numStartSteps  = 0;
   numEquates     = 0;
   numTurnActions = 0;
   numVarNames  = 0;
   numFlagNames = 0;
+  numSVars = 0;
   numActions  = 0;
   numVocab    = 0;
   numItems    = 0;
@@ -450,9 +498,13 @@ void readRoom(FILE* inFile,char* buf) {
   char* pBuffer;
   char head[255];
   char flag;
-  sscanf(buf,"%s %d",buffer,&number);
+  while (*buf != 0 && *buf != ' ') buf++;
+  while (*buf != 0 && *buf == ' ') buf++;
+  if (*buf == '{') number = numRooms;
+    else number = atoi(buf);
+  if (debug) printf("Reading room: %d (%d)\n",numRooms, number);
   if (number != numRooms) {
-    printf("Room number mismatch: %d, %s\n",numRooms,buf);
+    printf("Room number mismatch: %d, %d\n",numRooms,number);
     exit(1);
     }
   numRooms++;
@@ -594,9 +646,13 @@ void readItem(FILE* inFile,char* buf) {
   char* pBuffer;
   char head[255];
   char flag;
-  sscanf(buf,"%s %d",buffer,&number);
+  while (*buf != 0 && *buf != ' ') buf++;
+  while (*buf != 0 && *buf == ' ') buf++;
+  if (*buf == '{') number = numItems;
+    else number = atoi(buf);
+  if (debug) printf("Reading item: %d (%d)\n",numItems, number);
   if (number != numItems) {
-    printf("Item number mismatch: %d, %s\n",numItems,buf);
+    printf("Item number mismatch: %d, %d\n",numItems,number);
     exit(1);
     }
   numItems++;
@@ -712,9 +768,13 @@ void readDoor(FILE* inFile,char* buf) {
   char* pBuffer;
   char head[255];
   char flag;
-  sscanf(buf,"%s %d",buffer,&number);
+  while (*buf != 0 && *buf != ' ') buf++;
+  while (*buf != 0 && *buf == ' ') buf++;
+  if (*buf == '{') number = numDoors;
+    else number = atoi(buf);
+  if (debug) printf("Reading door: %d (%d)\n",numDoors, number);
   if (number != numDoors) {
-    printf("Door number mismatch: %d, %s\n",numDoors,buf);
+    printf("Door number mismatch: %d, %d\n",numDoors,number);
     exit(1);
     }
   numDoors++;
@@ -825,7 +885,8 @@ void readAdventure(FILE* inFile) {
   int     i;
   char buffer[1024];
   char* pBuffer;
-  char head[255];
+  char head[256];
+  char *tail;
   char flag;
   char eq[255];
   int  val;
@@ -875,9 +936,45 @@ void readAdventure(FILE* inFile) {
           varNames = (char**)realloc(varNames,sizeof(char*) * numVarNames);
           vars = (int*)realloc(vars,sizeof(int) * numVarNames);
           }
+        i = 0;
+        if (strchr(pBuffer, '=') != NULL) {
+          tail = strchr(pBuffer, '=');
+          *tail = 0;
+          tail++;
+          tail = trim(tail);
+          i = atoi(tail);
+          pBuffer = trim(pBuffer);
+          }
         varNames[numVarNames-1] = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(varNames[numVarNames-1],pBuffer);
-        vars[numVarNames-1] = 0;
+        vars[numVarNames-1] = i;
+        }
+      if (strcmp(head,"svar") == 0) {
+        if (++numSVars == 1) {
+          sVarNames = (char**)malloc(sizeof(char*));
+          sVarValues = (char**)malloc(sizeof(char*));
+          }
+        else {
+          sVarNames = (char**)realloc(sVarNames,sizeof(char*) * numSVars);
+          sVarValues = (char**)realloc(sVarValues,sizeof(char*) * numSVars);
+          }
+
+        tail = NULL;
+        if (strchr(pBuffer, '=') != NULL) {
+          tail = strchr(pBuffer, '=');
+          *tail = 0;
+          tail++;
+          tail = trim(tail);
+          pBuffer = trim(pBuffer);
+          }
+
+        sVarNames[numSVars-1] = (char*)malloc(strlen(pBuffer) + 1);
+        strcpy(sVarNames[numSVars-1],pBuffer);
+        sVarValues[numSVars-1] = (char*)malloc(256);
+        if (tail != NULL)
+          strcpy(sVarValues[numSVars-1],tail);
+        else 
+          strcpy(sVarValues[numSVars-1],"Not Initialized");
         }
       if (strcmp(head,"equate") == 0) {
         if (++numEquates == 1) {
@@ -901,16 +998,23 @@ void readAdventure(FILE* inFile) {
 int prePass(char* filename) {
   int   i;
   FILE* inFile;
-  int   count;
+  int   roomCount;
+  int   itemCount;
+  int   doorCount;
   char buffer[1024];
   char name[256];
   char *pBuffer;
   char *pBuf;
+  char  entity;
   int   pos;
   if ((inFile = fopen(filename,"r")) == NULL) {
     printf("Could not open file\n");
     return -1;
     }
+  roomCount = -1;
+  itemCount = -1;
+  doorCount = -1;
+  entity = ' ';
   while (fileRead(buffer,inFile) != NULL) {
     while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
       buffer[strlen(buffer)-1] = 0;
@@ -919,17 +1023,20 @@ int prePass(char* filename) {
     if (strncasecmp(pBuf,"room ",5) == 0) {
       pBuffer = pBuf+4;
       while (*pBuffer == ' ') pBuffer++;
-      count = atoi(pBuffer);
+      roomCount++;
+      entity = 'R';
       }
     if (strncasecmp(pBuf,"item ",5) == 0) {
       pBuffer = pBuf+4;
       while (*pBuffer == ' ') pBuffer++;
-      count = atoi(pBuffer);
+      itemCount++;
+      entity = 'I';
       }
     if (strncasecmp(pBuf,"door ",5) == 0) {
       pBuffer = pBuf+4;
       while (*pBuffer == ' ') pBuffer++;
-      count = atoi(pBuffer);
+      doorCount++;
+      entity = 'D';
       }
     if (strncasecmp(pBuf,"name ",5) == 0) {
       pBuffer = pBuf+4;
@@ -937,7 +1044,9 @@ int prePass(char* filename) {
       pos = 0;
       while (*pBuffer != 0 && *pBuffer != ' ') name[pos++] = *pBuffer++;
       name[pos] = 0;
-      addEquate(name, count);
+      if (entity == 'R') addEquate(name, roomCount);
+      if (entity == 'I') addEquate(name, itemCount);
+      if (entity == 'D') addEquate(name, doorCount);
       }
     }
   fclose(inFile);

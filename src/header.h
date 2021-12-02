@@ -134,6 +134,32 @@
 #define CMD_DUP2               30124
 #define CMD_SWAP2              30125
 #define CMD_QMARK              30126
+#define CMD_ITEMCOUNT          30127
+#define CMD_L_AND              30128
+#define CMD_L_OR               30129
+#define CMD_L_XOR              30130
+#define CMD_L_NOT              30131
+#define CMD_S_DOT              30132
+#define CMD_S_QMARK            30133
+#define CMD_S_LEN              30134
+#define CMD_S_LEFT             30135
+#define CMD_S_COPY             30136
+#define CMD_S_PLUS             30137
+#define CMD_S_RIGHT            30138
+#define CMD_S_AT               30139
+#define CMD_S_SET              30140
+#define CMD_S_EQ               30141
+#define CMD_S_NE               30142
+#define CMD_S_GT               30143
+#define CMD_S_LT               30144
+#define CMD_S_GE               30145
+#define CMD_S_LE               30146
+#define CMD_S_CLEAR            30147
+#define CMD_S_TRIM             30148
+#define CMD_S_LC               30149
+#define CMD_S_UC               30150
+#define CMD_S_VAL              30151
+#define CMD_S_STR              30152
 
 typedef struct {
   int*  phraseTokens;
@@ -266,9 +292,12 @@ LINK char   encrypted;
 LINK RC4_DATA key;
 LINK ACTION** functions;
 LINK int      numFunctions;
-LINK int doStack[100];
+LINK char**   sVarNames;
+LINK char**   sVarValues;
+LINK int      numSVars;
+LINK int doStack[1024];
 LINK int dsp;
-LINK int stack[100];
+LINK int stack[1024];
 LINK int sp;
 
 

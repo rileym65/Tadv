@@ -448,6 +448,29 @@ int actionBlock(int* actions,int count) {
            sp--;
            }
          break;
+    case CMD_L_AND:
+         if (sp > 1) {
+           stack[sp-2] = stack[sp-1] & stack[sp-2];
+           sp--;
+           }
+         break;
+    case CMD_L_OR:
+         if (sp > 1) {
+           stack[sp-2] = stack[sp-1] | stack[sp-2];
+           sp--;
+           }
+         break;
+    case CMD_L_XOR:
+         if (sp > 1) {
+           stack[sp-2] = stack[sp-1] ^ stack[sp-2];
+           sp--;
+           }
+         break;
+    case CMD_L_NOT:
+         if (sp > 0) {
+           stack[sp-1] = ~stack[sp-1];
+           }
+         break;
     case CMD_DUP:
          if (sp > 0) {
            stack[sp] = stack[sp-1];
@@ -816,6 +839,153 @@ int actionBlock(int* actions,int count) {
          printf("? ");
          fgets(more,255,stdin);
          push(atoi(more));
+         break;
+    case CMD_ITEMCOUNT:
+         push(numItems);
+         break;
+    case CMD_S_DOT:
+         j = pop();
+         printf("%s",sVarValues[j]);
+         break;
+    case CMD_S_QMARK:
+         j = pop();
+         printf("? ");
+         fgets(more,255,stdin);
+         while (strlen(more) > 0 && more[strlen(more)-1] < ' ')
+           more[strlen(more)-1] = 0;
+         strcpy(sVarValues[j], more);
+         break;
+    case CMD_S_LEN:
+         j = pop();
+         push(strlen(sVarValues[j]));
+         break;
+    case CMD_S_LEFT:
+         j = pop();
+         b = pop();
+         a = pop();
+         strcpy(sVarValues[a], sVarValues[b]);
+         if (strlen(sVarValues[b]) > j) {
+           sVarValues[a][j] = 0;
+           }
+         break;
+    case CMD_S_RIGHT:
+         j = pop();
+         b = pop();
+         a = pop();
+         if (strlen(sVarValues[b]) <= j) {
+           strcpy(sVarValues[a], sVarValues[b]);
+           }
+         else {
+           strcpy(sVarValues[a], sVarValues[b]+(strlen(sVarValues[b])-j));
+           }
+         break;
+    case CMD_S_COPY:
+         b = pop();
+         a = pop();
+         strcpy(sVarValues[a], sVarValues[b]);
+         break;
+    case CMD_S_PLUS:
+         b = pop();
+         a = pop();
+         strcat(sVarValues[a], sVarValues[b]);
+         break;
+    case CMD_S_AT:
+         a = pop();
+         j = strlen(sVarValues[a]) - 1;
+         push(0);
+         while (j >= 0) {
+           push(sVarValues[a][j]);
+           j--;
+           }
+         break;
+    case CMD_S_SET:
+         a = pop();
+         b = 99;
+         j = 0;
+         while (b != 0) {
+           b = pop();
+           more[j++] = b;
+           }
+         strcpy(sVarValues[a], more);
+         break;
+    case CMD_S_EQ:
+         a = pop();
+         b = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) == 0) push(1);
+           else push(0);
+         break;
+    case CMD_S_NE:
+         a = pop();
+         b = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) == 0) push(0);
+           else push(1);
+         break;
+    case CMD_S_GT:
+         b = pop();
+         a = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) > 0) push(1);
+           else push(0);
+         break;
+    case CMD_S_LT:
+         b = pop();
+         a = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) < 0) push(1);
+           else push(0);
+         break;
+    case CMD_S_LE:
+         b = pop();
+         a = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) <= 0) push(1);
+           else push(0);
+         break;
+    case CMD_S_GE:
+         b = pop();
+         a = pop();
+         if (strcmp(sVarValues[a], sVarValues[b]) >= 0) push(1);
+           else push(0);
+         break;
+    case CMD_S_CLEAR:
+         a = pop();
+         strcpy(sVarValues[a], "");
+         break;
+    case CMD_S_TRIM:
+         a = pop();
+         b = pop();
+         i = 0;
+         j = 0;
+         while (sVarValues[a][i] > 0 && sVarValues[a][i] <= ' ') i++;
+         while (sVarValues[a][i] != 0) more[j++] = sVarValues[a][i++];
+         more[j] = 0;
+         while (strlen(more) > 0 && more[strlen(more)-1] <= ' ')
+           more[strlen(more)-1] = 0;
+         strcpy(sVarValues[b], more);
+         break;
+    case CMD_S_LC:
+         a = pop();
+         b = pop();
+         strcpy(more, sVarValues[a]);
+         for (i=0; i<strlen(more); i++)
+           if (more[i] >= 'A' && more[i] <= 'Z') more[i] += 32;
+         strcpy(sVarValues[b], more);
+         break;
+    case CMD_S_UC:
+         a = pop();
+         b = pop();
+         strcpy(more, sVarValues[a]);
+         for (i=0; i<strlen(more); i++)
+           if (more[i] >= 'a' && more[i] <= 'z') more[i] -= 32;
+         strcpy(sVarValues[b], more);
+         break;
+    case CMD_S_VAL:
+         a = pop();
+         j = atoi(sVarValues[a]);
+         push(j);
+         break;
+    case CMD_S_STR:
+         j = pop();
+         a = pop();
+         sprintf(more,"%d",j);
+         strcpy(sVarValues[a], more);
          break;
     default: 
          stack[sp++] = actions[ip];

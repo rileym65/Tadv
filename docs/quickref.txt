@@ -8,8 +8,9 @@ ADVENTURE {
     action_steps
     ...
     } ]
-  FLAG flag_name
-  VAR  var_name
+  FLAG flag_name [=TRUE|FALSE]
+  VAR  var_name [=value]
+  SVAR var_name [=value]
   EQUATE name value
   ACTION {
     action_steps
@@ -20,7 +21,7 @@ FUNCTION name {
   action_steps
   ...
   }
-ROOM number {
+ROOM [number] {
   NAME room_name
   SHORT short description
   DESC description of room
@@ -56,7 +57,7 @@ ROOM number {
     }]
   }
 
-DOOR number {
+DOOR [number] {
   NAME door_name
   desc descriptive text
   desc {
@@ -70,7 +71,7 @@ DOOR number {
   [KEY object_number]
   }
 
-ITEM number {
+ITEM [number] {
   NAME item_name
   DESC description
   EXAMINE examine text
@@ -108,40 +109,6 @@ ACTION phrase {
   }
 
 Action Steps:
-[item]     carrying?      [boolean] True if player is carrying item
-[item]     notcarrying?   [boolean] True if player is not carrying item
-[flag]     flagset?       [boolean] True if specified flag is set
-[flag]     flagreset?     [boolean] True if specified flag is not set
-[flag]     setflag        []        Set specified flag
-[flag]     resetflag      []        Reset specified flag
-[room]     inroom?        [boolean] True if player in specified room
-[room]     notinroom?     [boolean] True if player not in specified room
-[item]     iteminroom?    [boolean] True if specified item in current room
-[item]     itemnotinroom? [boolean] True if specified item not in current room
-[msg]      say            []        Display specified message
-[]         true           []        Stop processing, prevent default actions
-[]         false          []        Stop processing, perform default actions
-[]         else           []        Continuation on failed boolean
-[item]     placeitem      []        Place specified item in current room
-[item]     takeitem       []        Place specified item into player inventory
-[item]     dropitem       []        Drop specified item from player inventory
-[num]      addscore       []        Add to player score
-[num]      subscore       []        Subtract from player score
-[room]     teleport       []        Teleport player to specified room
-[]         die            []        End adventrue with player's death
-[]         win            []        End adventure with player having won
-[]         lose           []        End adventure with player having lost
-[a b]      +              [n]       Add top two stack entries
-[a b]      -              [n]       Subtract top two stack entries
-[a b]      *              [n]       Multiply top two stack entries
-[a b]      /              [n]       Divide top two stack entries
-[a]        dup            [a a]     Duplicate top of stack
-[a b]      dup2           [a b a b] Duplicate top two stack values
-[a]        drop           []        Drop top stack entry
-[a b]      swap           [b a]     Swap top 2 stack entries     
-[a b c d]  swap2          [c d a b] Swap two 2 values with the 2 values below
-[var val]  set            []        Set variable to value
-[var]      get            [val]     Get value of a variable
 [var val]  !              []        Set variable to value
 [var]      @              [val]     Get value of a variable
 [a b]      =              [boolean] True if a == b
@@ -150,86 +117,152 @@ Action Steps:
 [a b]      <              [boolean] True if a < b
 [a b]      >=             [boolean] True if a >= b
 [a b]      <=             [boolean] True if a <= b
-[num]      random         [val]     Generate a random number from 0-num
+[a b]      +              [n]       Add top two stack entries
+[n]        ++             [n]       Increment top of stack
+[a b]      -              [n]       Subtract top two stack entries
+[n]        --             [n]       Decrement top of stack
+[a b]      *              [n]       Multiply top two stack entries
+[a b]      /              [n]       Divide top two stack entries
+[a b]      &              [n]       Logical AND
+[a b]      |              [n]       Logical OR
+[a b]      ^              [n]       Logical XOR
+[n]        ~              [n]       Logical NOT
 []         .              []        Print top of stack, no CR, space before and after
+[]         ?              [n]       Request numeric input from user
+[n]        abs            [n]       Absolute value
+[num]      addscore       []        Add to player score
+[a b]      and            [n]       Boolean and
+[n]        aug            [n]       Augment top of stack
+[]         begin          []        Beginning of BEGIN/UNTIL loop
+[item]     carrying?      [boolean] True if player is carrying item
+[n]        chs            [n]       Change sign of top of stack
+[...]      clear          []        Clear all items from stack
+[n]        close          []        Close a door
+[n]        closedoor      []        Close specified door
+[]         count          [n]       Count of items on stack
 []         cr             []        Print a carriage return
-[msg]      nsay           []        Say message number without a carriage return
-[room]     enteredfrom?   [boolean] True if entered from specified room
-[]         goingwest?     [boolean] True if last command was west
-[]         goingeast?     [boolean] True if last command was east
-[]         goingnorth?    [boolean] True if last command was north
-[]         goingsouth?    [boolean] True if last command was south
-[]         goingup?       [boolean] True if last command was up
-[]         goingdown?     [boolean] True if last command was down
 []         currentroom    [room]    Place current room on the stack
-[item]     removeitem     []        Remove item from current room
-[a b]      over           [a b a]   Copy 2nd stack item to top
-[a b c]    rot            [b c a]   Rotate 3rd item to top
-[a b c]    -rot           [c a b]   Rotate top to 3rd
-[a b]      and            [n]       logical and
-[a b]      or             [n]       Logical or
-[a b]      xor            [n]       Logical xor
-[a]        not            [n]       Logical not
-[n]        pick           [n]       Copy nth stack item to top
+[n]        dec            [n]       Decrement top of stack
+[n]        describeitem   []        Display describe text for specified item
+[]         die            []        End adventrue with player's death
+[n]        dim            [n]       Diminish top of stack
 [e s]      do             []        Begin a do loop
-[]         i              [n]       Get current do value
-[]         loop           []        End of do loop
-[]         roomdesc       []        Print room long description
-[n]        spaces         []        Output n spaces
-[item]     location       [room]    Room where object is located, or -1
+[n]        doorclosed?    [boolean] True if specifed door is closed
+[n]        doorlocked?    [boolean] True if specified door is locked
+[a]        drop           []        Drop top stack entry
+[item]     dropitem       []        Drop specified item from player inventory
+[n... n]   dropuntil      []        Drop items until TOS encountered again
+[a]        dup            [a a]     Duplicate top of stack
+[a b]      dup2           [a b a b] Duplicate top two stack values
+[]         else           []        Continuation on failed boolean
+[n]        emit           []        Output top of stack as ASCII character
+[room]     enteredfrom?   [boolean] True if entered from specified room
+[n]        examineitem    []        Display examine text for specified item
 [item]     extractitem    []        Remove item from whereever it is
-[]         score          [value]   Place the current score onto the stack
-[]         weight         [value]   Get weight player is carrying
+[]         false          []        Stop processing, perform default actions
+[flag]     flagreset?     [boolean] True if specified flag is not set
+[flag]     flagset?       [boolean] True if specified flag is set
+[var]      get            [val]     Get value of a variable
+[]         getdown        [room]    Room down of current room
 []         geteast        [room]    Room east of current room
 []         getwest        [room]    Room west of current room
 []         getnorth       [room]    Room north of current room
 []         getsouth       [room]    Room south of current room
 []         getup          [room]    Room up of current room
-[]         getdown        [room]    Room down of current room
-[n]        emit           []        Output top of stack as ASCII character
-[]         more           []        Prints -More- and then waits for <enter>
-[n]        light          []        Light for n turns, 0 turns off, -perm.
-[]         light?         [boolean] Whether or not the player has light
-[n]        open           []        Open a door
-[n]        close          []        Close a door
-[n]        opened?        [boolean] True if door is opened
-[n]        lock           []        Lock a door
-[n]        unlock         []        Unlock a door
-[n]        unlocked?      [boolean] True if door is unlocked
-[]         turncount      [n]       Place the number of turns onto the stack
-[n]        examineitem    []        Display examine text for specified item
-[n]        opendoor       []        Open specified door
-[n]        closedoor      []        Close specified door
-[n]        lockdoor       []        Lock specified door
-[n]        unlockdoor     []        Unlock specified door
-[n]        doorclosed?    [boolean] True if specifed door is closed
-[n]        doorlocked?    [boolean] True if specified door is locked
+[]         goingdown?     [boolean] True if last command was down
+[]         goingeast?     [boolean] True if last command was east
+[]         goingnorth?    [boolean] True if last command was north
+[]         goingsouth?    [boolean] True if last command was south
+[]         goingup?       [boolean] True if last command was up
+[]         goingwest?     [boolean] True if last command was west
+[]         i              [n]       Get current do value
+[n]        inc            [n]       Increment top of stack
+[room]     inroom?        [boolean] True if player in specified room
 []         invcount       [n]       Count of items being carried
 [n]        invitem        [n]       Get item number at specified inventory slot
-[n]        describeitem   []        Display describe text for specified item
+[]         itemcount      [n]       Count of items in the game
+[item]     iteminroom?    [boolean] True if specified item in current room
+[item]     itemnotinroom? [boolean] True if specified item not in current room
+[n]        light          []        Light for n turns, 0 turns off, -perm.
+[]         light?         [boolean] Whether or not the player has light
+[item]     location       [room]    Room where object is located, or -1
+[n]        lock           []        Lock a door
+[n]        lockdoor       []        Lock specified door
+[]         loop           []        End of do loop
+[]         lose           []        End adventure with player having lost
+[a b]      max            [n]       Return higher value of a or b
+[a b]      min            [n]       Return lower value of a or b
+[]         more           []        Prints -More- and then waits for <enter>
+[n]        n.             []        Pop n items from stack and display them
+[n]        ndrop          []        Drop n items from the stack
+[... n]    nmax           [n]       Return maximum of specified set
+[... n]    nmin           [n]       Return minimum of specified set
+[a]        not            [n]       Boolean not
+[item]     notcarrying?   [boolean] True if player is not carrying item
+[room]     notinroom?     [boolean] True if player not in specified room
+[msg]      nsay           []        Say message number without a carriage return
+[n]        open           []        Open a door
+[n]        opendoor       []        Open specified door
+[n]        opened?        [boolean] True if door is opened
+[a b]      or             [n]       Boolean or
+[a b]      over           [a b a]   Copy 2nd stack item to top
+[n]        pick           [n]       Copy nth stack item to top
+[item]     placeitem      []        Place specified item in current room
+[num]      random         [val]     Generate a random number from 0-num
+[item]     removeitem     []        Remove item from current room
+[]         repeat         []        End of WHILE/REPEAT loop
+[flag]     resetflag      []        Reset specified flag
+[]         roomdesc       []        Print room long description
+[a b c]    rot            [b c a]   Rotate 3rd item to top
+[a b c]    -rot           [c a b]   Rotate top to 3rd
+[svar]     s.             []        Print contents of specified svar
+[svar]     s?             []        Accept user input into specified svar
+[sd ss]    s+             []        Copy source string to end of destination
+[svar]     s@             [az]      Retrieve string variable onto stack
+[az svar]  s!             []        Store string into string variable
+[sa sb]    s=             [boolean] True if both strings are equal
+[sa sb]    s<>            [boolean] True if both strings are not equal
+[sa sb]    s>             [boolean] True if string a greater than b
+[sa sb]    s>=            [boolean] True if string a greater/equal to b
+[sa sb]    s<             [boolean] True if string a less than b
+[sa sb]    s<=            [boolean] True if string a less/equal to b
+[]         score          [value]   Place the current score onto the stack
+[svar]     sclear         []        Clear specified string variable
+[var val]  set            []        Set variable to value
+[msg]      say            []        Display specified message
+[sd ss]    scopy          []        Copy source string into destinaion
+[flag]     setflag        []        Set specified flag
+[svar]     sget           [az]      Retrieve string variable onto stack
+[sd sa]    slc            []        Convert sa to lowercase and place into sd
+[sd ss n]  sleft          []        Copy left n characters of ss into sd
+[svar]     slen           [n]       Length of specified svar
+[n]        sgn            [n]       Return sign of number
+[]         space          []        Print a single space
+[n]        spaces         []        Output n spaces
+[sd ss n]  sright         []        Copy right n characters of ss into sd
+[az svar]  sset           []        Store string into string variable
+[svar n]   sstr           []        Convert binay number to string
+[...]      stack          [...]     Show contents of stack
+[sd sa]    strim          []        Trim sa and place into sd
+[num]      subscore       []        Subtract from player score
+[sd sa]    suc            []        Convert sa to uppercase and place into sd
+[... n]    sum            [n]       Sum top n items
+[svar]     sval           [n]       Convert string number to binary
+[a b]      swap           [b a]     Swap top 2 stack entries     
+[a b c d]  swap2          [c d a b] Swap two 2 values with the 2 values below
+[item]     takeitem       []        Place specified item into player inventory
+[room]     teleport       []        Teleport player to specified room
+[]         true           []        Stop processing, prevent default actions
+[]         turncount      [n]       Place the number of turns onto the stack
+[n]        unlock         []        Unlock a door
+[n]        unlockdoor     []        Unlock specified door
+[n]        unlocked?      [boolean] True if door is unlocked
+[boolean]  until          []        End of BEGIN/UNTIL loop
 [n]        wearable?      [boolean] True if specified item is wearable
 [n]        wearing?       [boolean] True if specified item is being worn
+[]         weight         [value]   Get weight player is carrying
 [boolean]  while          []        Beginning of WHILE/REPEAT loop
-[]         repeat         []        End of WHILE/REPEAT loop
-[]         count          [n]       Count of items on stack
-[...]      clear          []        Clear all items from stack
-[]         begin          []        Beginning of BEGIN/UNTIL loop
-[boolean]  until          []        End of BEGIN/UNTIL loop
-[n]        n.             []        Pop n items from stack and display them
-[...]      stack          [...]     Show contents of stack
-[n]        abs            [n]       Absolute value
-[n]        sgn            [n]       Return sign of number
-[n]        inc            [n]       Increment top of stack
-[n]        dec            [n]       Decrement top of stack
-[n]        aug            [n]       Augment top of stack
-[n]        dim            [n]       Diminish top of stack
-[n]        chs            [n]       Change sign of top of stack
-[a b]      min            [n]       Return lower value of a or b
-[a b]      max            [n]       Return higher value of a or b
-[... n]    nmin           [n]       Return minimum of specified set
-[... n]    nmax           [n]       Return maximum of specified set
-[n]        ndrop          []        Drop n items from the stack
-[... n]    sum            [n]       Sum top n items
-[n... n]   dropuntil      []        Drop items until TOS encountered again
-[]         ?              [n]       Request numeric input from user
+[]         win            []        End adventure with player having won
+[a b]      xor            [n]       Boolean xor
+
 
