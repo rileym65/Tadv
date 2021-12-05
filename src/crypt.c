@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "header.h"
 
 RC4_DATA rc4_init(byte* key,int keylen) {

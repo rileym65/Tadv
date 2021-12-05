@@ -88,7 +88,7 @@ void read_dest(char* buffer,int* link) {
   if (strncmp(buffer,"door",4) == 0) {
     while (*buffer != 0 && *buffer != ' ') buffer++;
     while (*buffer == ' ') buffer++;
-    link[1] = atoi(buffer);
+    link[1] = getValue(buffer);
     }
   else {
     printf("Error in direction: %s\n",buffer);
@@ -258,6 +258,28 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"suc") == 0) return CMD_S_UC;
   if (strcasecmp(wrd,"sval") == 0) return CMD_S_VAL;
   if (strcasecmp(wrd,"sstr") == 0) return CMD_S_STR;
+  if (strcasecmp(wrd,"bless") == 0) return CMD_BLESS;
+  if (strcasecmp(wrd,"curse") == 0) return CMD_CURSE;
+  if (strcasecmp(wrd,"cursed?") == 0) return CMD_CURSED;
+  if (strcasecmp(wrd,"container?") == 0) return CMD_ISCONTAINER;
+  if (strcasecmp(wrd,"contents") == 0) return CMD_CONTENTS;
+  if (strcasecmp(wrd,"putinto") == 0) return CMD_PUT_INTO;
+  if (strcasecmp(wrd,"takefrom") == 0) return CMD_TAKE_FROM;
+  if (strcasecmp(wrd,"contains?") == 0) return CMD_CONTAINS;
+  if (strcasecmp(wrd,"health") == 0) return CMD_HEALTH;
+  if (strcasecmp(wrd,"health+") == 0) return CMD_HEALTH_PLUS;
+  if (strcasecmp(wrd,"health-") == 0) return CMD_HEALTH_MINUS;
+  if (strcasecmp(wrd,"health=") == 0) return CMD_HEALTH_EQ;
+  if (strcasecmp(wrd,"linknorth") == 0) return CMD_LINK_NORTH;
+  if (strcasecmp(wrd,"linksouth") == 0) return CMD_LINK_SOUTH;
+  if (strcasecmp(wrd,"linkeast") == 0) return CMD_LINK_EAST;
+  if (strcasecmp(wrd,"linkwest") == 0) return CMD_LINK_WEST;
+  if (strcasecmp(wrd,"linkne") == 0) return CMD_LINK_NE;
+  if (strcasecmp(wrd,"linknw") == 0) return CMD_LINK_NW;
+  if (strcasecmp(wrd,"linkse") == 0) return CMD_LINK_SE;
+  if (strcasecmp(wrd,"linksw") == 0) return CMD_LINK_SW;
+  if (strcasecmp(wrd,"linkup") == 0) return CMD_LINK_UP;
+  if (strcasecmp(wrd,"linkdown") == 0) return CMD_LINK_DOWN;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numRooms; i++)
@@ -406,6 +428,9 @@ void init() {
   addWord("exits");         /* 36 */
   addWord("wear");          /* 37 */
   addWord("remove");        /* 38 */
+  addWord("into");          /* 39 */
+  addWord("in");            /* 40 */
+  addWord("from");          /* 41 */
   addFlag("F_HAS_LIGHT");
   addFlag("F_CAN_MOVE");
   }
@@ -418,13 +443,14 @@ void reset() {
   player.location = 0;
   player.lastLocation = -1;
   player.score = 0;
+  player.health = 100;
   for (i=0; i<numRooms; i++) {
     if (rooms[i]->items != NULL) free(rooms[i]->items);
     rooms[i]->items = NULL;
     rooms[i]->numItems = 0;
     }
   for (i=0; i<numItems; i++) {
-    if (items[i]->location >= 0) {
+    if (items[i]->location >= 0 && items[i]->beingworn == 0 && items[i]->startingItem == 0) {
       loc = items[i]->location;
       rooms[loc]->numItems++;
       if (rooms[loc]->numItems == 1)
@@ -433,6 +459,14 @@ void reset() {
         rooms[loc]->items = (ITEM**)realloc(rooms[loc]->items,
           sizeof(ITEM*) * rooms[loc]->numItems);
       rooms[loc]->items[rooms[loc]->numItems - 1] = items[i];
+      }
+    if (items[i]->beingworn != 0 || items[i]->startingItem != 0) {
+      if (++player.numItems == 1)
+        player.items = (ITEM**)malloc(sizeof(ITEM*));
+      else
+        player.items = (ITEM**)realloc(player.items,
+                       sizeof(ITEM*)*player.numItems);
+      player.items[player.numItems-1] = items[i];
       }
     }
   }
@@ -657,6 +691,7 @@ void readItem(FILE* inFile,char* buf) {
     }
   numItems++;
   item = (ITEM*)malloc(sizeof(ITEM));
+  item->number = numItems-1;
   item->location = -1;
   item->weight = 0;
   item->score = 0;
@@ -673,6 +708,11 @@ void readItem(FILE* inFile,char* buf) {
   item->examine = NULL;
   item->wearable = 0;
   item->beingworn = 0;
+  item->startingItem = 0;
+  item->cursed = 0;
+  item->container = 0;
+  item->maxContents = 0;
+  item->numContents = 0;
   if (items == NULL) {
     items = (ITEM**)malloc(sizeof(ITEM*));
     items[0] = item;
@@ -724,6 +764,13 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"noncarryable") == 0) item->weight = -1;
       if (strcmp(head,"wearable") == 0) item->wearable = 1;
       if (strcmp(head,"beingworn") == 0) item->beingworn = 1;
+      if (strcmp(head,"startingitem") == 0) item->startingItem = 1;
+      if (strcmp(head,"cursed") == 0) item->cursed = 1;
+      if (strcmp(head,"container") == 0) {
+        item->container = 1;
+        if (item->maxContents == 0) item->maxContents = 255;
+        }
+      if (strcmp(head,"maxcontents") == 0) item->maxContents = atoi(pBuffer);
       if (strcmp(head,"weight") == 0 && item->weight == 0)
         item->weight = atoi(pBuffer);
       if (strcmp(head,"location") == 0) item->location = getRoomNumber(pBuffer);

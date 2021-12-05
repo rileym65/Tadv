@@ -160,6 +160,28 @@
 #define CMD_S_UC               30150
 #define CMD_S_VAL              30151
 #define CMD_S_STR              30152
+#define CMD_BLESS              30153
+#define CMD_CURSE              30154
+#define CMD_CURSED             30155
+#define CMD_ISCONTAINER        30156
+#define CMD_CONTENTS           30157
+#define CMD_PUT_INTO           30158
+#define CMD_TAKE_FROM          30159
+#define CMD_CONTAINS           30160
+#define CMD_HEALTH             30161
+#define CMD_HEALTH_PLUS        30162
+#define CMD_HEALTH_MINUS       30163
+#define CMD_HEALTH_EQ          30164
+#define CMD_LINK_NORTH         30165
+#define CMD_LINK_SOUTH         30166
+#define CMD_LINK_EAST          30167
+#define CMD_LINK_WEST          30168
+#define CMD_LINK_NE            30169
+#define CMD_LINK_NW            30170
+#define CMD_LINK_SE            30171
+#define CMD_LINK_SW            30172
+#define CMD_LINK_UP            30173
+#define CMD_LINK_DOWN          30174
 
 typedef struct {
   int*  phraseTokens;
@@ -169,6 +191,7 @@ typedef struct {
   } ACTION;
 
 typedef struct _item_struct {
+  int     number;
   char*   name;
   char*   description;
   char*   examine;
@@ -187,6 +210,12 @@ typedef struct _item_struct {
   int     numTurnSteps;
   int     wearable;
   int     beingworn;
+  int     startingItem;
+  int     cursed;
+  int     container;
+  int     maxContents;
+  int     contents[256];
+  int     numContents;
   } ITEM;
 
 typedef struct {
@@ -246,6 +275,7 @@ typedef struct {
   int    score;
   int    light;
   long   turnCount;
+  int    health;
   } PLAYER;
 
 typedef unsigned char byte;
@@ -319,6 +349,12 @@ extern int  checkActions();
 extern int  checkObjects();
 extern int  getItem(int itemNum);
 extern int  dropItem(int itemNum);
+extern int putIntoContainer(int container, int item);
+extern int takeFromContainer(int container, int item);
+extern void putIntoInventory(int item);
+extern int takeFromInventory(int item);
+extern void putIntoRoom(int room, int item);
+extern int takeFromRoom(int room, int item);
 
 extern void init();
 extern void reset();
@@ -327,6 +363,8 @@ extern int  getItemNumber(char* wrd);
 extern void addWord(char* wrd);
 extern int  load(char* filename);
 extern void save();
+extern int weight();
+extern int score();
 
 extern RC4_DATA rc4_init(byte* key,int keylen);
 extern void     rc4(byte* buffer,int len,RC4_DATA* key);

@@ -57,7 +57,8 @@ int load(char* filename) {
     msg->message = (char**)malloc(sizeof(char*) * msg->numLines);
     for (j=0; j<msg->numLines; j++) {
       fgets(buffer,255,file);
-      trim(buffer);
+      while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] < ' ')
+        buffer[strlen(buffer)-1] = 0;
       msg->message[j] = (char*)malloc(strlen(buffer) + 1);
       strcpy(msg->message[j], buffer);
       }
@@ -105,6 +106,7 @@ int load(char* filename) {
   items = (ITEM**)malloc(sizeof(ITEM*) * numItems);
   for (i=0; i<numItems; i++) {
      items[i] = (ITEM*)malloc(sizeof(ITEM));
+    fscanf(file,"%d\n",&(items[i]->number));
     fgets(buffer,255,file); trim(buffer);
     items[i]->name = (char*)malloc(strlen(buffer) + 1);
     strcpy(items[i]->name,buffer);
@@ -119,6 +121,7 @@ int load(char* filename) {
     fscanf(file,"%d\n",&(items[i]->location));
     fscanf(file,"%d\n",&(items[i]->wearable));
     fscanf(file,"%d\n",&(items[i]->beingworn));
+    fscanf(file,"%d\n",&(items[i]->cursed));
     fscanf(file,"%d\n",&(items[i]->numActions));
     items[i]->actions = (ACTION**)malloc(sizeof(ACTION*)*items[i]->numActions);
     for (j=0; j<items[i]->numActions; j++)
@@ -139,6 +142,11 @@ int load(char* filename) {
     items[i]->turnSteps = (int*)malloc(sizeof(int) * items[i]->numTurnSteps);
     for (j=0; j<items[i]->numTurnSteps; j++)
       fscanf(file,"%d\n",&(items[i]->turnSteps[j]));
+    fscanf(file,"%d\n",&(items[i]->container));
+    fscanf(file,"%d\n",&(items[i]->maxContents));
+    fscanf(file,"%d\n",&(items[i]->numContents));
+    for (j=0; j<items[i]->numContents; j++)
+      fscanf(file,"%d\n",&(items[i]->contents[j]));
     }
 
 /* ******************************************* */
@@ -255,10 +263,26 @@ int load(char* filename) {
       fscanf(file,"%d\n",&(vars[j]));
     }
 
+/* ******************************************* */
+/* ********** Load String Variables ********** */
+/* ******************************************* */
+  fscanf(file,"%d\n",&numSVars);
+  if (numSVars > 0) {
+    sVarValues = (char**)malloc(sizeof(char*) * numSVars);
+    for (j=0; j<numSVars; j++) {
+      fgets(buffer,255,file);
+      while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] < ' ')
+        buffer[strlen(buffer)-1] = 0;
+      sVarValues[j] = (char*)malloc(256);
+      strcpy(sVarValues[j], buffer);
+      }
+    }
+
 /* ************************************************* */
 /* ********** Load other player variables ********** */
 /* ************************************************* */
   fscanf(file,"%d\n",&(player.light));
+  fscanf(file,"%d\n",&(player.health));
 
 /* ******************************** */
 /* ********** Load doors ********** */

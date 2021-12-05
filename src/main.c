@@ -39,10 +39,15 @@ void mainLoop() {
   int  j;
   int  f;
   int  look;
+  int  a;
+  int  b;
+  int  room;
+  int  newRoom;
   char buffer[1024];
   ITEM *item;
   gameFlag = ' ';
   look = 0;
+  newRoom = 0;
   while (gameFlag == ' ') {
 
 /* ************************************ */
@@ -98,7 +103,9 @@ void mainLoop() {
       }
 
 /* ***** If the player entered a new room, process entry action ***** */
-    if (player.location != player.lastLocation && player.lastLocation >= 0) {
+    if (player.location != player.lastLocation && player.lastLocation >= 0) newRoom = -1;
+    if (newRoom) {
+      newRoom = 0;
       if (rooms[player.location]->numEnterSteps > 0)
         performAction(rooms[player.location]->enterSteps,
                       rooms[player.location]->numEnterSteps);
@@ -164,11 +171,25 @@ void mainLoop() {
 /* ******************** INVENT ********************* */
       else if (numTokens == 1 && tokens[0] == 12) {
         printf("You are carrying:\n");
-        for (i=0; i<player.numItems; i++)
+        for (i=0; i<player.numItems; i++) {
           if (player.items[i]->numDescSteps > 0)
             performAction(player.items[i]->descSteps,
                           player.items[i]->numDescSteps);
-            else printf("    %s\n",player.items[i]->description);
+            else printf("    %s",player.items[i]->description);
+          if (player.items[i]->beingworn) printf(" being worn");
+          if (player.items[i]->container != 0 &&
+              player.items[i]->numContents > 0) {
+            printf(" Contains:\n");
+            for (j=0; j<player.items[i]->numContents; j++) {
+              if (items[player.items[i]->contents[j]]->numDescSteps > 0)
+                performAction(items[player.items[i]->contents[j]]->descSteps,
+                              items[player.items[i]->contents[j]]->numDescSteps);
+                else printf("      %s",items[player.items[i]->contents[j]]->description);
+                printf("\n");
+              }
+            }
+          else printf("\n");
+          }
         }
 /* ******************** VOCAB ********************* */
       else if (numTokens == 1 && tokens[0] == 22) {
@@ -186,13 +207,11 @@ void mainLoop() {
         }
 /* ******************** SCORE ********************* */
       else if (numTokens == 1 && tokens[0] == 13) {
-        printf("You have scored %d points in %ld turns.\n",player.score,player.turnCount);
+        printf("You have scored %d points in %ld turns.\n",score(),player.turnCount);
         }
 /* ******************** Weight ********************* */
       else if (numTokens == 1 && tokens[0] == 29) {
-         j = 0;
-         for (i=0; i<player.numItems; i++)
-         j += player.items[i]->weight;
+         j = weight();
         printf("You are carrying %d pound",j);
         if (j!= 1) printf("s");
         printf("\n");
@@ -208,11 +227,15 @@ void mainLoop() {
         lastDir = 'N';
         if (rooms[player.location]->north[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
-            if (rooms[player.location]->north[1] < 0)
+            if (rooms[player.location]->north[1] < 0) {
               player.location = rooms[player.location]->north[0];
+              newRoom = -1;
+              }
             else if (rooms[player.location]->north[1] >= 0 &&
-                doors[rooms[player.location]->north[1]]->opened == 1)
+                doors[rooms[player.location]->north[1]]->opened == 1) {
               player.location = rooms[player.location]->north[0];
+              newRoom = -1;
+              }
               else printf("Your passage is currently blocked\n");
             }
           }
@@ -224,11 +247,15 @@ void mainLoop() {
         lastDir = 'S';
         if (rooms[player.location]->south[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
-            if (rooms[player.location]->south[1] < 0)
+            if (rooms[player.location]->south[1] < 0) {
               player.location = rooms[player.location]->south[0];
+              newRoom = -1;
+              }
             else if (rooms[player.location]->south[1] >= 0 &&
-                doors[rooms[player.location]->south[1]]->opened == 1)
+                doors[rooms[player.location]->south[1]]->opened == 1) {
               player.location = rooms[player.location]->south[0];
+              newRoom = -1;
+              }
               else printf("Your passage is currently blocked\n");
             }
           }
@@ -240,11 +267,15 @@ void mainLoop() {
         lastDir = 'E';
         if (rooms[player.location]->east[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
-            if (rooms[player.location]->east[1] < 0)
+            if (rooms[player.location]->east[1] < 0) {
               player.location = rooms[player.location]->east[0];
+              newRoom = -1;
+              }
             else if (rooms[player.location]->east[1] >= 0 &&
-                doors[rooms[player.location]->east[1]]->opened == 1)
+                doors[rooms[player.location]->east[1]]->opened == 1) {
               player.location = rooms[player.location]->east[0];
+              newRoom = -1;
+              }
               else printf("Your passage is currently blocked\n");
             }
           }
@@ -256,11 +287,15 @@ void mainLoop() {
         lastDir = 'W';
         if (rooms[player.location]->west[0] >= 0) {
           if (processLeave() != ACTION_TRUE) {
-            if (rooms[player.location]->west[1] < 0)
+            if (rooms[player.location]->west[1] < 0) {
               player.location = rooms[player.location]->west[0];
+              newRoom = -1;
+              }
             else if (rooms[player.location]->west[1] >= 0 &&
-                doors[rooms[player.location]->west[1]]->opened == 1)
+                doors[rooms[player.location]->west[1]]->opened == 1) {
               player.location = rooms[player.location]->west[0];
+              newRoom = -1;
+              }
               else printf("Your passage is currently blocked\n");
             }
             }
@@ -377,7 +412,6 @@ void mainLoop() {
                              sizeof(ITEM*)*player.numItems);
             player.items[player.numItems-1] = item;
             printf("  %s taken\n", item->description);
-            player.score += item->score;
             for (j=i; j<rooms[player.location]->numItems-1; j++)
               rooms[player.location]->items[j] =
               rooms[player.location]->items[j+1];
@@ -404,15 +438,62 @@ void mainLoop() {
       else if (numTokens == 2 && (tokens[0] == 19 || tokens[0] == 20)) {
         j = getItemNumber(vocab[tokens[1]]);
         if (j == -1) {
-          printf("Yor are not carrying %s\n",vocab[tokens[1]]);
-          } else {
+          printf("You are not carrying %s\n",vocab[tokens[1]]);
+          }
+        else if (items[j]->cursed != 0) {
+          printf("Item cannot be dropped, it is cursed\n");
+          }
+        else {
           if (dropItem(j)) printf("Dropped\n");
           }
         }
+/* ******************* PUT object INTO container ******************* */
+      else if (numTokens == 4 && tokens[0] == 19 &&
+               (tokens[2] == 39 || tokens[2] == 40)) {
+        a = getItemNumber(vocab[tokens[1]]);
+        b = getItemNumber(vocab[tokens[3]]);
+        if (a == -1) {
+          printf("You are not carrying %s\n",vocab[tokens[1]]);
+          }
+        else if (b == -1) {
+          printf("You are not carrying %s\n",vocab[tokens[3]]);
+          }
+        else if (items[b]->container == 0) {
+          printf("%s is not a container\n", vocab[tokens[3]]);
+          }
+        else {
+          takeFromInventory(a);
+          putIntoContainer(b, a);
+          printf("You place the %s into the %s\n",items[a]->description, items[b]->description);
+          }
+        }
+/* ******************* TAKE object FROM container ******************* */
+      else if (numTokens == 4 && (tokens[0] == 17 || tokens[0] == 18) &&
+               tokens[2] == 41) {
+        a = getItemNumber(vocab[tokens[1]]); j = a;
+        b = getItemNumber(vocab[tokens[3]]);
+        if (b == -1) {
+          printf("You are not carrying %s\n",vocab[tokens[3]]);
+          }
+        else if (items[b]->container == 0) {
+          printf("%s is not a container\n", vocab[tokens[3]]);
+          }
+        else {
+          j = takeFromContainer(b, a);
+          if (j < 0) {
+            printf("The %s does not contain the %s\n",items[b]->description, items[a]->description);
+            }
+          else {
+            putIntoInventory(a);
+            printf("You take the %s out of the %s\n",items[a]->description, items[b]->description);
+            }
+          }
+        }
+
 /* **************************************************** */
 /* ******************** OPEN door ********************* */
 /* **************************************************** */
-      else if (tokens[0] == 30) {
+      else if (numTokens == 2 && tokens[0] == 30 && tokens[1] == 34) {
         if (doorsInRoom(player.location,&j) == 1) {
           if (numTokens == 2 && tokens[1] == 34) {
             if (doors[j]->unlocked != 0) {
@@ -427,11 +508,50 @@ void mainLoop() {
               }
             }
           }
+        else printf("You need to specify which door.\n");
         }
+
+/* **************************************************** */
+/* ******************** OPEN door ********************* */
+/* **************************************************** */
+      else if (numTokens == 3 && tokens[0] == 30 && tokens[2] == 34 &&
+               (tokens[1] == 1 || tokens[1] == 2 || tokens[1] == 3 ||
+                tokens[1] == 4 || tokens[1] == 5 || tokens[1] == 6 ||
+                tokens[1] == 7 || tokens[1] == 8 || tokens[1] == 25 ||
+                tokens[1] == 26 || tokens[1] == 27 || tokens[1] == 28)) {
+        j = -1;
+        room = player.location;
+        if (tokens[1] == 1 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 2 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 3 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 4 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 5 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 6 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 7 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 8 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 25 && rooms[room]->ne[1] >= 0) j = rooms[room]->ne[1];
+        if (tokens[1] == 26 && rooms[room]->nw[1] >= 0) j = rooms[room]->nw[1];
+        if (tokens[1] == 27 && rooms[room]->se[1] >= 0) j = rooms[room]->se[1];
+        if (tokens[1] == 28 && rooms[room]->sw[1] >= 0) j = rooms[room]->sw[1];
+        if (j >= 0) {
+          if (doors[j]->unlocked != 0) {
+            if (doors[j]->opened == 0) {
+              doors[j]->opened = 1;
+              printf("The door is now open.\n");
+              } else {
+              printf("The door is already open.\n");
+              }
+            } else {
+            printf("The door is currently locked.\n");
+            }
+          }
+        else printf("There is no door there.\n");
+        }
+
 /* ***************************************************** */
 /* ******************** CLOSE door ********************* */
 /* ***************************************************** */
-      else if (tokens[0] == 31) {
+      else if (tokens[0] == 31 && tokens[1] == 34) {
         if (doorsInRoom(player.location,&j) == 1) {
           if (numTokens == 2 && tokens[1] == 34) {
               if (doors[j]->opened != 0) {
@@ -442,11 +562,46 @@ void mainLoop() {
                 }
               }
             }
+          else printf("You need to specify which door.\n");
           }
+
+/* ***************************************************** */
+/* ******************** CLOSE door ********************* */
+/* ***************************************************** */
+      else if (numTokens == 3 && tokens[0] == 31 && tokens[2] == 34 &&
+               (tokens[1] == 1 || tokens[1] == 2 || tokens[1] == 3 ||
+                tokens[1] == 4 || tokens[1] == 5 || tokens[1] == 6 ||
+                tokens[1] == 7 || tokens[1] == 8 || tokens[1] == 25 ||
+                tokens[1] == 26 || tokens[1] == 27 || tokens[1] == 28)) {
+        j = -1;
+        room = player.location;
+        if (tokens[1] == 1 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 2 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 3 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 4 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 5 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 6 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 7 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 8 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 25 && rooms[room]->ne[1] >= 0) j = rooms[room]->ne[1];
+        if (tokens[1] == 26 && rooms[room]->nw[1] >= 0) j = rooms[room]->nw[1];
+        if (tokens[1] == 27 && rooms[room]->se[1] >= 0) j = rooms[room]->se[1];
+        if (tokens[1] == 28 && rooms[room]->sw[1] >= 0) j = rooms[room]->sw[1];
+        if (j >= 0) {
+          if (doors[j]->opened != 0) {
+            doors[j]->opened = 0;
+            printf("The door is now closed.\n");
+            } else {
+            printf("The door is already closed.\n");
+            }
+          }
+        else printf("There is no door there.\n");
+        }
+
 /* ****************************************************** */
 /* ******************** UNLOCK door ********************* */
 /* ****************************************************** */
-      else if (tokens[0] == 33) {
+      else if (numTokens == 2 && tokens[0] == 33 && tokens[1] == 34) {
         if (doorsInRoom(player.location,&j) == 1) {
           if (numTokens == 2 && tokens[1] == 34) {
             if (doors[j]->unlocked != 0) {
@@ -465,11 +620,54 @@ void mainLoop() {
               }
             }
           }
+        else printf("You need to specify which door.\n");
         }
+
+/* ****************************************************** */
+/* ******************** UNLOCK door ********************* */
+/* ****************************************************** */
+      else if (numTokens == 3 && tokens[0] == 33 && tokens[2] == 34 &&
+               (tokens[1] == 1 || tokens[1] == 2 || tokens[1] == 3 ||
+                tokens[1] == 4 || tokens[1] == 5 || tokens[1] == 6 ||
+                tokens[1] == 7 || tokens[1] == 8 || tokens[1] == 25 ||
+                tokens[1] == 26 || tokens[1] == 27 || tokens[1] == 28)) {
+        j = -1;
+        room = player.location;
+        if (tokens[1] == 1 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 2 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 3 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 4 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 5 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 6 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 7 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 8 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 25 && rooms[room]->ne[1] >= 0) j = rooms[room]->ne[1];
+        if (tokens[1] == 26 && rooms[room]->nw[1] >= 0) j = rooms[room]->nw[1];
+        if (tokens[1] == 27 && rooms[room]->se[1] >= 0) j = rooms[room]->se[1];
+        if (tokens[1] == 28 && rooms[room]->sw[1] >= 0) j = rooms[room]->sw[1];
+        if (j >= 0) {
+          if (doors[j]->unlocked != 0) {
+            printf("The door is already unlocked.\n");
+            } else {
+            f = -1;
+            for (i=0; i< player.numItems; i++) {
+              if (player.items[i] == items[doors[j]->key]) f = i;
+              }
+            if (f >= 0) {
+              printf("The door has been unlocked.\n");
+              doors[j]->unlocked = 1;
+              } else {
+              printf("You do not have the key for that door.\n");
+              }
+            }
+          }
+        else printf("There is no door there.\n");
+        }
+
 /* ****************************************************** */
 /* ******************** LOCK door *********************** */
 /* ****************************************************** */
-      else if (tokens[0] == 32) {
+      else if (numTokens == 2 && tokens[0] == 32 && tokens[1] == 34) {
         if (doorsInRoom(player.location,&j) == 1) {
           if (numTokens == 2 && tokens[1] == 34) {
             if (doors[j]->lockable == 0)
@@ -490,7 +688,52 @@ void mainLoop() {
               }
             }
           }
+        else printf("You need to specify which door.\n");
         }
+
+/* **************************************************** */
+/* ******************** LOCK door ********************* */
+/* **************************************************** */
+      else if (numTokens == 3 && tokens[0] == 32 && tokens[2] == 34 &&
+               (tokens[1] == 1 || tokens[1] == 2 || tokens[1] == 3 ||
+                tokens[1] == 4 || tokens[1] == 5 || tokens[1] == 6 ||
+                tokens[1] == 7 || tokens[1] == 8 || tokens[1] == 25 ||
+                tokens[1] == 26 || tokens[1] == 27 || tokens[1] == 28)) {
+        j = -1;
+        room = player.location;
+        if (tokens[1] == 1 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 2 && rooms[room]->north[1] >= 0) j = rooms[room]->north[1];
+        if (tokens[1] == 3 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 4 && rooms[room]->south[1] >= 0) j = rooms[room]->south[1];
+        if (tokens[1] == 5 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 6 && rooms[room]->east[1] >= 0) j = rooms[room]->east[1];
+        if (tokens[1] == 7 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 8 && rooms[room]->west[1] >= 0) j = rooms[room]->west[1];
+        if (tokens[1] == 25 && rooms[room]->ne[1] >= 0) j = rooms[room]->ne[1];
+        if (tokens[1] == 26 && rooms[room]->nw[1] >= 0) j = rooms[room]->nw[1];
+        if (tokens[1] == 27 && rooms[room]->se[1] >= 0) j = rooms[room]->se[1];
+        if (tokens[1] == 28 && rooms[room]->sw[1] >= 0) j = rooms[room]->sw[1];
+        if (j >= 0) {
+          if (doors[j]->lockable == 0)
+            printf("This door cannot be locked.\n");
+          else if (doors[j]->unlocked == 0) {
+            printf("The door is already locked.\n");
+            } else {
+            f = -1;
+            for (i=0; i< player.numItems; i++) {
+              if (player.items[i] == items[doors[j]->key]) f = i;
+              }
+            if (f >= 0) {
+              printf("The door has been locked.\n");
+              doors[j]->unlocked = 0;
+              } else {
+              printf("You do not have the key for that door.\n");
+              }
+            }
+          }
+        else printf("There is no door there.\n");
+        }
+
 /* ********************************************************* */
 /* ******************** EXAMINE object ********************* */
 /* ********************************************************* */
@@ -581,6 +824,12 @@ void mainLoop() {
           printf(" is not being worn\n");
           j = -1;
           }
+        if (j >= 0 && player.items[j]->cursed != 0) {
+          printf("The ");
+          printToken(tokens[1]);
+          printf(" is cursed and cannot be removed\n");
+          j = -1;
+          }
         if (j >= 0) {
           player.items[j]->beingworn = 0;
           printf("You have removed the ");
@@ -623,28 +872,34 @@ void encodeFile(char* fname) {
 
 int main(int argc,char* argv[]) {
   int i;
-  debug = 1;
+  char filename[256];
+  char encode;
+  debug = 0;
+  encode = 0;
   numFunctions = 0;
   rcs_randomize();
   for (i=0; i<1024; i++) flags[i] = 0;
-  i = 0;
-  if (argc == 3 && strcmp(argv[1],"-c")==0) i=1;
-  if (argc == 2 && strcmp(argv[1],"-c")!=0) i=1;
-  if (i==0) {
+  strcpy(filename,"");
+  for (i=0; i<argc; i++) {
+    if (strcmp(argv[i], "-c") == 0) encode = 1;
+    else if (strcmp(argv[i], "-d") == 0) debug = 1;
+    else strcpy(filename, argv[i]);
+    }
+  if (strlen(filename) == 0) {
     printf("Usage: adv adventure-file\n");
     printf("   or  adv -c adventure-file\n");
     return 0;
     }
-  if (strcmp(argv[1],"-c")==0) {
-    encodeFile(argv[2]);
+  if (encode != 0) {
+    encodeFile(filename);
     return 0;
     }
   init();
-  if (strstr(argv[1],".sav") != NULL) {
-    load(argv[1]);
+  if (strstr(filename,".sav") != NULL) {
+    load(filename);
     player.lastLocation = -1;
     } else {
-    readFile(argv[1]);
+    readFile(filename);
     reset(); 
     }
   printf("\n\n");

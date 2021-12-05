@@ -33,7 +33,6 @@ int dropItem(int itemNum) {
       sizeof(ITEM*) * rooms[player.location]->numItems);
   rooms[player.location]->items[rooms[player.location]->numItems-1] =
     items[itemNum];
-  player.score -= items[itemNum]->score;
   for (i=j; i<player.numItems-1; i++)
     player.items[i] = player.items[i+1];
   if (--player.numItems == 0) free(player.items);
@@ -70,7 +69,6 @@ int getItem(int itemNum) {
   else rooms[player.location]->items = (ITEM**)realloc(
     rooms[player.location]->items,
     sizeof(ITEM*) * rooms[player.location]->numItems);
-  player.score += items[itemNum]->score;
   return -1;
   }
 
@@ -94,6 +92,139 @@ int removeItem(int itemNum,int roomNumber) {
   return -1;
   }
 
+void putIntoRoom(int room, int item) {
+  int i;
+  int j;
+  if (++rooms[room]->numItems == 1)
+    rooms[room]->items = (ITEM**)malloc(sizeof(ITEM*));
+  else
+    rooms[room]->items = (ITEM**)realloc(
+      rooms[room]->items,
+      sizeof(ITEM*) * rooms[room]->numItems);
+  rooms[room]->items[rooms[player.location]->numItems-1] = items[item];
+  }
+
+int takeFromRoom(int room, int item) {
+  int i;
+  int j;
+  j = -1;
+  for (i=0; i<rooms[room]->numItems; i++)
+    if (rooms[room]->items[i] == items[item]) j = i;
+  if (j == -1) return -1;
+  for (i=j; i<rooms[room]->numItems-1; i++)
+    rooms[room]->items[i] = rooms[room]->items[i+1];
+  if (--rooms[room]->numItems == 0)
+    free(rooms[room]->items);
+  else rooms[room]->items = (ITEM**)realloc(
+    rooms[room]->items,
+    sizeof(ITEM*) * rooms[room]->numItems);
+  return item;
+  }
+
+void putIntoInventory(int item) {
+  if (++player.numItems == 1)
+    player.items = (ITEM**)malloc(sizeof(ITEM*));
+  else
+    player.items = (ITEM**)realloc(player.items,
+                   sizeof(ITEM*)*player.numItems);
+  player.items[player.numItems-1] = items[item];
+  }
+
+int takeFromInventory(int item) {
+  int i;
+  int j;
+  j = -1;
+  for (i=0; i<player.numItems; i++)
+    if (player.items[i] == items[item]) j = i;
+  if (j >= 0) {
+    for (i=j; i<player.numItems-1; i++)
+      player.items[i] = player.items[i+1];
+    if (--player.numItems == 0) free(player.items);
+      else player.items = (ITEM**)realloc(player.items,
+        sizeof(ITEM*) * player.numItems);
+    return item;
+    }
+  return -1;
+  }
+
+int putIntoContainer(int container, int item) {
+  if (items[container]->container == 0) return -1;
+  if (items[container]->numContents == items[container]->maxContents) return -1;
+  items[container]->contents[items[container]->numContents++] = item;
+  return 0;
+  }
+
+int takeFromContainer(int container, int item) {
+  int i;
+  int j;
+  j = -1;
+  for (i=0; i<items[container]->numContents; i++)
+    if (items[container]->contents[i] == item) j = i;
+  if (j < 0) return -1;
+  for (i=j; i<items[container]->numContents-1; i++)
+    items[container]->contents[i] = items[container]->contents[i+1];
+  items[container]->numContents--;
+  return item;
+  }
+
+int containerWeight(int container) {
+  int i;
+  int j;
+  j = 0;
+  for (i=0; i<items[container]->numContents; i++) {
+    j += items[items[container]->contents[i]]->weight;
+    if (items[items[container]->contents[i]]->container != 0)
+      j += containerWeight(items[items[container]->contents[i]]->number);
+    }
+  return j;
+  }
+
+int weight() {
+  int i;
+  int j;
+  j = 0;
+  for (i=0; i<player.numItems; i++) {
+    j += player.items[i]->weight;
+    if (player.items[i]->container != 0)
+      j += containerWeight(player.items[i]->number);
+    }
+  return j;
+  }
+
+int containerScore(int container) {
+  int i;
+  int j;
+  j = 0;
+  for (i=0; i<items[container]->numContents; i++) {
+    j += items[items[container]->contents[i]]->score;
+    if (items[items[container]->contents[i]]->container != 0)
+      j += containerScore(items[items[container]->contents[i]]->number);
+    }
+  return j;
+  }
+
+int score() {
+  int i;
+  int j;
+  j = player.score;
+  for (i=0; i<player.numItems; i++) {
+    j += player.items[i]->score;
+    if (player.items[i]->container != 0)
+      j += containerScore(player.items[i]->number);
+    }
+  return j;
+  }
+
+void extract(int item) {
+  int i;
+  int j;
+  for (i=0; i<numRooms; i++) removeItem(item, i);
+  takeFromInventory(item);
+  for (i=0; i<player.numItems; i++)
+    if (player.items[i]->container != 0)
+      takeFromContainer(player.items[i]->number, item);
+  }
+
 int actionBlock(int* actions,int count) {
   int k;
   int i;
@@ -115,7 +246,31 @@ int actionBlock(int* actions,int count) {
     case CMD_EXTRACT:
          if (sp > 0) {
            k = stack[--sp];
-           for (i=0; i<numRooms; i++) removeItem(k,i);
+           extract(k);
+           }
+         break;
+    case CMD_PUT_INTO:
+         a = pop();
+         b = pop();
+         extract(a);
+         putIntoContainer(b, a);
+         break;
+    case CMD_TAKE_FROM:
+         a = pop();
+         b = pop();
+         takeFromContainer(b, a);
+         break;
+    case CMD_CONTAINS:
+         a = pop();
+         b = pop();
+         if (items[b]->container == 0) {
+           push(0);
+           }
+         else {
+           j = 0;
+           for (i=0; i<items[b]->numContents; i++)
+             if (items[b]->contents[i] == a) j = 1;
+           push(j);
            }
          break;
     case CMD_LOCATION:
@@ -631,13 +786,10 @@ int actionBlock(int* actions,int count) {
     case CMD_FALSE:
          return ACTION_FALSE;
     case CMD_SCORE:
-         stack[sp++] = player.score;
+         stack[sp++] = score();
          break;
     case CMD_WEIGHT:
-         j = 0;
-         for (i=0; i<player.numItems; i++)
-         j += player.items[i]->weight;
-         stack[sp++] = j;
+         push(weight());
          break;
     case CMD_GET_EAST:
          stack[sp++] = rooms[player.location]->east[0];
@@ -672,6 +824,46 @@ int actionBlock(int* actions,int count) {
            k = stack[--sp];
            if (k >= 0 && k<numItems)
              printf("%s",items[k]->description);
+           }
+         break;
+    case CMD_BLESS:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             items[k]->cursed = 0;
+           }
+         break;
+    case CMD_CURSE:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             items[k]->cursed = 1;
+           }
+         break;
+    case CMD_CURSED:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             if (items[k]->cursed == 0) push(0); else push(1);
+           }
+         break;
+    case CMD_ISCONTAINER:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             if (items[k]->container != 0) push(1); else push(0);
+           }
+         break;
+    case CMD_CONTENTS:
+         if (sp > 0) {
+           k = stack[--sp];
+           if (k >= 0 && k<numItems)
+             if (items[k]->container == 0) push(0);
+             else {
+               for (i=0; i<items[k]->numContents; i++)
+                 push(items[k]->contents[i]);
+               push(items[k]->numContents);
+               }
            }
          break;
     case CMD_WEARABLE:
@@ -986,6 +1178,91 @@ int actionBlock(int* actions,int count) {
          a = pop();
          sprintf(more,"%d",j);
          strcpy(sVarValues[a], more);
+         break;
+    case CMD_HEALTH:
+         push(player.health);
+         break;
+    case CMD_HEALTH_PLUS:
+         a = pop();
+         player.health += a;
+         break;
+    case CMD_HEALTH_MINUS:
+         a = pop();
+         player.health -= a;
+         break;
+    case CMD_HEALTH_EQ:
+         a = pop();
+         player.health = a;
+         break;
+    case CMD_LINK_NORTH:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->north[0] = b;
+           }
+         break;
+    case CMD_LINK_SOUTH:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->south[0] = b;
+           }
+         break;
+    case CMD_LINK_EAST:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->east[0] = b;
+           }
+         break;
+    case CMD_LINK_WEST:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->west[0] = b;
+           }
+         break;
+    case CMD_LINK_NE:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->ne[0] = b;
+           }
+         break;
+    case CMD_LINK_NW:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->nw[0] = b;
+           }
+         break;
+    case CMD_LINK_SE:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->se[0] = b;
+           }
+         break;
+    case CMD_LINK_SW:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->sw[0] = b;
+           }
+         break;
+    case CMD_LINK_UP:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->up[0] = b;
+           }
+         break;
+    case CMD_LINK_DOWN:
+         if (sp > 1) {
+           b = pop();
+           a = pop();
+           rooms[a]->down[0] = b;
+           }
          break;
     default: 
          stack[sp++] = actions[ip];

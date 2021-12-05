@@ -29,16 +29,16 @@ ROOM [number] {
   [DESC {
     action_steps...
     }]
-  [NORTH room_number [DOOR door_number]]
-  [SOUTH room_number [DOOR door_number]]
-  [EAST  room_number [DOOR door_number]]
-  [WEST  room_number [DOOR door_number]]
-  [NORTHEAST room_number [DOOR door_number]]
-  [NORTHWEST room_number [DOOR door_number]]
-  [SOUTHEAST room_number [DOOR door_number]]
-  [SOUTHWEST room_number [DOOR door_number]]
-  [UP    (room_number]
-  [DOWN  (room_number]
+  [NORTH room_name [DOOR door_name]]
+  [SOUTH room_name [DOOR door_name]]
+  [EAST  room_name [DOOR door_name]]
+  [WEST  room_name [DOOR door_name]]
+  [NORTHEAST room_name [DOOR door_name]]
+  [NORTHWEST room_name [DOOR door_name]]
+  [SOUTHEAST room_name [DOOR door_name]]
+  [SOUTHWEST room_name [DOOR door_name]]
+  [UP    (room_name]
+  [DOWN  (room_name]
   [NEEDLIGHT]
   [ACTION action phrase {
     action_steps...
@@ -68,7 +68,7 @@ DOOR [number] {
   [LOCKED]
   [UNLOCKED]
   [LOCKABLE]
-  [KEY object_number]
+  [KEY item_name]
   }
 
 ITEM [number] {
@@ -86,6 +86,10 @@ ITEM [number] {
   [NONCARRYABLE]
   [WEARABLE]
   [BEINGWORN]
+  [STARTINGITEM]
+  [CURSED]
+  [CONTAINER]
+  [MAXCONTENTS max]
   [LOCATION starting_room_number_or_name]
   [CARRYING {
     action_steps...
@@ -134,14 +138,20 @@ Action Steps:
 [a b]      and            [n]       Boolean and
 [n]        aug            [n]       Augment top of stack
 []         begin          []        Beginning of BEGIN/UNTIL loop
+[item]     bless          []        Remove cursed from an item
 [item]     carrying?      [boolean] True if player is carrying item
 [n]        chs            [n]       Change sign of top of stack
 [...]      clear          []        Clear all items from stack
 [n]        close          []        Close a door
 [n]        closedoor      []        Close specified door
+[item]     container?     [boolean] True if the item is a container
+[c i]      contains?      [boolean] True if container c contains item i
+[item]     contents       [... n]   Put container contents on stack
 []         count          [n]       Count of items on stack
 []         cr             []        Print a carriage return
 []         currentroom    [room]    Place current room on the stack
+[item]     curse          []        Place curse on item
+[item]     cursed?        [boolean] True if the item is cursed
 [n]        dec            [n]       Decrement top of stack
 [n]        describeitem   []        Display describe text for specified item
 []         die            []        End adventrue with player's death
@@ -175,6 +185,10 @@ Action Steps:
 []         goingsouth?    [boolean] True if last command was south
 []         goingup?       [boolean] True if last command was up
 []         goingwest?     [boolean] True if last command was west
+[]         health         [n]       Return players current health
+[n]        health+        []        Add to players health
+[n]        health-        []        Subtract from players health
+[n]        health=        []        Set players health
 []         i              [n]       Get current do value
 [n]        inc            [n]       Increment top of stack
 [room]     inroom?        [boolean] True if player in specified room
@@ -185,6 +199,16 @@ Action Steps:
 [item]     itemnotinroom? [boolean] True if specified item not in current room
 [n]        light          []        Light for n turns, 0 turns off, -perm.
 []         light?         [boolean] Whether or not the player has light
+[room rd]  linkdown       []        Link room's down exit to room rd
+[room rd]  linkeast       []        Link room's east exit to room rd
+[room rd]  linkne         []        Link room's north east exit to room rd
+[room rd]  linknorth      []        Link room's north exit to room rd
+[room rd]  linknw         []        Link room's north west exit to room rd
+[room rd]  linkse         []        Link room's south east exit to room rd
+[room rd]  linksouth      []        Link room's south exit to room rd
+[room rd]  linksw         []        Link room's south west exit to room rd
+[room rd]  linkwest       []        Link room's west exit to room rd
+[room rd]  linkup         []        Link room's up exit to room rd
 [item]     location       [room]    Room where object is located, or -1
 [n]        lock           []        Lock a door
 [n]        lockdoor       []        Lock specified door
@@ -208,6 +232,7 @@ Action Steps:
 [a b]      over           [a b a]   Copy 2nd stack item to top
 [n]        pick           [n]       Copy nth stack item to top
 [item]     placeitem      []        Place specified item in current room
+[c i]      putinto        []        Put item i into container c
 [num]      random         [val]     Generate a random number from 0-num
 [item]     removeitem     []        Remove item from current room
 []         repeat         []        End of WHILE/REPEAT loop
@@ -250,6 +275,7 @@ Action Steps:
 [svar]     sval           [n]       Convert string number to binary
 [a b]      swap           [b a]     Swap top 2 stack entries     
 [a b c d]  swap2          [c d a b] Swap two 2 values with the 2 values below
+[c i]      takefrom       []        Take item i out of container c
 [item]     takeitem       []        Place specified item into player inventory
 [room]     teleport       []        Teleport player to specified room
 []         true           []        Stop processing, prevent default actions

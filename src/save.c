@@ -84,6 +84,7 @@ void save() {
   if (debug) printf("*** Saving items ***\n");
   fprintf(file,"%d\n",numItems);
   for (i=0; i<numItems; i++) {
+    fprintf(file,"%d\n",items[i]->number);
     fprintf(file,"%s\n",items[i]->name);
     fprintf(file,"%s\n",items[i]->description);
     fprintf(file,"%s\n",items[i]->examine);
@@ -92,6 +93,7 @@ void save() {
     fprintf(file,"%d\n",items[i]->location);
     fprintf(file,"%d\n",items[i]->wearable);
     fprintf(file,"%d\n",items[i]->beingworn);
+    fprintf(file,"%d\n",items[i]->cursed);
     fprintf(file,"%d\n",items[i]->numActions);
     for (j=0; j<items[i]->numActions; j++)
       saveAction(items[i]->actions[j],file);
@@ -107,6 +109,11 @@ void save() {
     fprintf(file,"%d\n",items[i]->numTurnSteps);
     for (j=0; j<items[i]->numTurnSteps; j++)
       fprintf(file,"%d\n",items[i]->turnSteps[j]);
+    fprintf(file,"%d\n",items[i]->container);
+    fprintf(file,"%d\n",items[i]->maxContents);
+    fprintf(file,"%d\n",items[i]->numContents);
+    for (j=0; j<items[i]->numContents; j++)
+      fprintf(file,"%d\n",items[i]->contents[j]);
     }
 
 /* ********************************* */
@@ -191,11 +198,19 @@ void save() {
   fprintf(file,"%d\n",numVarNames);
   for (i=0; i<numVarNames; i++) fprintf(file,"%d\n",vars[i]);
 
+/* ********************************* */
+/* ***** Save string variables ***** */
+/* ********************************* */
+  if (debug) printf("*** Saving string variables ***\n");
+  fprintf(file,"%d\n",numSVars);
+  for (i=0; i<numSVars; i++) fprintf(file,"%s\n",sVarValues[i]);
+
 /* *************************************** */
 /* ***** Save other player variables ***** */
 /* *************************************** */
   if (debug) printf("*** Saving other player data ***\n");
   fprintf(file,"%d\n",player.light);
+  fprintf(file,"%d\n",player.health);
 
 /* ********************** */
 /* ***** Save doors ***** */
