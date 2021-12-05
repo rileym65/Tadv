@@ -86,6 +86,7 @@ void save() {
   for (i=0; i<numItems; i++) {
     fprintf(file,"%d\n",items[i]->number);
     fprintf(file,"%s\n",items[i]->name);
+    fprintf(file,"%s\n",items[i]->identifier);
     fprintf(file,"%s\n",items[i]->description);
     fprintf(file,"%s\n",items[i]->examine);
     fprintf(file,"%d\n",items[i]->weight);

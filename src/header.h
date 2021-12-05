@@ -193,6 +193,7 @@ typedef struct {
 typedef struct _item_struct {
   int     number;
   char*   name;
+  char*   identifier;
   char*   description;
   char*   examine;
   int     weight;
@@ -365,6 +366,7 @@ extern int  load(char* filename);
 extern void save();
 extern int weight();
 extern int score();
+extern int carrying(int item);
 
 extern RC4_DATA rc4_init(byte* key,int keylen);
 extern void     rc4(byte* buffer,int len,RC4_DATA* key);

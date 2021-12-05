@@ -111,6 +111,9 @@ int load(char* filename) {
     items[i]->name = (char*)malloc(strlen(buffer) + 1);
     strcpy(items[i]->name,buffer);
     fgets(buffer,255,file); trim(buffer);
+    items[i]->identifier = (char*)malloc(strlen(buffer) + 1);
+    strcpy(items[i]->identifier,buffer);
+    fgets(buffer,255,file); trim(buffer);
     items[i]->description = (char*)malloc(strlen(buffer) + 1);
     strcpy(items[i]->description,buffer);
     fgets(buffer,255,file); trim(buffer);

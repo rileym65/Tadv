@@ -427,18 +427,18 @@ void mainLoop() {
         }
 /* ******************** GET object ********************** */
       else if (numTokens == 2 && (tokens[0] == 17 || tokens[0] == 18)) {
-        j = getItemNumber(vocab[tokens[1]]);
-        if (j == -1) {
-          printf("There is no %s here\n",vocab[tokens[1]]);
+        j = tokens[1]-40000;
+        if (j < 0) {
+          printf("You must specify a valid item name\n");
           } else {
           if (getItem(j)) printf("Taken\n");
           }
         }
 /* ******************** DROP object ********************* */
       else if (numTokens == 2 && (tokens[0] == 19 || tokens[0] == 20)) {
-        j = getItemNumber(vocab[tokens[1]]);
-        if (j == -1) {
-          printf("You are not carrying %s\n",vocab[tokens[1]]);
+        j = tokens[1]-40000;
+        if (j < 0) {
+          printf("You must specify a valid item name\n");
           }
         else if (items[j]->cursed != 0) {
           printf("Item cannot be dropped, it is cursed\n");
@@ -450,13 +450,19 @@ void mainLoop() {
 /* ******************* PUT object INTO container ******************* */
       else if (numTokens == 4 && tokens[0] == 19 &&
                (tokens[2] == 39 || tokens[2] == 40)) {
-        a = getItemNumber(vocab[tokens[1]]);
-        b = getItemNumber(vocab[tokens[3]]);
-        if (a == -1) {
-          printf("You are not carrying %s\n",vocab[tokens[1]]);
+        a = tokens[1] - 40000;
+        b = tokens[3] - 40000;
+        if (a < 0) {
+          printf("You must specify a valid item name\n");
           }
-        else if (b == -1) {
-          printf("You are not carrying %s\n",vocab[tokens[3]]);
+        else if (b < 0) {
+          printf("You must specify a valid item name\n");
+          }
+        else if (carrying(a) == 0) {
+          printf("You are not carrying the %s\n",items[a]->description);
+          }
+        else if (carrying(b) == 0) {
+          printf("You are not carrying the %s\n",items[b]->description);
           }
         else if (items[b]->container == 0) {
           printf("%s is not a container\n", vocab[tokens[3]]);
@@ -470,13 +476,17 @@ void mainLoop() {
 /* ******************* TAKE object FROM container ******************* */
       else if (numTokens == 4 && (tokens[0] == 17 || tokens[0] == 18) &&
                tokens[2] == 41) {
-        a = getItemNumber(vocab[tokens[1]]); j = a;
-        b = getItemNumber(vocab[tokens[3]]);
-        if (b == -1) {
-          printf("You are not carrying %s\n",vocab[tokens[3]]);
+        a = tokens[1] - 40000;
+        b = tokens[3] - 40000;
+        j = a;
+        if (a < 0) {
+          printf("You must specify a valid item name\n");
+          }
+        if (b < 0) {
+          printf("You must specify a valid item name\n");
           }
         else if (items[b]->container == 0) {
-          printf("%s is not a container\n", vocab[tokens[3]]);
+          printf("%s is not a container\n", items[b]->description);
           }
         else {
           j = takeFromContainer(b, a);
@@ -738,106 +748,123 @@ void mainLoop() {
 /* ******************** EXAMINE object ********************* */
 /* ********************************************************* */
       else if (numTokens == 2 && tokens[0] == 23) {
-        j = -1;
-/* ***** Check for item in inventory ***** */
-        for (i=0; i<player.numItems; i++)
-          if (getToken(player.items[i]->name) == tokens[1])
-            j = i;
-/* ***** Show description if item is found ***** */
-        if (j >= 0) {
-          if (player.items[j]->numExamSteps > 0) 
-            performAction(player.items[j]->examSteps,
-                          player.items[j]->numExamSteps);
-            else printf("%s\n",player.items[j]->examine);
-          j = -2;
+        if (tokens[1] < 40000 || tokens[1] >= 50000) {
+          printf("You must specify a valid item name\n");
           }
-        if (j == -1) {
-/* ***** Check for noncarryable items in room ***** */
-          for (i=0; i<rooms[player.location]->numItems; i++) {
-            if (rooms[player.location]->items[i]->weight < 0 &&
-                getToken(rooms[player.location]->items[i]->name) == tokens[1])
-                  j = i;
+        else {
+          a = tokens[1] - 40000;
+          j = -1;
+  /* ***** Check for item in inventory ***** */
+          for (i=0; i<player.numItems; i++)
+            if (player.items[i] == items[a])
+              j = i;
+  /* ***** Show description if item is found ***** */
+          if (j >= 0) {
+            if (player.items[j]->numExamSteps > 0) 
+              performAction(player.items[j]->examSteps,
+                            player.items[j]->numExamSteps);
+              else printf("%s\n",player.items[j]->examine);
+            j = -2;
             }
-          }
-/* ***** Show description if item is found ***** */
-        if (j >= 0) {
-          if (rooms[player.location]->items[j]->numExamSteps > 0) 
-            performAction(rooms[player.location]->items[j]->examSteps,
-                          rooms[player.location]->items[j]->numExamSteps);
-            else printf("%s\n",rooms[player.location]->items[j]->examine);
-          }
-/* ***** Otherwise indicate player cannot examine ***** */
-        if (j == -1) {
-          printf("You are not carrying the ");
-          printToken(tokens[1]);
-          printf("\n");
+          if (j == -1) {
+  /* ***** Check for noncarryable items in room ***** */
+            for (i=0; i<rooms[player.location]->numItems; i++) {
+              if (rooms[player.location]->items[i]->weight < 0 &&
+                  rooms[player.location]->items[i] == items[a])
+                    j = i;
+              }
+            }
+  /* ***** Show description if item is found ***** */
+          if (j >= 0) {
+            if (rooms[player.location]->items[j]->numExamSteps > 0) 
+              performAction(rooms[player.location]->items[j]->examSteps,
+                            rooms[player.location]->items[j]->numExamSteps);
+              else printf("%s\n",rooms[player.location]->items[j]->examine);
+            }
+  /* ***** Otherwise indicate player cannot examine ***** */
+          if (j == -1) {
+            printf("You are not carrying the ");
+            printToken(tokens[1]);
+            printf("\n");
+            }
           }
         }
 /* **************************************************** */
 /* ******************** Wear item ********************* */
 /* **************************************************** */
       else if (numTokens == 2 && tokens[0] == 37) {
-        j = -1;
-        for (i=0; i<player.numItems; i++)
-          if (getToken(player.items[i]->name) == tokens[1])
-            j = i;
-        if (j < 0) {
-          printf("You are not carrying the ");
-          printToken(tokens[1]);
-          printf("\n");
+        if (tokens[1] < 40000 || tokens[1] >= 50000) {
+          printf("You must specify a valid item name\n");
           }
-        if (j >=0 && player.items[j]->wearable == 0) {
-          printf("The ");
-          printToken(tokens[1]);
-          printf(" is not wearable\n");
+        else {
+          a = tokens[1] - 40000;
           j = -1;
-          }
-        if (j >= 0 && player.items[j]->beingworn != 0) {
-          printf("The ");
-          printToken(tokens[1]);
-          printf(" is already being worn\n");
-          j = -1;
-          }
-        if (j >= 0) {
-          player.items[j]->beingworn = 1;
-          printf("You are now wearing the ");
-          printToken(tokens[1]);
-          printf("\n");
+          for (i=0; i<player.numItems; i++)
+            if (player.items[i] == items[a])
+              j = i;
+          if (j < 0) {
+            printf("You are not carrying the ");
+            printToken(tokens[1]);
+            printf("\n");
+            }
+          if (j >=0 && player.items[j]->wearable == 0) {
+            printf("The ");
+            printToken(tokens[1]);
+            printf(" is not wearable\n");
+            j = -1;
+            }
+          if (j >= 0 && player.items[j]->beingworn != 0) {
+            printf("The ");
+            printToken(tokens[1]);
+            printf(" is already being worn\n");
+            j = -1;
+            }
+          if (j >= 0) {
+            player.items[j]->beingworn = 1;
+            printf("You are now wearing the ");
+            printToken(tokens[1]);
+            printf("\n");
+            }
           }
         }
 /* ****************************************************** */
 /* ******************** Remove item ********************* */
 /* ****************************************************** */
       else if (numTokens == 2 && tokens[0] == 38) {
-        j = -1;
-        for (i=0; i<player.numItems; i++)
-          if (getToken(player.items[i]->name) == tokens[1])
-            j = i;
-        if (j < 0) {
-          printf("You are not wearing the ");
-          printToken(tokens[1]);
-          printf("\n");
+        if (tokens[1] < 40000 || tokens[1] >= 50000) {
+          printf("You must specify a valid item name\n");
           }
-        if (j >= 0 && player.items[j]->beingworn == 0) {
-          printf("The ");
-          printToken(tokens[1]);
-          printf(" is not being worn\n");
+        else {
+          a = tokens[1] - 40000;
           j = -1;
-          }
-        if (j >= 0 && player.items[j]->cursed != 0) {
-          printf("The ");
-          printToken(tokens[1]);
-          printf(" is cursed and cannot be removed\n");
-          j = -1;
-          }
-        if (j >= 0) {
-          player.items[j]->beingworn = 0;
-          printf("You have removed the ");
-          printToken(tokens[1]);
-          printf("\n");
+          for (i=0; i<player.numItems; i++)
+            if (player.items[i] == items[a])
+              j = i;
+          if (j < 0) {
+            printf("You are not wearing the ");
+            printToken(tokens[1]);
+            printf("\n");
+            }
+          if (j >= 0 && player.items[j]->beingworn == 0) {
+            printf("The ");
+            printToken(tokens[1]);
+            printf(" is not being worn\n");
+            j = -1;
+            }
+          if (j >= 0 && player.items[j]->cursed != 0) {
+            printf("The ");
+            printToken(tokens[1]);
+            printf(" is cursed and cannot be removed\n");
+            j = -1;
+            }
+          if (j >= 0) {
+            player.items[j]->beingworn = 0;
+            printf("You have removed the ");
+            printToken(tokens[1]);
+            printf("\n");
+            }
           }
         }
-      else printf("I do not understand\n");
       }
     }
   }
@@ -896,9 +923,11 @@ int main(int argc,char* argv[]) {
     }
   init();
   if (strstr(filename,".sav") != NULL) {
+    if (debug) printf("Loading save file\n"); fflush(stdout);
     load(filename);
     player.lastLocation = -1;
     } else {
+    if (debug) printf("Loading adventure file\n"); fflush(stdout);
     readFile(filename);
     reset(); 
     }

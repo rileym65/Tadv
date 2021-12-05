@@ -23,6 +23,7 @@ FUNCTION name {
   }
 ROOM [number] {
   NAME room_name
+  IDENTIFIER room_identifier
   SHORT short description
   DESC description of room
   [DESC additional description lines...]
@@ -59,6 +60,7 @@ ROOM [number] {
 
 DOOR [number] {
   NAME door_name
+  IDENTIFIER door_identifier
   desc descriptive text
   desc {
     action_steps...
@@ -73,6 +75,7 @@ DOOR [number] {
 
 ITEM [number] {
   NAME item_name
+  IDENTIFIER item_identifier
   DESC description
   EXAMINE examine text
   [DESC {

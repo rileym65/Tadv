@@ -4,6 +4,7 @@
 #include "header.h"
 
 void addEquate(char* name, int value) {
+  if (debug) printf("Adding equate: %s = %d\n",name, value); fflush(stdout);
   if (++numEquates == 1) {
     equates = (char**)malloc(sizeof(char*));
     eqValues = (int*)malloc(sizeof(int));
@@ -13,13 +14,14 @@ void addEquate(char* name, int value) {
     eqValues = (int*)realloc(eqValues,sizeof(int) * numEquates);
     }
   equates[numEquates-1] = (char*)malloc(strlen(name) + 1);
-  addWord(name);
+//  addWord(name);
   strcpy(equates[numEquates-1],name);
   eqValues[numEquates-1] = value;
   }
 
 void addFlag(char* pBuffer) {
   char *value;
+  if (debug) printf("Adding flag: %s\n",pBuffer); fflush(stdout);
   value = NULL;
   if (strchr(pBuffer, '=') != NULL) {
     value = strchr(pBuffer, '=');
@@ -349,6 +351,7 @@ int* readActionSteps(FILE* inFile,int* count, char* pBuf) {
 
 void addWord(char* wrd) {
   int i;
+  if (debug) printf("Adding vocabulary: %s\n",wrd); fflush(stdout);
   for (i=0; i<numVocab; i++)
     if (strcasecmp(wrd,vocab[i]) == 0) return;
   numVocab++;
@@ -360,6 +363,7 @@ void addWord(char* wrd) {
 
 void init() {
   int i;
+  if (debug) printf("Entering INIT\n"); fflush(stdout);
   for (i=0; i<1024; i++) flags[i] = 0;
   flagNames = NULL;
   actions  = NULL;
@@ -389,6 +393,7 @@ void init() {
   player.score = 0;
   player.light = 0;
   player.turnCount = 0;
+  if (debug) printf("Loading initial dictionary\n"); fflush(stdout);
   addWord("look");          /*  0 */
   addWord("north");         /*  1 */
   addWord("n");             /*  2 */
@@ -431,8 +436,10 @@ void init() {
   addWord("into");          /* 39 */
   addWord("in");            /* 40 */
   addWord("from");          /* 41 */
+  if (debug) printf("Loading initial flags\n"); fflush(stdout);
   addFlag("F_HAS_LIGHT");
   addFlag("F_CAN_MOVE");
+  if (debug) printf("Exiting INIT\n"); fflush(stdout);
   }
 
 void reset() {
@@ -543,6 +550,7 @@ void readRoom(FILE* inFile,char* buf) {
     }
   numRooms++;
   room = (ROOM*)malloc(sizeof(ROOM));
+  room->name = NULL;
   room->items = NULL;
   room->numItems = 0;
   room->north[0] = -1;
@@ -597,6 +605,12 @@ void readRoom(FILE* inFile,char* buf) {
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
       if (strcmp(head,"name") == 0) {
+        if (room->name != NULL) free(room->name);
+        room->name = (char*)malloc(strlen(pBuffer) + 1);
+        strcpy(room->name, pBuffer);
+        }
+      else if (strcmp(head,"identifier") == 0) {
+        if (room->name != NULL) free(room->name);
         room->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->name, pBuffer);
         }
@@ -691,6 +705,8 @@ void readItem(FILE* inFile,char* buf) {
     }
   numItems++;
   item = (ITEM*)malloc(sizeof(ITEM));
+  item->name = NULL;
+  item->identifier = NULL;
   item->number = numItems-1;
   item->location = -1;
   item->weight = 0;
@@ -730,9 +746,20 @@ void readItem(FILE* inFile,char* buf) {
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
       if (strcmp(head,"name") == 0) {
+        if (item->name != NULL) free(item->name);
         item->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(item->name, pBuffer);
-        addWord(item->name);
+        if (item->identifier == NULL) {
+          item->identifier = (char*)malloc(strlen(pBuffer) + 1);
+          strcpy(item->identifier, pBuffer);
+          }
+//        addWord(item->name);
+        }
+      if (strcmp(head,"identifier") == 0) {
+        if (item->identifier != NULL) free(item->identifier);
+        item->identifier = (char*)malloc(strlen(pBuffer) + 1);
+        strcpy(item->identifier, pBuffer);
+//        addWord(item->name);
         }
       if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
@@ -826,6 +853,7 @@ void readDoor(FILE* inFile,char* buf) {
     }
   numDoors++;
   door = (DOOR*)malloc(sizeof(DOOR));
+  door->name = NULL;
   door->opened = 0;
   door->unlocked = 1;
   door->lockable = 0;
@@ -847,9 +875,16 @@ void readDoor(FILE* inFile,char* buf) {
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
       if (strcmp(head,"name") == 0) {
+        if (door->name != NULL) free(door->name);
         door->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(door->name, pBuffer);
-        addWord(door->name);
+//        addWord(door->name);
+        }
+      else if (strcmp(head,"identifier") == 0) {
+        if (door->name != NULL) free(door->name);
+        door->name = (char*)malloc(strlen(pBuffer) + 1);
+        strcpy(door->name, pBuffer);
+//        addWord(door->name);
         }
       if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
@@ -1054,6 +1089,7 @@ int prePass(char* filename) {
   char *pBuf;
   char  entity;
   int   pos;
+  if (debug) printf("Executing pre-pass\n"); fflush(stdout);
   if ((inFile = fopen(filename,"r")) == NULL) {
     printf("Could not open file\n");
     return -1;
@@ -1097,6 +1133,7 @@ int prePass(char* filename) {
       }
     }
   fclose(inFile);
+  if (debug) printf("Done with pre-pass\n"); fflush(stdout);
   }
 
 int readFile(char* filename) {

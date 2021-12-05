@@ -75,6 +75,7 @@ int tokenize(char* buffer) {
   char *pWord;
   numTokens = 0;
   buffer = trim(buffer);
+  if (debug) printf("Tokenizing: %s\n[",buffer); fflush(stdout);
   while (*buffer != 0) {
     pWord = wrd;
     while (*buffer > ' ') *pWord++ = *buffer++;
@@ -83,18 +84,24 @@ int tokenize(char* buffer) {
     for (i=0; i<numVocab; i++) {
       if (strcmp(upper(wrd),upper(vocab[i])) == 0) token = i;
       }
+    for (i=0; i<numItems; i++) {
+      if (strcmp(upper(wrd),upper(items[i]->name)) == 0) token = i+40000;
+      }
     if (token == -1) {
       printf("I do not understand %s\n",wrd);
       return -1;
       }
     tokens[numTokens++] = token;
+    if (debug) printf(" %d",token);
     while (*buffer > 0 && *buffer <= ' ') buffer++;
     }
+  if (debug) printf(" ]\n");
   return numTokens;
   }
 
 void printToken(int token) {
-  printf("%s",vocab[token]);
+  if (token >=40000 && token < 50000) printf("%s",items[token-40000]->description);
+  else printf("%s",vocab[token]);
   }
 
 int tokenizeAdd(char* buffer) {
@@ -123,5 +130,12 @@ int tokenizeAdd(char* buffer) {
     while (*buffer > 0 && *buffer <= ' ') buffer++;
     }
   return numTokens;
+  }
+
+int carrying(int item) {
+  int i;
+  for (i=0; i<player.numItems; i++)
+    if (player.items[i] == items[item]) return -1;
+  return 0;
   }
 
