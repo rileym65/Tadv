@@ -41,6 +41,7 @@ ROOM [number] {
   [UP    (room_name]
   [DOWN  (room_name]
   [NEEDLIGHT]
+  [VISITED]
   [ACTION action phrase {
     action_steps...
     }]
@@ -74,8 +75,8 @@ DOOR [number] {
   }
 
 ITEM [number] {
-  NAME item_name
-  IDENTIFIER item_identifier
+  NAME item_name                        - Name for input parser
+  IDENTIFIER item_identifier            - single word identifier for actions
   DESC description
   EXAMINE examine text
   [DESC {

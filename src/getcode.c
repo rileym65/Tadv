@@ -187,6 +187,8 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"linkdown") == 0) return CMD_LINK_DOWN;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
+  for (i=0; i<numItems; i++)
+    if (strcasecmp(wrd,items[i]->identifier) == 0) return i;
   for (i=0; i<numRooms; i++)
     if (strcasecmp(wrd,rooms[i]->name) == 0) return i;
   for (i=0; i<numFlagNames; i++)

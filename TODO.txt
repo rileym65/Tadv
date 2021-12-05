@@ -1,4 +1,1 @@
-  - Multple token names for items
-  - Multiple doors in a room
-  - Containers
 

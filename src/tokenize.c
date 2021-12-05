@@ -12,16 +12,31 @@ int tokenize(char* buffer) {
   buffer = trim(buffer);
   if (debug) printf("Tokenizing: %s\n[",buffer); fflush(stdout);
   while (*buffer != 0) {
-    pWord = wrd;
-    while (*buffer > ' ') *pWord++ = *buffer++;
-    *pWord = 0;
     token = -1;
-    for (i=0; i<numVocab; i++) {
-      if (strcmp(upper(wrd),upper(vocab[i])) == 0) token = i;
-      }
+ 
     for (i=0; i<numItems; i++) {
-      if (strcmp(upper(wrd),upper(items[i]->name)) == 0) token = i+40000;
+      if (strncasecmp(buffer, items[i]->name, strlen(items[i]->name)) == 0) {
+        if (buffer[strlen(items[i]->name)] == ' ' ||
+            buffer[strlen(items[i]->name)] == 0) {
+          token = i+40000;
+          buffer += strlen(items[i]->name);
+          i = numItems;
+          }
+        }
       }
+
+    if (token < 0) {
+      pWord = wrd;
+      while (*buffer > ' ') *pWord++ = *buffer++;
+      *pWord = 0;
+      for (i=0; i<numVocab; i++) {
+        if (strcmp(upper(wrd),upper(vocab[i])) == 0) token = i;
+        }
+      for (i=0; i<numItems; i++) {
+        if (strcmp(upper(wrd),upper(items[i]->name)) == 0) token = i+40000;
+        }
+      }
+
     if (token == -1) {
       printf("I do not understand %s\n",wrd);
       return -1;
