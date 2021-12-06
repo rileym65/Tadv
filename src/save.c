@@ -212,6 +212,8 @@ void save() {
   if (debug) printf("*** Saving other player data ***\n");
   fprintf(file,"%d\n",player.light);
   fprintf(file,"%d\n",player.health);
+  fprintf(file,"%d\n",player.maxWeight);
+  fprintf(file,"%d\n",player.maxItems);
 
 /* ********************** */
 /* ***** Save doors ***** */

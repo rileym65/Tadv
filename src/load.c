@@ -286,6 +286,8 @@ int load(char* filename) {
 /* ************************************************* */
   fscanf(file,"%d\n",&(player.light));
   fscanf(file,"%d\n",&(player.health));
+  fscanf(file,"%d\n",&(player.maxWeight));
+  fscanf(file,"%d\n",&(player.maxItems));
 
 /* ******************************** */
 /* ********** Load doors ********** */

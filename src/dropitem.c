@@ -18,11 +18,14 @@ int dropItem(int itemNum) {
       sizeof(ITEM*) * rooms[player.location]->numItems);
   rooms[player.location]->items[rooms[player.location]->numItems-1] =
     items[itemNum];
-  for (i=j; i<player.numItems-1; i++)
-    player.items[i] = player.items[i+1];
-  if (--player.numItems == 0) free(player.items);
-    else player.items = (ITEM**)realloc(player.items,
-      sizeof(ITEM*) * player.numItems);
+
+  takeFromInventory(itemNum);
+//  for (i=j; i<player.numItems-1; i++)
+//    player.items[i] = player.items[i+1];
+//  if (--player.numItems == 0) free(player.items);
+//    else player.items = (ITEM**)realloc(player.items,
+//      sizeof(ITEM*) * player.numItems);
+
   return -1;
   }
 

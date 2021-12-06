@@ -41,7 +41,7 @@ void mainLoop() {
     if (rooms[player.location]->needLight && player.light == 0) {
       printf("It is too dark to see where you are.\n");
       } else {
-      if (player.location != player.lastLocation || look == 1) {
+      if (player.location != player.lastLocation || look == 1 || newRoom != 0) {
   /* ***** Long or short depending on if the room has been visited ***** */
         if (rooms[player.location]->visited)
           printf("%s\n",rooms[player.location]->shortDesc);
@@ -371,21 +371,30 @@ void mainLoop() {
         while (i < rooms[player.location]->numItems) {
           item = rooms[player.location]->items[i];
           if (item->weight >= 0) {
-            if (++player.numItems == 1)
-              player.items = (ITEM**)malloc(sizeof(ITEM*));
-            else
-              player.items = (ITEM**)realloc(player.items,
-                             sizeof(ITEM*)*player.numItems);
-            player.items[player.numItems-1] = item;
-            printf("  %s taken\n", item->description);
-            for (j=i; j<rooms[player.location]->numItems-1; j++)
-              rooms[player.location]->items[j] =
-              rooms[player.location]->items[j+1];
-            if (--rooms[player.location]->numItems == 0)
-              free(rooms[player.location]->items);
-            else rooms[player.location]->items = (ITEM**)realloc(
-              rooms[player.location]->items,
-              sizeof(ITEM*) * rooms[player.location]->numItems);
+            j = putIntoInventory(item->number);
+            if (j == -1) {
+              printf("You cannot carry that item\n");
+              i++;
+              }
+            if (j == -2) {
+              printf("This item is too heavy to carry at this time.\n");
+              i++;
+              }
+            if (j == -3) {
+              printf("You cannot carry any more items.\n");
+              i++;
+              }
+            if (j >= 0) {
+              printf("  %s taken\n", item->description);
+              for (j=i; j<rooms[player.location]->numItems-1; j++)
+                rooms[player.location]->items[j] =
+                rooms[player.location]->items[j+1];
+              if (--rooms[player.location]->numItems == 0)
+                free(rooms[player.location]->items);
+              else rooms[player.location]->items = (ITEM**)realloc(
+                rooms[player.location]->items,
+                sizeof(ITEM*) * rooms[player.location]->numItems);
+              }
             }
           else i++;
 

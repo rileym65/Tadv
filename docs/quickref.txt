@@ -4,14 +4,17 @@ ADVENTURE {
   AUTHOR Author
   INTRO Intro message text
   [INTRO additional lines allowed...]
-  [START {
-    action_steps
-    ...
-    } ]
+  MAXWEIGHT weight
+  MAXITEMS count
   FLAG flag_name [=TRUE|FALSE]
   VAR  var_name [=value]
   SVAR var_name [=value]
   EQUATE name value
+  TRACING
+  [START {
+    action_steps
+    ...
+    } ]
   ACTION {
     action_steps
     ...
@@ -95,6 +98,12 @@ ITEM [number] {
   [CONTAINER]
   [MAXCONTENTS max]
   [LOCATION starting_room_number_or_name]
+  [ACQUIRED {
+    action_steps...
+    }]
+  [LOST {
+    action_steps...
+    }]
   [CARRYING {
     action_steps...
     }]
@@ -119,6 +128,12 @@ ACTION phrase {
 Action Steps:
 [var val]  !              []        Set variable to value
 [var]      @              [val]     Get value of a variable
+[var]      @.             []        Print value of variable
+[var val]  @=             [boolean] True if variable equals value
+[var]      @++            []        Increment value of variable
+[var]      @--            []        Decrement value of variable
+[var val]  @+=            []        Add value to variable
+[var val]  @-=            []        Subtract value to variable
 [a b]      =              [boolean] True if a == b
 [a b]      <>             [boolean] True if a != b
 [a b]      >              [boolean] True if a > b
@@ -131,6 +146,8 @@ Action Steps:
 [n]        --             [n]       Decrement top of stack
 [a b]      *              [n]       Multiply top two stack entries
 [a b]      /              [n]       Divide top two stack entries
+[a b]      <<             [n]       Shift a left b bits
+[a b]      >>             [n]       Shift a right b bits
 [a b]      &              [n]       Logical AND
 [a b]      |              [n]       Logical OR
 [a b]      ^              [n]       Logical XOR
@@ -282,6 +299,8 @@ Action Steps:
 [c i]      takefrom       []        Take item i out of container c
 [item]     takeitem       []        Place specified item into player inventory
 [room]     teleport       []        Teleport player to specified room
+[]         troff          []        Turn off command tracing
+[]         tron           []        Turn on command tracing
 []         true           []        Stop processing, prevent default actions
 []         turncount      [n]       Place the number of turns onto the stack
 [n]        unlock         []        Unlock a door

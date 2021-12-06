@@ -44,6 +44,8 @@ void readItem(FILE* inFile,char* buf) {
   item->container = 0;
   item->maxContents = 0;
   item->numContents = 0;
+  item->acquiredSteps = NULL;
+  item->numAcquiredSteps = 0;
   if (items == NULL) {
     items = (ITEM**)malloc(sizeof(ITEM*));
     items[0] = item;
@@ -123,6 +125,12 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"turn") == 0)
          item->turnSteps =
            readActionSteps(inFile,&(item->numTurnSteps),pBuffer);
+      if (strcmp(head,"acquired") == 0)
+         item->acquiredSteps =
+           readActionSteps(inFile,&(item->numAcquiredSteps),pBuffer);
+      if (strcmp(head,"lost") == 0)
+         item->lostSteps =
+           readActionSteps(inFile,&(item->numLostSteps),pBuffer);
       if (strcmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          for (i=0; i<strlen(pBuffer); i++)

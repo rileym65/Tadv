@@ -35,6 +35,10 @@ void init() {
   player.score = 0;
   player.light = 0;
   player.turnCount = 0;
+  player.maxWeight =99999;
+  player.maxItems = 99999;
+  tracing = 0;
+  tron = 0;
   if (debug) printf("Loading initial dictionary\n"); fflush(stdout);
   addWord("look");          /*  0 */
   addWord("north");         /*  1 */

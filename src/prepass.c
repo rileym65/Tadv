@@ -54,6 +54,16 @@ int prePass(char* filename) {
       if (entity == 'I') addEquate(name, itemCount);
       if (entity == 'D') addEquate(name, doorCount);
       }
+    if (strncasecmp(pBuf,"identifier ",11) == 0) {
+      pBuffer = pBuf+10;
+      while (*pBuffer == ' ') pBuffer++;
+      pos = 0;
+      while (*pBuffer != 0 && *pBuffer != ' ') name[pos++] = *pBuffer++;
+      name[pos] = 0;
+      if (entity == 'R') addEquate(name, roomCount);
+      if (entity == 'I') addEquate(name, itemCount);
+      if (entity == 'D') addEquate(name, doorCount);
+      }
     }
   fclose(inFile);
   if (debug) printf("Done with pre-pass\n"); fflush(stdout);

@@ -12,6 +12,8 @@ int takeFromInventory(int item) {
     if (--player.numItems == 0) free(player.items);
       else player.items = (ITEM**)realloc(player.items,
         sizeof(ITEM*) * player.numItems);
+    if (items[item]->numLostSteps > 0)
+      performAction(items[item]->lostSteps,items[item]->numLostSteps);
     return item;
     }
   return -1;

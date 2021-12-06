@@ -14,12 +14,21 @@ int getItem(int itemNum) {
     printf("You cannot pick up this item\n");
     return 0;
     }
-  if (++player.numItems == 1)
-    player.items = (ITEM**)malloc(sizeof(ITEM*));
-  else
-    player.items = (ITEM**)realloc(player.items,
-                   sizeof(ITEM*)*player.numItems);
-  player.items[player.numItems-1] = items[itemNum];
+
+  i = putIntoInventory(itemNum);
+  if (i == -1) {
+    printf("That item cannot be carried.\n");
+    return 0;
+    }
+  if (i == -2) {
+    printf("That would exceed your weight limit.\n");
+    return 0;
+    }
+  if (i == -3) {
+    printf("You cannot carry any more items.\n");
+    return 0;
+    }
+
   for (i=j; i<rooms[player.location]->numItems-1; i++)
     rooms[player.location]->items[i] =
     rooms[player.location]->items[i+1];

@@ -92,7 +92,7 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"opened?") == 0) return CMD_OPENED;
   if (strcasecmp(wrd,"lock") == 0) return CMD_LOCK;
   if (strcasecmp(wrd,"unlock") == 0) return CMD_UNLOCK;
-  if (strcasecmp(wrd,"unlock?") == 0) return CMD_UNLOCKED;
+  if (strcasecmp(wrd,"unlocked?") == 0) return CMD_UNLOCKED;
   if (strcasecmp(wrd,"turncount") == 0) return CMD_TURNCOUNT;
   if (strcasecmp(wrd,"examineitem") == 0) return CMD_EXAMINEITEM;
   if (strcasecmp(wrd,"opendoor") == 0) return CMD_OPEN_DOOR;
@@ -185,6 +185,16 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,"linksw") == 0) return CMD_LINK_SW;
   if (strcasecmp(wrd,"linkup") == 0) return CMD_LINK_UP;
   if (strcasecmp(wrd,"linkdown") == 0) return CMD_LINK_DOWN;
+  if (strcasecmp(wrd,"@=") == 0) return CMD_AT_EQ;
+  if (strcasecmp(wrd,"@++") == 0) return CMD_AT_PLUSPLUS;
+  if (strcasecmp(wrd,"@--") == 0) return CMD_AT_MINUSMINUS;
+  if (strcasecmp(wrd,"@+=") == 0) return CMD_AT_PLUS_EQ;
+  if (strcasecmp(wrd,"@-=") == 0) return CMD_AT_MINUS_EQ;
+  if (strcasecmp(wrd,"@.") == 0) return CMD_AT_DOT;
+  if (strcasecmp(wrd,"<<") == 0) return CMD_LT_LT;
+  if (strcasecmp(wrd,">>") == 0) return CMD_GT_GT;
+  if (strcasecmp(wrd,"tron") == 0) return CMD_TRON;
+  if (strcasecmp(wrd,"troff") == 0) return CMD_TROFF;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numItems; i++)

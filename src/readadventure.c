@@ -110,6 +110,11 @@ void readAdventure(FILE* inFile) {
         strcpy(equates[numEquates-1],eq);
         eqValues[numEquates-1] = val;
         }
+      if (strcmp(head,"maxweight") == 0) player.maxWeight = atoi(pBuffer);
+      if (strcmp(head,"maxitems") == 0) player.maxItems = atoi(pBuffer);
+      if (strcmp(head,"tracing") == 0) tracing = 1;
+
+
       }
     }
   }

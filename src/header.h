@@ -186,6 +186,16 @@
 #define CMD_LINK_SW            30172
 #define CMD_LINK_UP            30173
 #define CMD_LINK_DOWN          30174
+#define CMD_AT_EQ              30175
+#define CMD_AT_PLUSPLUS        30176
+#define CMD_AT_MINUSMINUS      30177
+#define CMD_AT_PLUS_EQ         30178
+#define CMD_AT_MINUS_EQ        30179
+#define CMD_AT_DOT             30180
+#define CMD_LT_LT              30181
+#define CMD_GT_GT              30182
+#define CMD_TRON               30183
+#define CMD_TROFF              30184
 
 typedef struct {
   int*  phraseTokens;
@@ -213,6 +223,10 @@ typedef struct _item_struct {
   int     numCarryingSteps;
   int*    turnSteps;
   int     numTurnSteps;
+  int*    acquiredSteps;
+  int     numAcquiredSteps;
+  int*    lostSteps;
+  int     numLostSteps;
   int     wearable;
   int     beingworn;
   int     startingItem;
@@ -281,6 +295,8 @@ typedef struct {
   int    light;
   long   turnCount;
   int    health;
+  int    maxWeight;
+  int    maxItems;
   } PLAYER;
 
 typedef unsigned char byte;
@@ -330,6 +346,8 @@ LINK int*      startSteps;
 LINK char**    sVarNames;
 LINK char**    sVarValues;
 LINK int       tokens[256];
+LINK int       tracing;
+LINK int       tron;
 LINK ACTION**  turnActions;
 LINK char**    varNames;
 LINK int*      vars;
@@ -370,7 +388,7 @@ extern void     printToken(int token);
 extern int      processLeave();
 extern void     push(int n);
 extern int      putIntoContainer(int container, int item);
-extern void     putIntoInventory(int item);
+extern int      putIntoInventory(int item);
 extern void     putIntoRoom(int room, int item);
 extern int      rcs_random(int size);
 extern void     rcs_randomize();
