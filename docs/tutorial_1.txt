@@ -29,7 +29,7 @@ and for Windows users, Notepad will produce proper files.
   Lets get started by building the header for our adventure.  Open up your
 text editor and create a file with these lines:
 
-tadv 1.0
+tadv 1.1
 adventure {
   title Escape
   author Mike Riley
@@ -61,10 +61,10 @@ Congratulations!!! You have won!!!
 
   First we have:
 
-  tadv 1.0
+  tadv 1.1
 
   This line indicates that this is a TADV adventure and that at least 
-version 1.0 of TADV is required to run this adventure.
+version 1.1 of TADV is required to run this adventure.
 
   The next line:
 

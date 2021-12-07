@@ -196,6 +196,10 @@
 #define CMD_GT_GT              30182
 #define CMD_TRON               30183
 #define CMD_TROFF              30184
+#define CMD_DUPQ               30185
+#define CMD_NIP                30186
+#define CMD_TUCK               30187
+#define CMD_INVENTORY          30188
 
 typedef struct {
   int*  phraseTokens;

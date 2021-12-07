@@ -185,6 +185,7 @@ Action Steps:
 [n... n]   dropuntil      []        Drop items until TOS encountered again
 [a]        dup            [a a]     Duplicate top of stack
 [a b]      dup2           [a b a b] Duplicate top two stack values
+[a]        dup?           [a a]     Duplicate top of stack if non-zero
 []         else           []        Continuation on failed boolean
 [n]        emit           []        Output top of stack as ASCII character
 [room]     enteredfrom?   [boolean] True if entered from specified room
@@ -214,6 +215,7 @@ Action Steps:
 [n]        inc            [n]       Increment top of stack
 [room]     inroom?        [boolean] True if player in specified room
 []         invcount       [n]       Count of items being carried
+[]         inventory      [... n]   Push players inventory onto stack
 [n]        invitem        [n]       Get item number at specified inventory slot
 []         itemcount      [n]       Count of items in the game
 [item]     iteminroom?    [boolean] True if specified item in current room
@@ -240,6 +242,7 @@ Action Steps:
 []         more           []        Prints -More- and then waits for <enter>
 [n]        n.             []        Pop n items from stack and display them
 [n]        ndrop          []        Drop n items from the stack
+[a b]      nip            [b]       Drop second on stack
 [... n]    nmax           [n]       Return maximum of specified set
 [... n]    nmin           [n]       Return minimum of specified set
 [a]        not            [n]       Boolean not
@@ -302,6 +305,7 @@ Action Steps:
 []         troff          []        Turn off command tracing
 []         tron           []        Turn on command tracing
 []         true           []        Stop processing, prevent default actions
+[a b]      tuck           [b a b]   Copy top of stack to third on stack
 []         turncount      [n]       Place the number of turns onto the stack
 [n]        unlock         []        Unlock a door
 [n]        unlockdoor     []        Unlock specified door

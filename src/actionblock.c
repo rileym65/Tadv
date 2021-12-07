@@ -512,6 +512,15 @@ int actionBlock(int* actions,int count) {
              sp++;
              }
            break;
+      case CMD_DUPQ:
+           if (tron == 1) printf("%-*s",pad,"dup?");
+           if (sp > 0) {
+             if (stack[sp-1] != 0) {
+               stack[sp] = stack[sp-1];
+               sp++;
+               }
+             }
+           break;
       case CMD_DUP2:
            if (tron == 1) printf("%-*s",pad,"dup2");
            if (sp > 1) {
@@ -1310,6 +1319,24 @@ int actionBlock(int* actions,int count) {
       case CMD_TROFF:
            if (tron == 1) printf("%-*s",pad,"troff");
            tron = 0;
+           break;
+      case CMD_NIP:
+           if (tron == 1) printf("%-*s",pad,"nip");
+           a = pop();
+           b = pop();
+           push(a);
+           break;
+      case CMD_TUCK:
+           if (tron == 1) printf("%-*s",pad,"tuck");
+           a = pop();
+           b = pop();
+           push(a); push(b); push(a);
+           break;
+      case CMD_INVENTORY:
+           if (tron == 1) printf("%-*s",pad,"inventory");
+           for (i=0; i<player.numItems; i++)
+             push(player.items[i]->number);
+           push(player.numItems);
            break;
       default: 
            if (tron == 1) printf("%-*d",pad,actions[ip]);

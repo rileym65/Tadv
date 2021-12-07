@@ -195,6 +195,10 @@ int getCode(char* wrd) {
   if (strcasecmp(wrd,">>") == 0) return CMD_GT_GT;
   if (strcasecmp(wrd,"tron") == 0) return CMD_TRON;
   if (strcasecmp(wrd,"troff") == 0) return CMD_TROFF;
+  if (strcasecmp(wrd,"dup?") == 0) return CMD_DUPQ;
+  if (strcasecmp(wrd,"nip") == 0) return CMD_NIP;
+  if (strcasecmp(wrd,"tuck") == 0) return CMD_TUCK;
+  if (strcasecmp(wrd,"inventory") == 0) return CMD_INVENTORY;
   for (i=0; i<numItems; i++)
     if (strcasecmp(wrd,items[i]->name) == 0) return i;
   for (i=0; i<numItems; i++)
