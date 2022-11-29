@@ -82,6 +82,7 @@ void init() {
   addWord("into");          /* 39 */
   addWord("in");            /* 40 */
   addWord("from");          /* 41 */
+  addWord("wearing");       /* 42 */
   if (debug) printf("Loading initial flags\n"); fflush(stdout);
   addFlag("F_HAS_LIGHT");
   addFlag("F_CAN_MOVE");

@@ -36,6 +36,12 @@ void readItem(FILE* inFile,char* buf) {
   item->numCarryingSteps = 0;
   item->turnSteps = NULL;
   item->numTurnSteps = 0;
+  item->wornSteps = NULL;
+  item->numWornSteps = 0;
+  item->removedSteps = NULL;
+  item->numRemovedSteps = 0;
+  item->wearingSteps = NULL;
+  item->numWearingSteps = 0;
   item->examine = NULL;
   item->wearable = 0;
   item->beingworn = 0;
@@ -131,6 +137,15 @@ void readItem(FILE* inFile,char* buf) {
       if (strcmp(head,"lost") == 0)
          item->lostSteps =
            readActionSteps(inFile,&(item->numLostSteps),pBuffer);
+      if (strcmp(head,"worn") == 0)
+         item->wornSteps =
+           readActionSteps(inFile,&(item->numWornSteps),pBuffer);
+      if (strcmp(head,"wearing") == 0)
+         item->wearingSteps =
+           readActionSteps(inFile,&(item->numWearingSteps),pBuffer);
+      if (strcmp(head,"removed") == 0)
+         item->removedSteps =
+           readActionSteps(inFile,&(item->numRemovedSteps),pBuffer);
       if (strcmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          for (i=0; i<strlen(pBuffer); i++)

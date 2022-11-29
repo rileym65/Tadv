@@ -145,6 +145,18 @@ int load(char* filename) {
     items[i]->turnSteps = (int*)malloc(sizeof(int) * items[i]->numTurnSteps);
     for (j=0; j<items[i]->numTurnSteps; j++)
       fscanf(file,"%d\n",&(items[i]->turnSteps[j]));
+    fscanf(file,"%d\n",&(items[i]->numWornSteps));
+    items[i]->wornSteps = (int*)malloc(sizeof(int) * items[i]->numWornSteps);
+    for (j=0; j<items[i]->numWornSteps; j++)
+      fscanf(file,"%d\n",&(items[i]->wornSteps[j]));
+    fscanf(file,"%d\n",&(items[i]->numWearingSteps));
+    items[i]->wearingSteps = (int*)malloc(sizeof(int) * items[i]->numWearingSteps);
+    for (j=0; j<items[i]->numWearingSteps; j++)
+      fscanf(file,"%d\n",&(items[i]->wearingSteps[j]));
+    fscanf(file,"%d\n",&(items[i]->numRemovedSteps));
+    items[i]->removedSteps = (int*)malloc(sizeof(int) * items[i]->numRemovedSteps);
+    for (j=0; j<items[i]->numRemovedSteps; j++)
+      fscanf(file,"%d\n",&(items[i]->removedSteps[j]));
     fscanf(file,"%d\n",&(items[i]->container));
     fscanf(file,"%d\n",&(items[i]->maxContents));
     fscanf(file,"%d\n",&(items[i]->numContents));

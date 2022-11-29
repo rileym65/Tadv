@@ -110,6 +110,15 @@ void save() {
     fprintf(file,"%d\n",items[i]->numTurnSteps);
     for (j=0; j<items[i]->numTurnSteps; j++)
       fprintf(file,"%d\n",items[i]->turnSteps[j]);
+    fprintf(file,"%d\n",items[i]->numWornSteps);
+    for (j=0; j<items[i]->numWornSteps; j++)
+      fprintf(file,"%d\n",items[i]->wornSteps[j]);
+    fprintf(file,"%d\n",items[i]->numWearingSteps);
+    for (j=0; j<items[i]->numWearingSteps; j++)
+      fprintf(file,"%d\n",items[i]->wearingSteps[j]);
+    fprintf(file,"%d\n",items[i]->numRemovedSteps);
+    for (j=0; j<items[i]->numRemovedSteps; j++)
+      fprintf(file,"%d\n",items[i]->removedSteps[j]);
     fprintf(file,"%d\n",items[i]->container);
     fprintf(file,"%d\n",items[i]->maxContents);
     fprintf(file,"%d\n",items[i]->numContents);

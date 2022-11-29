@@ -201,6 +201,50 @@
 #define CMD_TUCK               30187
 #define CMD_INVENTORY          30188
 
+#define V_LOOK                     0
+#define V_NORTH                    1
+#define V_N                        2
+#define V_SOUTH                    3
+#define V_S                        4
+#define V_EAST                     5
+#define V_E                        6
+#define V_WEST                     7
+#define V_W                        8
+#define V_GO                       9
+#define V_UP                      10
+#define V_DOWN                    11
+#define V_INVENT                  12
+#define V_SCORE                   13
+#define V_SAVE                    14
+#define V_DIAGNOSE                15
+#define V_QUIT                    16
+#define V_GET                     17
+#define V_TAKE                    18
+#define V_PUT                     19
+#define V_DROP                    20
+#define V_ALL                     21
+#define V_VOCAB                   22
+#define V_EXAMINE                 23
+#define V_LOAD                    24
+#define V_NE                      25
+#define V_NW                      26
+#define V_SE                      27
+#define V_SW                      28
+#define V_WEIGHT                  29
+#define V_OPEN                    30
+#define V_CLOSE                   31
+#define V_LOCK                    32
+#define V_UNLOCK                  33
+#define V_DOOR                    34
+#define V_WITH                    35
+#define V_EXITS                   36
+#define V_WEAR                    37
+#define V_REMOVE                  38
+#define V_INTO                    39
+#define V_IN                      40
+#define V_FROM                    41
+#define V_WEARING                 42
+
 typedef struct {
   int*  phraseTokens;
   int   numPhraseTokens;
@@ -231,6 +275,12 @@ typedef struct _item_struct {
   int     numAcquiredSteps;
   int*    lostSteps;
   int     numLostSteps;
+  int*    wornSteps;
+  int     numWornSteps;
+  int*    wearingSteps;
+  int     numWearingSteps;
+  int*    removedSteps;
+  int     numRemovedSteps;
   int     wearable;
   int     beingworn;
   int     startingItem;
