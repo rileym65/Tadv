@@ -200,6 +200,7 @@
 #define CMD_NIP                30186
 #define CMD_TUCK               30187
 #define CMD_INVENTORY          30188
+#define CMD_QT                 30189
 
 #define V_LOOK                     0
 #define V_NORTH                    1

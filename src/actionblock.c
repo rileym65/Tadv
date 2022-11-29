@@ -45,6 +45,10 @@ int actionBlock(int* actions,int count) {
       printf("  ");
       }
     switch (actions[ip]) {
+      case CMD_QT:
+           ip++;
+           while (actions[ip] != CMD_QT) printf("%c",actions[ip++]);
+           break;
       case CMD_EXTRACT:
            if (tron == 1) printf("%-*s",pad,"extract");
            if (sp > 0) {
