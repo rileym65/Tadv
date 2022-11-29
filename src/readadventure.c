@@ -10,6 +10,7 @@ void readAdventure(FILE* inFile) {
   char eq[255];
   int  val;
   ACTION* action;
+  strcpy(startingRoom,"0");
   flag = ' ';
   while (flag == ' ') {
     if (fileRead(buffer,inFile) == NULL) flag = '*';
@@ -67,6 +68,9 @@ void readAdventure(FILE* inFile) {
         varNames[numVarNames-1] = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(varNames[numVarNames-1],pBuffer);
         vars[numVarNames-1] = i;
+        }
+      if (strcmp(head,"startingroom") == 0) {
+        strcpy(startingRoom, pBuffer);
         }
       if (strcmp(head,"svar") == 0) {
         if (++numSVars == 1) {

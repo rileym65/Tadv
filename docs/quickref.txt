@@ -10,6 +10,7 @@ ADVENTURE {
   VAR  var_name [=value]
   SVAR var_name [=value]
   EQUATE name value
+  STARTINGROOM room_name
   TRACING
   [START {
     action_steps

@@ -5,10 +5,18 @@ void reset() {
   int loc;
   player.items = NULL;
   player.numItems = 0;
-  player.location = 0;
+  player.location = -1;
   player.lastLocation = -1;
   player.score = 0;
   player.health = 100;
+  for (i=0; i<numRooms; i++) {
+    if (strcasecmp(rooms[i]->name, startingRoom) == 0) player.location=i;
+    }
+  if (player.location < 0) {
+    if (startingRoom[0] >= '0' && startingRoom[0] <= '9')
+      player.location = atoi(startingRoom);
+    }
+  if (player.location < 0) player.location = 0;
   for (i=0; i<numRooms; i++) {
     if (rooms[i]->items != NULL) free(rooms[i]->items);
     rooms[i]->items = NULL;

@@ -1,0 +1,16 @@
+Added string variables/commands
+Lots of new commands
+Variables can now have an initial value
+Flags can now have an initial value
+String variables can have an initial value
+Added Doors
+Added Wearable items
+Room entry numbers are now optional, but if specified must match the
+  load order
+Item entry numbers are now optional, but if specified must match the
+  load order
+Door entry numbers are optional, but if specified must match the
+  load order
+Added containers
+Added startingroom option to adventure section to start somewher other
+  than room 0

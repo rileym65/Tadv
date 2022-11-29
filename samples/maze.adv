@@ -1,0 +1,104 @@
+tadv 1.1
+adventure {
+  title Maze Demo
+  author Mike Riley
+  intro This adventure demonstrates how with a clever bit of programming
+  intro you can turn a single room into the classic "maze of twisty passages"
+  intro puzzle.  This sample uses code to manipulate room links to simulate
+  intro the maze.  To get to any of the three exits you must perform the
+  intro correct sequence of moves for the given exit.  These sequences are:
+  intro start room: S E S W
+  intro exit room: N N E N
+  intro center: E N E S
+  intro If a step is missed then the sequence starts over again, for example
+  intro if you went N N E the next N would take you out, but if you went S
+  intro then the whole sequence resets and you must again do N N E before
+  intro the N that will take you out.
+  var v_exit
+  var v_center
+  var v_entry
+  }
+
+room {
+  name entry_room
+  short Maze entry room
+  desc You are in the maze entry chamber, the maze is to the east
+  east maze
+  }
+
+room {
+  name exit_room
+  short Maze exit room
+  desc You are in the maze exit chamber, the maze is to the south
+  south maze
+  }
+
+room {
+  name maze_center
+  short Maze center
+  desc You are in the center of the maze
+  north maze
+  }
+
+room {
+  name maze
+  short Maze of twisty passages
+  desc You are in a maze of twisty passages
+  north exit_room
+  west entry_room
+  south maze_center
+  east maze
+  enter {
+    maze enteredfrom? if
+      v_entry 3 @= if
+        goingwest? not if v_entry 0 ! then
+        then
+      v_entry 2 @= if
+        goingsouth? if v_entry 3 ! else v_entry 0 ! then
+        then
+      v_entry 1 @= if
+        goingeast? if v_entry 2 ! else v_entry 0 ! then
+        then
+      v_entry 0 @= if
+        goingsouth? if v_entry 1 ! else v_entry 0 ! then
+        then
+      v_center @ 3 = if
+        goingsouth? not if v_exit 0 ! then
+        then
+      v_center @ 2 = if
+        goingeast? if v_center 3 ! else v_center 0 ! then
+        then
+      v_center @ 1 = if
+        goingnorth? if v_center 2 ! else v_center 0 ! then
+        then
+      v_center @ 0 = if
+        goingeast? if v_center 1 ! else v_center 0 ! then
+        then
+      v_exit @ 3 = if
+        goingnorth? not if v_exit 0 ! then
+        then
+      v_exit @ 2 = if
+        goingeast? if v_exit 3 ! else v_exit 0 ! then
+        then
+      v_exit @ 1 = if
+        goingnorth? if v_exit 2 ! else v_exit 0 ! then
+        then
+      v_exit @ 0 = if
+        goingnorth? if v_exit 1 ! else v_exit 0 ! then
+        then
+      maze v_entry @ 3 = if entry_room else maze then linkwest
+      maze v_center @ 3 = if maze_center else maze then linksouth
+      maze v_exit @ 3 = if exit_room else maze then linknorth
+    else
+      maze maze linknorth
+      maze maze linksouth
+      maze maze linkeast
+      maze maze linkwest
+      v_exit 0 !
+      v_center 0 !
+      v_entry 0 !
+    then
+    }
+  }
+
+

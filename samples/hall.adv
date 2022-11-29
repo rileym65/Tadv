@@ -1,0 +1,67 @@
+tadv 1.1
+adventure {
+  title Hallway demo
+  author Mike Riley
+  intro This demo shows how you can use programming to change room linkage
+  intro in order to simulate a long hall using only a single room.
+  var V_HALL
+  }
+
+room {
+  name west_room
+  short West room
+  desc You are in the west room, there is an exit to the east
+  east hall
+  }
+
+room {
+  name hall
+  short Long hall
+  desc You are in a long hall that stretches esat to west
+  east east_room
+  west west_room
+  enter {
+    west_room enteredfrom? if
+      hall hall linkeast
+      hall west_room linkwest
+      V_HALL 1 !
+      then
+    east_room enteredfrom? if
+      hall hall linkwest
+      hall east_room linkeast
+      V_HALL 10 !
+      then
+    hall enteredfrom? if
+      goingwest? if
+        V_HALL @ 2 = if
+          hall west_room linkwest
+          hall hall linkeast
+        else
+          hall hall linkwest
+          hall hall linkeast
+        then
+        V_HALL dup @ 1 - !
+      then
+      goingeast? if
+        V_HALL @ 9 = if
+          hall east_room linkeast
+          hall hall linkwest
+        else
+          hall hall linkwest
+          hall hall linkeast
+        then
+        V_HALL V_HALL @ 1 + !
+      then
+    then
+    false
+    }
+  }
+
+room {
+  name east_room
+  short East room
+  desc You are in the east room, there is an exit to the west
+  west hall
+  }
+
+

@@ -346,6 +346,7 @@ LINK PLAYER    player;
 LINK ROOM**    rooms;
 LINK int       sp;
 LINK int       stack[1024];
+LINK char      startingRoom[1024];
 LINK int*      startSteps;
 LINK char**    sVarNames;
 LINK char**    sVarValues;

@@ -73,6 +73,10 @@ tadv: $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) $(DEFS) $(INCDIR) $(INCS) -c $<
 
+install:
+	cp tadv /usr/local/games
+	chmod a+rx /usr/local/games/tadv
+
 clean:
 	-rm *.o
 	-rm tadv
