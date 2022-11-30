@@ -10,6 +10,7 @@ int main(int argc,char* argv[]) {
   char filename[256];
   char encode;
   time_t t;
+  printf("TADV %s\n",VERSION);
   debug = 0;
   encode = 0;
   numFunctions = 0;

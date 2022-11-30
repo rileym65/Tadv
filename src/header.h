@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define VERSION                 "1.2"
+
 #define ACTION_TRUE             101
 #define ACTION_FALSE            100
 

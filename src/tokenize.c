@@ -30,10 +30,10 @@ int tokenize(char* buffer) {
       while (*buffer > ' ') *pWord++ = *buffer++;
       *pWord = 0;
       for (i=0; i<numVocab; i++) {
-        if (strcmp(upper(wrd),upper(vocab[i])) == 0) token = i;
+        if (strcasecmp(upper(wrd),upper(vocab[i])) == 0) token = i;
         }
       for (i=0; i<numItems; i++) {
-        if (strcmp(upper(wrd),upper(items[i]->name)) == 0) token = i+40000;
+        if (strcasecmp(upper(wrd),upper(items[i]->name)) == 0) token = i+40000;
         }
       }
 

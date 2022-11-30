@@ -45,13 +45,13 @@ void readDoor(FILE* inFile,char* buf) {
     if (flag != '*') {
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
-      if (strcmp(head,"name") == 0) {
+      if (strcasecmp(head,"name") == 0) {
         if (door->name != NULL) free(door->name);
         door->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(door->name, pBuffer);
 //        addWord(door->name);
         }
-      else if (strcmp(head,"identifier") == 0) {
+      else if (strcasecmp(head,"identifier") == 0) {
         if (door->name != NULL) free(door->name);
         door->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(door->name, pBuffer);
@@ -69,7 +69,7 @@ void readDoor(FILE* inFile,char* buf) {
       if (strcasecmp(head,"onunlock") == 0)
         door->onUnlockSteps =
           readActionSteps(inFile,&(door->numOnUnlockSteps),pBuffer);
-      if (strcmp(head,"desc") == 0) {
+      if (strcasecmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           door->descSteps =
             readActionSteps(inFile,&(door->numDescSteps),pBuffer);
@@ -79,12 +79,12 @@ void readDoor(FILE* inFile,char* buf) {
           strcpy(door->description, pBuffer);
           }
         }
-      if (strcmp(head,"opened") == 0) door->opened = 1;
-      if (strcmp(head,"closed") == 0) door->opened = 0;
-      if (strcmp(head,"locked") == 0) door->unlocked = 0;
-      if (strcmp(head,"unlocked") == 0) door->unlocked = 1;
-      if (strcmp(head,"lockable") == 0) door->lockable = 1;
-      if (strcmp(head,"key") == 0) door->key = getItemNumber(pBuffer);
+      if (strcasecmp(head,"opened") == 0) door->opened = 1;
+      if (strcasecmp(head,"closed") == 0) door->opened = 0;
+      if (strcasecmp(head,"locked") == 0) door->unlocked = 0;
+      if (strcasecmp(head,"unlocked") == 0) door->unlocked = 1;
+      if (strcasecmp(head,"lockable") == 0) door->lockable = 1;
+      if (strcasecmp(head,"key") == 0) door->key = getItemNumber(pBuffer);
       }
     }
   }

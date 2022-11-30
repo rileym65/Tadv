@@ -1081,42 +1081,42 @@ int actionBlock(int* actions,int count) {
            if (tron == 1) printf("%-*s",pad,"s=");
            a = pop();
            b = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) == 0) push(1);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) == 0) push(1);
              else push(0);
            break;
       case CMD_S_NE:
            if (tron == 1) printf("%-*s",pad,"s<>");
            a = pop();
            b = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) == 0) push(0);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) == 0) push(0);
              else push(1);
            break;
       case CMD_S_GT:
            if (tron == 1) printf("%-*s",pad,"s>");
            b = pop();
            a = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) > 0) push(1);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) > 0) push(1);
              else push(0);
            break;
       case CMD_S_LT:
            if (tron == 1) printf("%-*s",pad,"s<");
            b = pop();
            a = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) < 0) push(1);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) < 0) push(1);
              else push(0);
            break;
       case CMD_S_LE:
            if (tron == 1) printf("%-*s",pad,"s<=");
            b = pop();
            a = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) <= 0) push(1);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) <= 0) push(1);
              else push(0);
            break;
       case CMD_S_GE:
            if (tron == 1) printf("%-*s",pad,"s>=");
            b = pop();
            a = pop();
-           if (strcmp(sVarValues[a], sVarValues[b]) >= 0) push(1);
+           if (strcasecmp(sVarValues[a], sVarValues[b]) >= 0) push(1);
              else push(0);
            break;
       case CMD_S_CLEAR:

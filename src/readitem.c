@@ -68,7 +68,7 @@ void readItem(FILE* inFile,char* buf) {
     if (flag != '*') {
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
-      if (strcmp(head,"name") == 0) {
+      if (strcasecmp(head,"name") == 0) {
         if (item->name != NULL) free(item->name);
         item->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(item->name, pBuffer);
@@ -78,13 +78,13 @@ void readItem(FILE* inFile,char* buf) {
           }
 //        addWord(item->name);
         }
-      if (strcmp(head,"identifier") == 0) {
+      if (strcasecmp(head,"identifier") == 0) {
         if (item->identifier != NULL) free(item->identifier);
         item->identifier = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(item->identifier, pBuffer);
 //        addWord(item->name);
         }
-      if (strcmp(head,"desc") == 0) {
+      if (strcasecmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           item->descSteps =
             readActionSteps(inFile,&(item->numDescSteps),pBuffer);
@@ -94,7 +94,7 @@ void readItem(FILE* inFile,char* buf) {
           strcpy(item->description, pBuffer);
           }
         }
-      if (strcmp(head,"examine") == 0) {
+      if (strcasecmp(head,"examine") == 0) {
         if (pBuffer[0] == '{') {
           item->examSteps =
             readActionSteps(inFile,&(item->numExamSteps),pBuffer);
@@ -111,42 +111,42 @@ void readItem(FILE* inFile,char* buf) {
             }
           }
         }
-      if (strcmp(head,"noncarryable") == 0) item->weight = -1;
-      if (strcmp(head,"wearable") == 0) item->wearable = 1;
-      if (strcmp(head,"beingworn") == 0) item->beingworn = 1;
-      if (strcmp(head,"startingitem") == 0) item->startingItem = 1;
-      if (strcmp(head,"cursed") == 0) item->cursed = 1;
-      if (strcmp(head,"container") == 0) {
+      if (strcasecmp(head,"noncarryable") == 0) item->weight = -1;
+      if (strcasecmp(head,"wearable") == 0) item->wearable = 1;
+      if (strcasecmp(head,"beingworn") == 0) item->beingworn = 1;
+      if (strcasecmp(head,"startingitem") == 0) item->startingItem = 1;
+      if (strcasecmp(head,"cursed") == 0) item->cursed = 1;
+      if (strcasecmp(head,"container") == 0) {
         item->container = 1;
         if (item->maxContents == 0) item->maxContents = 255;
         }
-      if (strcmp(head,"maxcontents") == 0) item->maxContents = atoi(pBuffer);
-      if (strcmp(head,"weight") == 0 && item->weight == 0)
+      if (strcasecmp(head,"maxcontents") == 0) item->maxContents = atoi(pBuffer);
+      if (strcasecmp(head,"weight") == 0 && item->weight == 0)
         item->weight = atoi(pBuffer);
-      if (strcmp(head,"location") == 0) item->location = getRoomNumber(pBuffer);
-      if (strcmp(head,"score") == 0) item->score = atoi(pBuffer);
-      if (strcmp(head,"carrying") == 0)
+      if (strcasecmp(head,"location") == 0) item->location = getRoomNumber(pBuffer);
+      if (strcasecmp(head,"score") == 0) item->score = atoi(pBuffer);
+      if (strcasecmp(head,"carrying") == 0)
          item->carryingSteps =
            readActionSteps(inFile,&(item->numCarryingSteps),pBuffer);
-      if (strcmp(head,"turn") == 0)
+      if (strcasecmp(head,"turn") == 0)
          item->turnSteps =
            readActionSteps(inFile,&(item->numTurnSteps),pBuffer);
-      if (strcmp(head,"acquired") == 0)
+      if (strcasecmp(head,"acquired") == 0)
          item->acquiredSteps =
            readActionSteps(inFile,&(item->numAcquiredSteps),pBuffer);
-      if (strcmp(head,"lost") == 0)
+      if (strcasecmp(head,"lost") == 0)
          item->lostSteps =
            readActionSteps(inFile,&(item->numLostSteps),pBuffer);
-      if (strcmp(head,"worn") == 0)
+      if (strcasecmp(head,"worn") == 0)
          item->wornSteps =
            readActionSteps(inFile,&(item->numWornSteps),pBuffer);
-      if (strcmp(head,"wearing") == 0)
+      if (strcasecmp(head,"wearing") == 0)
          item->wearingSteps =
            readActionSteps(inFile,&(item->numWearingSteps),pBuffer);
-      if (strcmp(head,"removed") == 0)
+      if (strcasecmp(head,"removed") == 0)
          item->removedSteps =
            readActionSteps(inFile,&(item->numRemovedSteps),pBuffer);
-      if (strcmp(head,"action") == 0) {
+      if (strcasecmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          for (i=0; i<strlen(pBuffer); i++)
            if (pBuffer[i] == '{') pBuffer[i] = 0;

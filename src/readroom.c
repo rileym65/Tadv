@@ -76,22 +76,22 @@ void readRoom(FILE* inFile,char* buf) {
       pBuffer = trim(buffer);
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
-      if (strcmp(head,"name") == 0) {
+      if (strcasecmp(head,"name") == 0) {
         if (room->name != NULL) free(room->name);
         room->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->name, pBuffer);
         }
-      else if (strcmp(head,"identifier") == 0) {
+      else if (strcasecmp(head,"identifier") == 0) {
         if (room->name != NULL) free(room->name);
         room->name = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->name, pBuffer);
         }
-      else if (strcmp(head,"short") == 0) {
+      else if (strcasecmp(head,"short") == 0) {
         room->shortDesc = (char*)malloc(strlen(pBuffer) + 1);
         strcpy(room->shortDesc, pBuffer);
         }
 
-      else if (strcmp(head,"desc") == 0) {
+      else if (strcasecmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           room->descSteps =
             readActionSteps(inFile,&(room->numDescSteps),pBuffer);
@@ -106,31 +106,31 @@ void readRoom(FILE* inFile,char* buf) {
           }
         }
 
-      else if (strcmp(head,"needlight") == 0) room->needLight = 1;
-      else if (strcmp(head,"visited") == 0) room->visited = 1;
-      else if (strcmp(head,"north") == 0) read_dest(pBuffer,room->north);
-      else if (strcmp(head,"south") == 0) read_dest(pBuffer,room->south);
-      else if (strcmp(head,"east") == 0) read_dest(pBuffer,room->east);
-      else if (strcmp(head,"west") == 0) read_dest(pBuffer,room->west);
-      else if (strcmp(head,"up") == 0) read_dest(pBuffer,room->up);
-      else if (strcmp(head,"down") == 0) read_dest(pBuffer,room->down);
-      else if (strcmp(head,"northeast") == 0) read_dest(pBuffer,room->ne);
-      else if (strcmp(head,"northwest") == 0) read_dest(pBuffer,room->nw);
-      else if (strcmp(head,"southeast") == 0) read_dest(pBuffer,room->se);
-      else if (strcmp(head,"southwest") == 0) read_dest(pBuffer,room->sw);
-      else if (strcmp(head,"enter") == 0)
+      else if (strcasecmp(head,"needlight") == 0) room->needLight = 1;
+      else if (strcasecmp(head,"visited") == 0) room->visited = 1;
+      else if (strcasecmp(head,"north") == 0) read_dest(pBuffer,room->north);
+      else if (strcasecmp(head,"south") == 0) read_dest(pBuffer,room->south);
+      else if (strcasecmp(head,"east") == 0) read_dest(pBuffer,room->east);
+      else if (strcasecmp(head,"west") == 0) read_dest(pBuffer,room->west);
+      else if (strcasecmp(head,"up") == 0) read_dest(pBuffer,room->up);
+      else if (strcasecmp(head,"down") == 0) read_dest(pBuffer,room->down);
+      else if (strcasecmp(head,"northeast") == 0) read_dest(pBuffer,room->ne);
+      else if (strcasecmp(head,"northwest") == 0) read_dest(pBuffer,room->nw);
+      else if (strcasecmp(head,"southeast") == 0) read_dest(pBuffer,room->se);
+      else if (strcasecmp(head,"southwest") == 0) read_dest(pBuffer,room->sw);
+      else if (strcasecmp(head,"enter") == 0)
          room->enterSteps =
            readActionSteps(inFile,&(room->numEnterSteps),pBuffer);
-      else if (strcmp(head,"leave") == 0)
+      else if (strcasecmp(head,"leave") == 0)
          room->leaveSteps =
            readActionSteps(inFile,&(room->numLeaveSteps),pBuffer);
-      else if (strcmp(head,"occupied") == 0)
+      else if (strcasecmp(head,"occupied") == 0)
          room->occupiedSteps =
            readActionSteps(inFile,&(room->numOccupiedSteps),pBuffer);
-      else if (strcmp(head,"turn") == 0)
+      else if (strcasecmp(head,"turn") == 0)
          room->turnSteps =
            readActionSteps(inFile,&(room->numTurnSteps),pBuffer);
-      else if (strcmp(head,"action") == 0) {
+      else if (strcasecmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          strcpy(buf2, pBuffer);
          for (i=0; i<strlen(pBuffer); i++)

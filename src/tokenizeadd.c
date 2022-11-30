@@ -13,7 +13,7 @@ int tokenizeAdd(char* buffer) {
     *pWord = 0;
     token = -1;
     for (i=0; i<numVocab; i++) {
-      if (strcmp(upper(wrd),upper(vocab[i])) == 0) token = i;
+      if (strcasecmp(upper(wrd),upper(vocab[i])) == 0) token = i;
       }
     if (token == -1) {
       if (++numVocab == 1) vocab = (char**)malloc(sizeof(char*));

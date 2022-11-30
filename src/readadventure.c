@@ -19,18 +19,18 @@ void readAdventure(FILE* inFile) {
       pBuffer = trim(buffer);
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
-      if (strcmp(head,"title") == 0) {
+      if (strcasecmp(head,"title") == 0) {
         printf("Adventure: %s\n",pBuffer);
         }
-      if (strcmp(head,"author") == 0) {
+      if (strcasecmp(head,"author") == 0) {
         printf("Written by: %s\n",pBuffer);
         }
-      if (strcmp(head,"intro") == 0) {
+      if (strcasecmp(head,"intro") == 0) {
         printf("%s\n",pBuffer);
         }
-      if (strcmp(head,"start") == 0)
+      if (strcasecmp(head,"start") == 0)
          startSteps = readActionSteps(inFile,&numStartSteps,pBuffer);
-      if (strcmp(head,"action") == 0) {
+      if (strcasecmp(head,"action") == 0) {
          action = (ACTION*)malloc(sizeof(ACTION));
          if (++numTurnActions == 1)
            turnActions = (ACTION**)malloc(sizeof(ACTION*));
@@ -44,10 +44,10 @@ void readAdventure(FILE* inFile) {
          action->actionTokens =
            readActionSteps(inFile,&(action->numActionTokens),pBuffer);
         }
-      if (strcmp(head,"flag") == 0) {
+      if (strcasecmp(head,"flag") == 0) {
         addFlag(pBuffer);
         }
-      if (strcmp(head,"var") == 0) {
+      if (strcasecmp(head,"var") == 0) {
         if (++numVarNames == 1) {
           varNames = (char**)malloc(sizeof(char*));
           vars = (int*)malloc(sizeof(int));
@@ -69,10 +69,10 @@ void readAdventure(FILE* inFile) {
         strcpy(varNames[numVarNames-1],pBuffer);
         vars[numVarNames-1] = i;
         }
-      if (strcmp(head,"startingroom") == 0) {
+      if (strcasecmp(head,"startingroom") == 0) {
         strcpy(startingRoom, pBuffer);
         }
-      if (strcmp(head,"svar") == 0) {
+      if (strcasecmp(head,"svar") == 0) {
         if (++numSVars == 1) {
           sVarNames = (char**)malloc(sizeof(char*));
           sVarValues = (char**)malloc(sizeof(char*));
@@ -99,7 +99,7 @@ void readAdventure(FILE* inFile) {
         else 
           strcpy(sVarValues[numSVars-1],"Not Initialized");
         }
-      if (strcmp(head,"equate") == 0) {
+      if (strcasecmp(head,"equate") == 0) {
         if (++numEquates == 1) {
           equates = (char**)malloc(sizeof(char*));
           eqValues = (int*)malloc(sizeof(int));
@@ -114,9 +114,9 @@ void readAdventure(FILE* inFile) {
         strcpy(equates[numEquates-1],eq);
         eqValues[numEquates-1] = val;
         }
-      if (strcmp(head,"maxweight") == 0) player.maxWeight = atoi(pBuffer);
-      if (strcmp(head,"maxitems") == 0) player.maxItems = atoi(pBuffer);
-      if (strcmp(head,"tracing") == 0) tracing = 1;
+      if (strcasecmp(head,"maxweight") == 0) player.maxWeight = atoi(pBuffer);
+      if (strcasecmp(head,"maxitems") == 0) player.maxItems = atoi(pBuffer);
+      if (strcasecmp(head,"tracing") == 0) tracing = 1;
 
 
       }
