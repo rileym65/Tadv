@@ -25,6 +25,10 @@ void readDoor(FILE* inFile,char* buf) {
   door->unlocked = 1;
   door->lockable = 0;
   door->numDescSteps = 0;
+  door->numOnOpenSteps = 0;
+  door->numOnCloseSteps = 0;
+  door->numOnLockSteps = 0;
+  door->numOnUnlockSteps = 0;
   if (doors == NULL) {
     doors = (DOOR**)malloc(sizeof(DOOR*));
     doors[0] = door;
@@ -36,9 +40,9 @@ void readDoor(FILE* inFile,char* buf) {
   flag = ' ';
   while (flag == ' ') {
     if (fileRead(buffer,inFile) == NULL) flag = '*';
-    if (strchr(buffer,'}') != NULL) flag='*';
+    pBuffer = trim(buffer);
+    if (*pBuffer == '}') flag='*';
     if (flag != '*') {
-      pBuffer = trim(buffer);
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
       if (strcmp(head,"name") == 0) {
@@ -53,6 +57,18 @@ void readDoor(FILE* inFile,char* buf) {
         strcpy(door->name, pBuffer);
 //        addWord(door->name);
         }
+      if (strcasecmp(head,"onopen") == 0)
+        door->onOpenSteps =
+          readActionSteps(inFile,&(door->numOnOpenSteps),pBuffer);
+      if (strcasecmp(head,"onclose") == 0)
+        door->onCloseSteps =
+          readActionSteps(inFile,&(door->numOnCloseSteps),pBuffer);
+      if (strcasecmp(head,"onlock") == 0)
+        door->onLockSteps =
+          readActionSteps(inFile,&(door->numOnLockSteps),pBuffer);
+      if (strcasecmp(head,"onunlock") == 0)
+        door->onUnlockSteps =
+          readActionSteps(inFile,&(door->numOnUnlockSteps),pBuffer);
       if (strcmp(head,"desc") == 0) {
         if (pBuffer[0] == '{') {
           door->descSteps =

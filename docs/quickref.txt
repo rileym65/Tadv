@@ -76,6 +76,10 @@ DOOR [number] {
   [UNLOCKED]
   [LOCKABLE]
   [KEY item_name]
+  ONOPEN { action_steps }
+  ONCLOSE { action_steps }
+  ONLOCK { action_steps }
+  ONUNLOCK { action_steps }
   }
 
 ITEM [number] {

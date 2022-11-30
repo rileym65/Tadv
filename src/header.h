@@ -334,6 +334,14 @@ typedef struct {
   char* description;
   int*  descSteps;
   int   numDescSteps;
+  int*  onOpenSteps;
+  int   numOnOpenSteps;
+  int*  onCloseSteps;
+  int   numOnCloseSteps;
+  int*  onLockSteps;
+  int   numOnLockSteps;
+  int*  onUnlockSteps;
+  int   numOnUnlockSteps;
   } DOOR;
 
 typedef struct {

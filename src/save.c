@@ -239,6 +239,18 @@ void save() {
     fprintf(file,"%d\n",doors[i]->numDescSteps);
     for (j=0; j<doors[i]->numDescSteps; j++)
       fprintf(file,"%d\n",doors[i]->descSteps[j]);
+    fprintf(file,"%d\n",doors[i]->numOnOpenSteps);
+    for (j=0; j<doors[i]->numOnOpenSteps; j++)
+      fprintf(file,"%d\n",doors[i]->onOpenSteps[j]);
+    fprintf(file,"%d\n",doors[i]->numOnCloseSteps);
+    for (j=0; j<doors[i]->numOnCloseSteps; j++)
+      fprintf(file,"%d\n",doors[i]->onCloseSteps[j]);
+    fprintf(file,"%d\n",doors[i]->numOnLockSteps);
+    for (j=0; j<doors[i]->numOnLockSteps; j++)
+      fprintf(file,"%d\n",doors[i]->onLockSteps[j]);
+    fprintf(file,"%d\n",doors[i]->numOnUnlockSteps);
+    for (j=0; j<doors[i]->numOnUnlockSteps; j++)
+      fprintf(file,"%d\n",doors[i]->onUnlockSteps[j]);
     }
 
   fclose(file);

@@ -324,6 +324,22 @@ int load(char* filename) {
     door->descSteps = (int*)malloc(sizeof(int) * door->numDescSteps);
     for (j=0; j<door->numDescSteps; j++)
       fscanf(file,"%d\n",&(door->descSteps[j]));
+    fscanf(file,"%d\n",&(door->numOnOpenSteps));
+    door->onOpenSteps = (int*)malloc(sizeof(int) * door->numOnOpenSteps);
+    for (j=0; j<door->numOnOpenSteps; j++)
+      fscanf(file,"%d\n",&(door->onOpenSteps[j]));
+    fscanf(file,"%d\n",&(door->numOnCloseSteps));
+    door->onCloseSteps = (int*)malloc(sizeof(int) * door->numOnCloseSteps);
+    for (j=0; j<door->numOnCloseSteps; j++)
+      fscanf(file,"%d\n",&(door->onCloseSteps[j]));
+    fscanf(file,"%d\n",&(door->numOnLockSteps));
+    door->onLockSteps = (int*)malloc(sizeof(int) * door->numOnLockSteps);
+    for (j=0; j<door->numOnLockSteps; j++)
+      fscanf(file,"%d\n",&(door->onLockSteps[j]));
+    fscanf(file,"%d\n",&(door->numOnUnlockSteps));
+    door->onUnlockSteps = (int*)malloc(sizeof(int) * door->numOnUnlockSteps);
+    for (j=0; j<door->numOnUnlockSteps; j++)
+      fscanf(file,"%d\n",&(door->onUnlockSteps[j]));
     }
   return -1;
   }

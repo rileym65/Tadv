@@ -494,6 +494,9 @@ void mainLoop() {
             if (doors[j]->unlocked != 0) {
               if (doors[j]->opened == 0) {
                 doors[j]->opened = 1;
+                if (doors[j]->numOnOpenSteps > 0)
+                  performAction(doors[j]->onOpenSteps,
+                                doors[j]->numOnOpenSteps);
                 printf("The door is now open.\n");
                 } else {
                 printf("The door is already open.\n");
@@ -534,6 +537,9 @@ void mainLoop() {
           if (doors[j]->unlocked != 0) {
             if (doors[j]->opened == 0) {
               doors[j]->opened = 1;
+              if (doors[j]->numOnOpenSteps > 0)
+                performAction(doors[j]->onOpenSteps,
+                              doors[j]->numOnOpenSteps);
               printf("The door is now open.\n");
               } else {
               printf("The door is already open.\n");
@@ -553,6 +559,9 @@ void mainLoop() {
           if (numTokens == 2 && tokens[1] == V_DOOR) {
               if (doors[j]->opened != 0) {
                 doors[j]->opened = 0;
+                if (doors[j]->numOnCloseSteps > 0)
+                  performAction(doors[j]->onCloseSteps,
+                                doors[j]->numOnCloseSteps);
                 printf("The door is now closed.\n");
                 } else {
                 printf("The door is already closed.\n");
@@ -611,8 +620,11 @@ void mainLoop() {
                 if (player.items[i] == items[doors[j]->key]) f = i;
                 }
               if (f >= 0) {
-                printf("The door has been unlocked.\n");
                 doors[j]->unlocked = 1;
+                if (doors[j]->numOnUnlockSteps > 0)
+                  performAction(doors[j]->onUnlockSteps,
+                                doors[j]->numOnUnlockSteps);
+                printf("The door has been unlocked.\n");
                 } else {
                 printf("You do not have the key for that door.\n");
                 }
@@ -655,8 +667,11 @@ void mainLoop() {
               if (player.items[i] == items[doors[j]->key]) f = i;
               }
             if (f >= 0) {
-              printf("The door has been unlocked.\n");
               doors[j]->unlocked = 1;
+              if (doors[j]->numOnUnlockSteps > 0)
+                performAction(doors[j]->onUnlockSteps,
+                              doors[j]->numOnUnlockSteps);
+              printf("The door has been unlocked.\n");
               } else {
               printf("You do not have the key for that door.\n");
               }
@@ -681,8 +696,11 @@ void mainLoop() {
                 if (player.items[i] == items[doors[j]->key]) f = i;
                 }
               if (f >= 0) {
-                printf("The door has been locked.\n");
                 doors[j]->unlocked = 0;
+                if (doors[j]->numOnLockSteps > 0)
+                  performAction(doors[j]->onLockSteps,
+                                doors[j]->numOnLockSteps);
+                printf("The door has been locked.\n");
                 } else {
                 printf("You do not have the key for that door.\n");
                 }
@@ -727,8 +745,11 @@ void mainLoop() {
               if (player.items[i] == items[doors[j]->key]) f = i;
               }
             if (f >= 0) {
-              printf("The door has been locked.\n");
               doors[j]->unlocked = 0;
+              if (doors[j]->numOnLockSteps > 0)
+                performAction(doors[j]->onLockSteps,
+                              doors[j]->numOnLockSteps);
+              printf("The door has been locked.\n");
               } else {
               printf("You do not have the key for that door.\n");
               }
