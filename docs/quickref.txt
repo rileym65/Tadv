@@ -164,6 +164,7 @@ Action Steps:
 [n]        ~              [n]       Logical NOT
 []         .              []        Print top of stack, no CR, space before and after
 []         ?              [n]       Request numeric input from user
+[]         "text"         []        Print the text between the quotes
 [n]        abs            [n]       Absolute value
 [num]      addscore       []        Add to player score
 [a b]      and            [n]       Boolean and

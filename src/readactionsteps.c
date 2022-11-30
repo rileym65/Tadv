@@ -10,6 +10,8 @@ int* readActionSteps(FILE* inFile,int* count, char* pBuf) {
   int     token;
   int i;
   int j;
+  int ch;
+  int c;
   *count = 0;
   flag = ' ';
   while (*pBuf != 0 && *pBuf != '{') pBuf++;
@@ -34,13 +36,33 @@ int* readActionSteps(FILE* inFile,int* count, char* pBuf) {
         *pWrd++ = '"';
         *pWrd = 0;
         if (*pBuf == '"') pBuf++;
-        if (*count == 0) steps = (int*)malloc(strlen(wrd)*sizeof(int));
-          else steps = (int*)realloc(steps, (strlen(wrd) + *count) * sizeof(int));
-        for (j=0; j<strlen(wrd); j++) {
-          if (wrd[j] == '"') steps[*count] = CMD_QT;
-            else steps[*count] = wrd[j];
-          *count += 1;
+
+        if ((*count += 1) == 1)
+          steps = (int*)malloc(sizeof(int));
+        else
+          steps = (int*)realloc(steps,sizeof(int) * *count);
+        steps[*count - 1] = CMD_QT;
+        ch = 0;
+        c = 4;
+        for (j=1; j<strlen(wrd)-1; j++) {
+          ch |= (wrd[j] << ((c-1)*8));
+          c--;
+          if (c == 0) {
+            *count += 1;
+            steps = (int*)realloc(steps,sizeof(int) * *count);
+            steps[*count-1] = ch;
+            ch = 0;
+            c = 4;
+            }
           }
+        if (c != 4) {
+          *count += 1;
+          steps = (int*)realloc(steps,sizeof(int) * *count);
+          steps[*count-1] = ch;
+          }
+        *count += 1;
+        steps = (int*)realloc(steps,sizeof(int) * *count);
+        steps[*count-1] = CMD_QT;
         }
       else {
         while (*pBuf > ' ' && *pBuf <=126) *pWrd++ = *pBuf++;
