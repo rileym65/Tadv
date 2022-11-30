@@ -63,9 +63,9 @@ void readItem(FILE* inFile,char* buf) {
   flag = ' ';
   while (flag == ' ') {
     if (fileRead(buffer,inFile) == NULL) flag = '*';
-    if (strchr(buffer,'}') != NULL) flag='*';
+    pBuffer = trim(buffer);
+    if (*pBuffer == '}') flag='*';
     if (flag != '*') {
-      pBuffer = trim(buffer);
       sscanf(buffer,"%s",head);
       pBuffer = nextWord(pBuffer);
       if (strcmp(head,"name") == 0) {
