@@ -6,6 +6,7 @@ void readItem(FILE* inFile,char* buf) {
   ACTION* action;
   int number;
   char buffer[1024];
+  char buffer2[1024];
   char* pBuffer;
   char head[255];
   char flag;
@@ -149,7 +150,10 @@ void readItem(FILE* inFile,char* buf) {
       if (strcasecmp(head,"action") == 0) {
          pBuffer = trim(pBuffer);
          for (i=0; i<strlen(pBuffer); i++)
-           if (pBuffer[i] == '{') pBuffer[i] = 0;
+           if (pBuffer[i] == '{') {
+             strcpy(buffer2, pBuffer+i);
+             pBuffer[i] = 0;
+             }
          pBuffer = trim(pBuffer);
          i = tokenizeAdd(pBuffer);
          action = (ACTION*)malloc(sizeof(ACTION));
@@ -164,7 +168,7 @@ void readItem(FILE* inFile,char* buf) {
          for (i=0; i<numTokens; i++) action->phraseTokens[i] = tokens[i];
          action->numActionTokens = 0;
          action->actionTokens =
-           readActionSteps(inFile,&(action->numActionTokens),pBuffer);
+           readActionSteps(inFile,&(action->numActionTokens),buffer2);
         }
       }
     }

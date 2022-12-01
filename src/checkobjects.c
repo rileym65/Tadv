@@ -17,7 +17,8 @@ int checkObjects() {
       for (j=0; j<player.items[i]->numActions; j++) {
         flag = 1;
         for (k=0; k<numTokens-1; k++)
-          if (tokens[k] != player.items[i]->actions[j]->phraseTokens[k])
+          if (k < player.items[i]->actions[j]->numPhraseTokens &&
+              tokens[k] != player.items[i]->actions[j]->phraseTokens[k])
             flag = 0;
         if (flag) {
           r = performAction(player.items[i]->actions[j]->actionTokens,
