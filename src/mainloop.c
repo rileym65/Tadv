@@ -127,18 +127,23 @@ void mainLoop() {
       else if (numTokens == 1 && tokens[0] == V_SAVE) save();
 /* ******************** EXITS ********************** */
       else if (numTokens == 1 && tokens[0] == V_EXITS) {
-        printf("Exits:");
-        if (rooms[player.location]->north[0] >= 0) printf(" N");
-        if (rooms[player.location]->south[0] >= 0) printf(" S");
-        if (rooms[player.location]->west[0] >= 0) printf(" W");
-        if (rooms[player.location]->east[0] >= 0) printf(" E");
-        if (rooms[player.location]->nw[0] >= 0) printf(" NW");
-        if (rooms[player.location]->ne[0] >= 0) printf(" NE");
-        if (rooms[player.location]->sw[0] >= 0) printf(" SW");
-        if (rooms[player.location]->se[0] >= 0) printf(" SE");
-        if (rooms[player.location]->up[0] >= 0) printf(" U");
-        if (rooms[player.location]->down[0] >= 0) printf(" D");
-        printf("\n\n");
+        if (rooms[player.location]->needLight && player.light == 0) {
+          printf("It is too dark to see the exits\n");
+          }
+        else {
+          printf("Exits:");
+          if (rooms[player.location]->north[0] >= 0) printf(" N");
+          if (rooms[player.location]->south[0] >= 0) printf(" S");
+          if (rooms[player.location]->west[0] >= 0) printf(" W");
+          if (rooms[player.location]->east[0] >= 0) printf(" E");
+          if (rooms[player.location]->nw[0] >= 0) printf(" NW");
+          if (rooms[player.location]->ne[0] >= 0) printf(" NE");
+          if (rooms[player.location]->sw[0] >= 0) printf(" SW");
+          if (rooms[player.location]->se[0] >= 0) printf(" SE");
+          if (rooms[player.location]->up[0] >= 0) printf(" U");
+          if (rooms[player.location]->down[0] >= 0) printf(" D");
+          printf("\n\n");
+          }
         }
 
 /* ******************** INVENT ********************* */

@@ -12,7 +12,7 @@ int readFile(char* filename) {
   while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
     buffer[strlen(buffer)-1] = 0;
   encrypted = 'N';
-  if (strncmp(buffer,"tadv",4) != 0) {
+  if (strncasecmp(buffer,"tadv",4) != 0) {
     printf("Invalid file\n");
     fclose(inFile);
     exit(1);
@@ -24,13 +24,13 @@ int readFile(char* filename) {
   while (fileRead(buffer,inFile) != NULL) {
     while (strlen(buffer) > 0 && buffer[strlen(buffer)-1] <= ' ')
       buffer[strlen(buffer)-1] = 0;
-    if (strncmp(buffer,"room",4)         == 0) readRoom(inFile,buffer);
-    else if (strncmp(buffer,"message",7) == 0) readMessage(inFile,buffer);
-    else if (strncmp(buffer,"item",4)    == 0) readItem(inFile,buffer);
-    else if (strncmp(buffer,"action",6)  == 0) readAction(inFile,buffer);
-    else if (strncmp(buffer,"adventure",9) == 0) readAdventure(inFile);
-    else if (strncmp(buffer,"function",8) == 0) readFunction(inFile,buffer);
-    else if (strncmp(buffer,"door",4) == 0) readDoor(inFile,buffer);
+    if (strncasecmp(buffer,"room",4)         == 0) readRoom(inFile,buffer);
+    else if (strncasecmp(buffer,"message",7) == 0) readMessage(inFile,buffer);
+    else if (strncasecmp(buffer,"item",4)    == 0) readItem(inFile,buffer);
+    else if (strncasecmp(buffer,"action",6)  == 0) readAction(inFile,buffer);
+    else if (strncasecmp(buffer,"adventure",9) == 0) readAdventure(inFile);
+    else if (strncasecmp(buffer,"function",8) == 0) readFunction(inFile,buffer);
+    else if (strncasecmp(buffer,"door",4) == 0) readDoor(inFile,buffer);
     else if (strlen(buffer) == 0) ;
     else printf("Unknown line: %s\n",buffer);
     }

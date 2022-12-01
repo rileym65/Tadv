@@ -13,7 +13,7 @@ void read_dest(char* buffer,int* link) {
     return;
     }
   while (*buffer == ' ') buffer++;
-  if (strncmp(buffer,"door",4) == 0) {
+  if (strncasecmp(buffer,"door",4) == 0) {
     while (*buffer != 0 && *buffer != ' ') buffer++;
     while (*buffer == ' ') buffer++;
     link[1] = getValue(buffer);
